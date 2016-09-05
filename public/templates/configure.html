@@ -77,9 +77,7 @@
 			widget.state && widget.state(1, changes);
 
 			dashboard.changed = true;
-
-			if (is)
-				widget.refresh();
+			is && widget.refresh();
 		};
 	});
 
