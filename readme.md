@@ -5,9 +5,9 @@
 # Dashboard
 
 This application has to be modified by your requirements.
-__Do you need support?__ [Contact our customer service specialists](https://www.totaljs.com/support).
 
-Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
+- Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
+- __Do you need support?__ [Contact our customer service specialists](https://www.totaljs.com/support).
 
 __Default mode__:
 

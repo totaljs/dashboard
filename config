@@ -2,8 +2,6 @@ name                      : Dashboard
 version                   : 1.0.0
 author                    : Totaljs.com Ltd
 
-superadmin                : admin:admin
-
 // Custom SMTP settings
 mail.smtp                 : YOUR.SMTPSERVER.COM
 // mail.smtp.options         : {"user":"","password":"","timeout":2000}
