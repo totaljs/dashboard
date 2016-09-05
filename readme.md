@@ -14,6 +14,7 @@ __Default mode__:
 - it uses NoSQL embedded database `/models/*.js`
 - it uses fake user profile `/definitions/auth.js`
 - the application is [localized via Total.js localization](https://docs.totaljs.com/latest/en.html#pages~Localization)
+- __it doesn't support__ lower resolution than __width<767px__ (mobile phones aren't supported now)
 
 ## Installation
 
