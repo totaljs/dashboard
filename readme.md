@@ -4,7 +4,7 @@
 
 # Dashboard
 
-This application has to be modified by your requirements.
+This application has to be modified by your requirements. Do you need support? [Contact our customer service specialists](https://www.totaljs.com/support).
 
 __Default mode__:
 
@@ -33,7 +33,7 @@ __License__: [MIT](license.txt).
 
 ## Creating widget
 
-- [Download: __Widget maker__](/totaljs/dashboard/blob/master/public/maker.html) and start to develop on your localhost
+- [Download: __Widget maker__](https://github.com/totaljs/dashboard/blob/master/public/maker.html) and start to develop on your localhost
 
 ```javascript
 // WIDGET(name, declaration, [initialization]);
@@ -46,7 +46,7 @@ WIDGET('WidgetName', function() {  // DECLARATION
     // self.options   (readonly)      --> custom options according to the @config
     // self.element   (readonly)      --> current jQuery element
     // self.dom       (readonly)      --> current DOM element (without jQuery)
-    // self.size (readonly)           --> current dimension + position
+    // self.size      (readonly)      --> current dimension + position
     
     // ==== METHODS ====
     // self.html(html)                --> sets HTML into the current element
@@ -58,12 +58,12 @@ WIDGET('WidgetName', function() {  // DECLARATION
     // self.refresh()                 --> refresh datasource and executes `render` when the data are OK.
     // self.center(boolean)           --> toggles centering
     // self.config(name, [value])     --> can read and write custom name/value (the configuration persists because is stored in DB on the server)
-    // self.ajax('url', [data], [callback(err, response)], [headers]) --> self.ajax('POST http://yourserver.com/data/', { dashboard: 'is the best!!!' }, function(err, response) { ... })
     // self.success(message)          --> shows a success message
     // self.warning(message)          --> shows a warning message
     // self.notify(icon, message, [callback])   --> creates a notification
     // self.confirm(message, buttons_labels_array, [callback(index)]) --> creates a confirm dialog
-
+    // self.ajax('url', [data], [callback(err, response)], [headers]) --> self.ajax('POST http://yourserver.com/data/', { dashboard: 'is the best!!!' }, function(err, response) { ... })
+    
     // ==== HANDLERS ====
 
     self.make = function(dimension) {
@@ -127,7 +127,9 @@ WIDGET('WidgetName', function() {  // DECLARATION
 
 ### Additional helpers
 
-- read jComponent documentation: [Section Tools](https://github.com/totaljs/jComponent#tools
+Use async operations, AJAX calls, date and number formatting, etc. in your widgets.
+
+- read jComponent documentation: [Section Tools](https://github.com/totaljs/jComponent#tools)
 - supports [Tangular template engine](https://github.com/totaljs/tangular)
 
 __Global variables__:
