@@ -1,0 +1,57 @@
+@{layout('')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>@{config.name} v@{config.version}</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="robots" content="all,follow" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="#A0A0A0" />
+	<meta name="apple-mobile-web-app-title" content="@{config.name}" />
+	<link rel="apple-touch-icon" href="/icon.png" />
+	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,700&subset=latin,latin-ext" />
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/styles/github.min.css" />
+	@{import('head', 'default.css', 'favicon.ico')}
+	<script>var user = JSON.parse('@{json(user)}');</script>
+</head>
+<body>
+
+	<div id="success"><span class="fa fa-check-circle"></span></div>
+	<div data-component="message" data-button="@(Close)"></div>
+	<div data-component="confirm"></div>
+	<div data-component="loading" class="ui-loading"></div>
+	<div data-component="calendar" data-days="@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)" data-months="@(January,February,March,April,May,Juny,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
+	<div data-component="notifications" data-date-format="@(yyyy-MM-dd HH:mm)" data-timeout="8000"></div>
+
+	<div data-component="resource">
+		<script type="text/plain">
+			yes:@(Yes)
+			no:@(No)
+			confirm-remove-widget:@(Are you sure you want to remove widget?)
+		</script>
+	</div>
+
+	<div id="body">
+		<div data-component="page" data-component-path="common.page" data-if="dashboard" data-template="/templates/dashboard.html"></div>
+	</div>
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.6.0/highlight.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.2.2/d3.min.js"></script>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.2/Chart.min.js"></script>
+
+	@{import('default.js')}
+
+	@{foreach m in model}
+		<script>WIDGETS_CURRENTREPOSITORY='@{m}';</script>
+		<script src="@{m}"></script>
+	@{end}
+
+	<script>WIDGETS_CURRENTREPOSITORY='';</script>
+</body>
+</html>

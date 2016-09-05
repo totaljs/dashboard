@@ -1,0 +1,185 @@
+<div class="mainmenu">
+	<ul class="iconmenu">
+		<li class="iconnew"><a href="/" class="jrouting"><i class="fa fa-plus-square-o"></i>@(New)</a></li>
+		<li class="iconbrowse"><a href="javascript:void(0)" data-component="click" data-component-path="dashboard_browse"><i class="fa fa-folder-o"></i>@(Browse)</a></li>
+		<li><a href="javascript:void(0)" data-component="click" data-component-path="dashboard_import"><i class="fa fa-cloud-download"></i>@(Import)</a></li>
+		<li class="iconmodify" data-save="@(Save)" data-modify="@(Modify)"><a href="javascript:void(0)" data-component="click" data-component-path="dashboard_edit"><i class="fa fa-braille"></i><span>@(Modify)</span></a></li>
+		<li><a href="javascript:void(0)" data-component="click" data-component-path="dashboard_repositories"><i class="fa fa-database"></i>@(Repository)</a></li>
+		<li data-component="visible" data-component-path="dashboard.current" data-if="value" class="hidden"><a href="javascript:void(0)" data-component="click" data-component-path="dashboard_export"><i class="fa fa-cloud-upload"></i>@(Export)</a></li>
+	</ul>
+	<div class="photo"><img src="/img/widget.png" alt="@(My account)" border="0" /></div>
+</div>
+
+<div class="container">
+	<div class="row" data-component="dashboard" data-component-path="WIDGETS_DASHBOARD"></div>
+</div>
+
+<script>
+
+	var dashboard = {};
+
+	dashboard.changed = false;
+	dashboard.title = document.title;
+	dashboard.items = [];
+	dashboard.initialized = false;
+	dashboard.oldsettings = '';
+
+	function dashboard_edit() {
+		var com = FIND('dashboard');
+		var btn = $('.iconmodify');
+
+		if (com.getMode() === 0) {
+			dashboard_editbutton(1);
+			return com.mode();
+		}
+
+		if (!dashboard.changed) {
+			com.mode();
+			dashboard_editbutton(0);
+			return;
+		}
+
+		IMPORTSET('formsave', 'common.form', 'save');
+		var item = dashboard.items.findItem('id', jR.params[0]);
+		SET('formsave', item || {}, true);
+		item && setTimeout(function() { CHANGE('formsave.name', true); }, 1000);
+	}
+
+	function dashboard_editbutton(type) {
+		var btn = $('.iconmodify');
+		var fa = btn.find('.fa');
+		btn.find('span').html(btn.attr('data-' + (type === 0 ? 'modify' : 'save')));
+		btn.toggleClass('save', type === 1);
+		fa.toggleClass('fa-floppy-o', type === 1);
+		fa.toggleClass('fa-braille', type === 0);
+	}
+
+	function dashboard_repositories() {
+		IMPORTSET('formrepository', 'common.form', 'repository')
+	}
+
+	function dashboard_browse() {
+		IMPORTSET('formbrowse', 'common.form', 'browse')
+	}
+
+	function dashboard_refresh(callback) {
+		AJAX('GET /api/dashboard/', function(response) {
+
+			var categories = {};
+
+			response.forEach(function(item) {
+				if (item.group)
+					categories[item.group] = true;
+			});
+
+			categories = Object.keys(categories);
+			categories.sort(function(a, b) {
+				return a.toLowerCase().removeDiacritics().substring(0, 5).localeCompare(b.toLowerCase().removeDiacritics().substring(0, 5));
+			});
+
+			response.sort(function(a, b) {
+				return a.name.toLowerCase().removeDiacritics().substring(0, 5).localeCompare(b.name.toLowerCase().removeDiacritics().substring(0, 5));
+			});
+
+			SET('dashboard.categories', categories);
+			SET('dashboard.items', response);
+
+			typeof(callback) === 'function' && callback();
+
+			if (!callback || jR.url !== '/')
+				return;
+
+			response.length && dashboard_browse();
+		});
+	}
+
+	function dashboard_load(id) {
+
+		var item = dashboard.items.findItem('id', id);
+		if (!item)
+			return;
+
+		AJAX('GET /api/settings/{0}/'.format(id), function(response) {
+
+			if (response && response.data)
+				WIDGETS_WIDGETSETTINGS = JSON.parse(decodeURIComponent(atob(response.data)));
+			else
+				WIDGETS_WIDGETSETTINGS = {};
+
+			document.title = item.name;
+			dashboard.changed = false;
+
+			SETTER('loading', 'show');
+			WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
+			SETTER('loading', 'hide', 800);
+			$('.iconnew').removeClass('selected');
+			$('.iconbrowse').addClass('selected');
+			dashboard_editbutton(0);
+			FIND('dashboard').mode(0);
+			SET('dashboard.current', item);
+		});
+	}
+
+	function dashboard_new() {
+		SETTER('loading', 'show');
+		SETTER('dashboard', 'clear');
+		SETTER('loading', 'hide', 800);
+		$('.iconnew').addClass('selected');
+		$('.iconbrowse').removeClass('selected');
+		dashboard_editbutton(1);
+		FIND('dashboard').mode(1);
+		document.title = dashboard.title;
+		WIDGETS_WIDGETSETTINGS = {};
+		SET('dashboard.current', null);
+	}
+
+	setInterval(function() {
+		if (!jR.params.length || FIND('dashboard').getMode())
+			return;
+		var item = dashboard.items.findItem('id', jR.params[0]);
+		if (!item)
+			return;
+
+		var obj = {};
+		obj.data = btoa(encodeURIComponent(JSON.stringify(WIDGETS_WIDGETSETTINGS)));
+
+		if (obj.data === dashboard.oldsettings)
+			return;
+
+		obj.id = item.id;
+		dashboard.oldsettings = obj.data;
+		AJAX('POST /api/settings/', obj, NOOP);
+	}, 10000);
+
+	function dashboard_import() {
+		IMPORTSET('formimport', 'common.form', 'import');
+		SET('formimport', {}, true);
+	}
+
+	function dashboard_export() {
+
+		var item = dashboard.items.findItem('id', jR.params[0]);
+		if (!item)
+			return;
+
+		var data = WIDGETS_SAVE();
+		data.repository = [];
+		data.name = item.name;
+		data.group = item.group;
+
+		for (var i = 0, length = data.widgets.length; i < length; i++) {
+			var w = WIDGETS_DATABASE[data.widgets[i].$name];
+			if (w && w.repository && data.repository.indexOf(w.repository) === -1)
+				data.repository.push(w.repository);
+		}
+
+		IMPORTSET('formexport', 'common.form', 'export');
+		SET('formexport.body', btoa(encodeURIComponent(JSON.stringify(data))));
+	}
+
+	dashboard_refresh(true);
+	setTimeout(function() {
+		user.photo && $('.photo img').attr('src', user.photo);
+	}, 200);
+
+</script>

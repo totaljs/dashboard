@@ -1,0 +1,47 @@
+<div data-component="form" data-title="@(Repository)" data-component-path="common.form" data-if="value === 'repository'" data-width="600px" data-component-id="formrepository" data-autocenter="false">
+	<div class="padding npt">
+		<div data-component="textboxlist" data-component-path="formrepository.items" data-placeholder="@(Add URL address to JavaScript and press enter)" data-icon="fa-database">@(Repositories)</div>
+	</div>
+	<div class="ui-form-buttons">
+		<div data-component="validation" data-component-path="formrepository">
+			<button name="submit">@(SUBMIT)</button>
+		</div>
+		<button name="cancel">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+
+	var formrepository = {};
+	formrepository.items = [];
+
+	ON('#formrepository', function(component) {
+		component.submit = function(hide) {
+			hide();
+
+			if (JSON.stringify(formrepository.items) === JSON.stringify(formrepository.backup))
+				return;
+
+			AJAX('POST /api/repositories/', { items: formrepository.items }, function(response) {
+				formrepository.items.forEach(function(item) {
+					if (formrepository.backup.indexOf(item) !== -1)
+						return;
+					IMPORT(item);
+					formrepository.backup.push(item);
+				});
+			});
+		};
+	});
+
+	function repositories_refresh(callback) {
+		AJAX('GET /api/repositories/', function(response) {
+			SET('formrepository.items', response.slice(0));
+			formrepository.backup = response;
+			RESET('formrepository.*');
+			callback && callback();
+		});
+	}
+
+	repositories_refresh();
+
+</script>

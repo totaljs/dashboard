@@ -1,0 +1,15 @@
+<div data-component="form" data-title="@(Exporting dashboard)" data-component-path="common.form" data-if="value === 'export'" data-width="600px" data-component-id="formexport" data-autocenter="false">
+	<div class="padding">
+		<div class="m" data-component="textarea" data-component-path="formexport.body" data-height="300px" data-readonly="true">@(Copy dashboard data)</div>
+	</div>
+	<div class="ui-form-buttons center">
+		<button name="cancel" style="width:150px">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+
+	if (!window.formexport)
+		window.formexport = {};
+
+</script>

@@ -1,0 +1,111 @@
+<div data-component="form" data-title="@(Configure widget)" data-component-path="common.form" data-if="value === 'configure'" data-width="800px" data-component-id="formconfigure" data-autocenter="false">
+	<div class="padding">
+		<div class="row">
+			<div class="col-md-9 m">
+				<div data-component="textbox" data-component-path="formconfigure.datasource" data-component-type="url" data-placeholder="https://www.yourdatasource.com/data.json" data-component-value="''">@(Datasource)</div>
+				<div class="help">@(URL address to widget datasource. Keep recommended structure from widget.)</div>
+			</div>
+			<div class="col-md-3">
+				<div data-component="textbox" data-component-path="formconfigure.interval" data-component-type="number" data-increment="true" data-placeholder="1" data-maxlength="4" data-component-value="0" data-align="center" data-icon="fa-clock-o">@(Refresh interval)</div>
+				<div class="help">@(Refresh interval in <b>seconds</b>.)</div>
+			</div>
+		</div>
+		<div data-component="visible" data-component-path="formconfigure.example" data-if="value" class="hidden">
+			<div data-component="highlightsyntax" data-type="json" data-component-path="formconfigure.example">
+				<div class="fs11"><i class="fa fa-code mr5"></i>@(Datasource example:)</div>
+			</div>
+		</div>
+	</div>
+	<div class="padding npb npt">
+		<ul class="tabmenu" data-component="tabmenu" data-component-path="formconfigure.tab">
+			<li data-value="settings">@(Settings)</li>
+			<li data-value="dictionary">@(Dictionary)</li>
+		</ul>
+	</div>
+	<div data-component="visible" data-component-path="formconfigure.tab" data-if="value === 'settings'" class="hidden">
+		<div data-component="multioptions" data-component-path="formconfigure.options" data-component-id="widgetoptions"></div>
+	</div>
+	<div data-component="visible" data-component-path="formconfigure.tab" data-if="value === 'dictionary'" class="padding hidden">
+		<div data-component="dictionary" data-component-path="formconfigure.dictionary" data-placeholder-key="@(Key)" data-placeholder-value="@(New name and press enter)"></div>
+	</div>
+	<br />
+	<div class="ui-form-buttons">
+		<div>
+			<button name="submit">@(SUBMIT)</button>
+		</div>
+		<button name="cancel">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+
+	if (!window.formconfigure)
+		window.formconfigure = {};
+
+	formconfigure.tab = 'settings';
+
+	ON('#formconfigure', function(component) {
+		component.submit = function(hide) {
+
+			hide();
+			FIND('#widgetoptions').save();
+
+			var widget = WIDGETS_DASHBOARD.findItem('id', formconfigure.id);
+			if (!widget)
+				return;
+
+			var is = widget.datasource !== formconfigure.datasource;
+			var changes = [];
+
+			widget.datasource = formconfigure.datasource;
+			widget.interval = formconfigure.interval * 1000;
+
+			if (!WIDGETS_USERSETTINGS[formconfigure.id])
+				WIDGETS_USERSETTINGS[formconfigure.id] = {};
+
+			Object.keys(formconfigure.options).forEach(function(key) {
+				var a = WIDGETS_USERSETTINGS[formconfigure.id][key];
+				var b = formconfigure.options[key].value;
+				if (a === b)
+					return;
+				WIDGETS_USERSETTINGS[formconfigure.id][key] = b;
+				changes.push(key);
+			});
+
+			widget.options = WIDGETS_USERSETTINGS[formconfigure.id];
+			widget.dictionary = formconfigure.dictionary;
+			widget.state && widget.state(1, changes);
+
+			dashboard.changed = true;
+
+			if (is)
+				widget.refresh();
+		};
+	});
+
+	ON('@multioptions', function(component) {
+		component.form = function(type, input, name) {
+			dashboard.pathstarget = input;
+
+			if (!formconfigure.datasource) {
+				SETTER('message', 'warning', '@(You don\'t have specified data-source.)');
+				return;
+			}
+
+			var data = SINGLETON('analyse');
+			data.url = formconfigure.datasource;
+
+			if (dashboard.paths) {
+				SET('common.subform', 'path');
+				return;
+			}
+
+			AJAX('GET /api/proxy/', data, function(response, err) {
+				var output = [];
+				analyse(output, response);
+				SET('dashboard.paths', output);
+				SET('common.subform', 'path');
+			});
+		};
+	});
+</script>

@@ -1,0 +1,42 @@
+<div data-component="form" data-title="@(Select widget)" data-component-path="common.form" data-if="value === 'widgets'" data-width="960px" data-component-id="formwidgets" data-autocenter="false">
+	<div class="filter padding npt">
+		<div class="row">
+			<div class="col-md-4">
+				<div data-component="textbox" data-control-icon="fa-search" data-placeholder="@(Search widgets)" data-component-path="formwidgets.widgetsearch"></div>
+			</div>
+		</div>
+	</div>
+	<div class="padding npb npt" data-component="search" data-component-path="formwidgets.widgetsearch" data-selector=".widgets-item-search">
+		<div data-component="repeater" data-component-path="formwidgets.widgets" data-group="category" class="widgetscontainer row">
+			<script type="text/html">
+				<div class="col-sm-3 m widgets-item-search{{ if disabled }} widgets-item-search-disabled{{ fi }}" data-search="{{ name }}" data-size="{{ sizes | join }}">
+					<div class="widgets-item" data-id="{{ id }}">
+						<div><img src="{{ preview | preview }}" alt="{{ name }}" border="0" class="img-responsive img-rounded" /></div>
+						<div class="widgets-item-name">{{ name }}</div>
+						<div class="widgets-item-company">{{ author | default('@(Unknown author)') }}</div>
+					</div>
+				</div>
+			</script>
+		</div>
+		<div class="clearfix"></div>
+	</div>
+	<div class="ui-form-buttons center">
+		<button name="cancel" style="width:200px">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+	if (!window.formwidgets)
+		window.formwidgets = {};
+
+	$(document).on('click', '.widgets-item', function() {
+		var el = $(this);
+		if (el.parent().hasClass('widgets-item-search-disabled'))
+			return;
+		var container = $('[data-instance="{0}"]'.format(formwidgets.current));
+		WIDGET_MAKE(formwidgets.current, el.attr('data-id'), container);
+		WIDGETS_REFRESH_DATASOURCE(false);
+		SET('common.form', '');
+		dashboard.changed = true;
+	});
+</script>

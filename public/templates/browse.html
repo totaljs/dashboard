@@ -1,0 +1,69 @@
+<div data-component="form" data-title="@(Select dashboard)" data-component-path="common.form" data-if="value === 'browse'" data-width="700px" data-component-id="formbrowse" data-autocenter="false">
+	<div class="filter padding npt">
+		<div class="row">
+			<div class="col-md-8">
+				<div data-component="textbox" data-control-icon="fa-search" data-placeholder="@(Search dashbarods)" data-component-path="formbrowse.search" data-maxlength="30"></div>
+			</div>
+			<div class="col-md-4">
+				<a href="javascript:void(0)" class="button button-small" data-component="click" data-component-path="formbrowse_new"><i class="fa fa-plus-circle"></i>@(Create new)</a>
+			</div>
+		</div>
+	</div>
+	<div data-component="search" data-component-path="formbrowse.search" data-selector=".search">
+		<div data-component="repeater-group" data-component-path="dashboard.items" data-group="group" class="browsecontainer">
+			<script type="text/html">
+				<div class="browse-item search" data-search="{{ name }}">
+					<a href="/{{ id }}/" class="browse-item-link jrouting">{{ name }}</a>
+					<a href="javascript:void(0)" data-id="{{ id }}" class="browse-item-remove"><i class="fa fa-times-circle"></i></a>
+				</div>
+			</script>
+			<script type="text/html">
+				<div class="browse-category search" data-search="_"><i class="fa fa-folder-o mr5"></i>{{ group }}</div>
+			</script>
+		</div>
+	</div>
+	<br />
+	<div class="ui-form-buttons center">
+		<button name="cancel" style="width:150px">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+	var formbrowse = {};
+
+	$(document).on('click', '.browse-item-link', function() {
+		SETTER('loading', 'show');
+		SET('common.form', '', 100);
+	});
+
+	function formbrowse_new() {
+		jR.redirect('/');
+		SET('common.form', '', 100);
+	}
+
+	$(document).on('click', '.browse-item-remove', function() {
+		var el = $(this);
+		var id = el.attr('data-id');
+
+		FIND('confirm').confirm('@(Are you sure you want to remove this dashboard?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			if (index)
+				return;
+			SETTER('loading', 'show');
+			AJAX('DELETE /api/dashboard/{0}/'.format(id), function() {
+				EXEC('dashboard_refresh')(function() {
+
+					SETTER('loading', 'hide', 1000);
+					if (jR.params[0] === id)
+						jR.redirect('/');
+
+					SET('formbrowse.search', '');
+
+					if (!dashboard.items.length)
+						SET('common.form', '');
+
+				});
+			});
+		});
+	});
+
+</script>

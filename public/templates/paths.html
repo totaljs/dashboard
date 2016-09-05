@@ -1,0 +1,23 @@
+<div data-component="form" data-title="@(Select path)" data-component-path="common.subform" data-if="value === 'path'" data-width="500px" data-component-id="form.path" data-autocenter="false">
+	<div class="padding">
+		<div data-component="repeater" data-component-path="dashboard.paths" class="pathcontainer">
+			<script type="text/html">
+				<div class="path-item" data-id="$index">{{ path }}</div>
+			</script>
+		</div>
+	</div>
+	<div class="ui-form-buttons center">
+		<button name="cancel" style="width:150px">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+	var formpaths = {};
+
+	$(document).on('click', '.path-item', function() {
+		var el = $(this);
+		dashboard.pathstarget.val(el.html());
+		SET('common.subform', '');
+	});
+
+</script>
