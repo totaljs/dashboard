@@ -4,7 +4,10 @@
 
 # Dashboard
 
-This application has to be modified by your requirements. Do you need support? [Contact our customer service specialists](https://www.totaljs.com/support).
+This application has to be modified by your requirements.
+__Do you need support?__ [Contact our customer service specialists](https://www.totaljs.com/support).
+
+Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
 
 __Default mode__:
 
