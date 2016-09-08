@@ -222,7 +222,7 @@ function $WIDGET(name, declaration, init) {
 	var recth = [];
 	var rectv = [];
 
-	if (!objinit.sizes || objinit.sizes.length)
+	if (!objinit.sizes || !objinit.sizes.length)
 		objinit.sizes = '1x1,2x2,3x3,4x4,5x5,6x6,1x2,1x3,1x4,1x5,1x6,2x1,3x1,4x1,5x1,6x1'.split(',');
 
 	objinit.sizes.forEach(function(val) {
