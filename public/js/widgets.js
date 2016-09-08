@@ -238,6 +238,9 @@ WIDGET_COMPONENT.prototype.configure = function() {
 	obj.author = w.author;
 	obj.name = w.name;
 
+	if (window.dashboard && window.dashboard.paths)
+		window.dashboard.paths = null;
+
 	IMPORTSET('formconfigure', 'common.form', 'configure');
 	SET('formconfigure', obj);
 	return self;
@@ -317,11 +320,13 @@ WIDGET_COMPONENT.prototype.refresh = function() {
 			return;
 
 		var datasource = WIDGETS_DATASOURCE[self.datasource];
-		if (datasource) {
-			datasource.counter = 0;
-			datasource.response = response;
-			self.redraw();
-		}
+
+		if (!datasource)
+			datasource = WIDGETS_DATASOURCE[self.datasource] = {};
+
+		datasource.counter = 0;
+		datasource.response = response;
+		self.redraw();
 	});
 
 	return self;
