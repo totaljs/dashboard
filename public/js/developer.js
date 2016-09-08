@@ -119,8 +119,7 @@ function $WIDGET(name, declaration, init) {
 			widgetready = true;
 			obj.make && obj.make(obj.size);
 			obj.state && obj.state(0);
-			if (currentdata)
-				obj.refresh();
+			currentdata && obj.refresh();
 		}, 50);
 	};
 
@@ -217,56 +216,54 @@ function $WIDGET(name, declaration, init) {
 	$('.preview-author').html(objinit.author || 'Unknown author');
 
 	document.title = 'Preview: ' + (objinit.title || name);
+	objinit.preview && $('.preview img').attr('src', objinit.preview);
 
-	if (objinit.preview)
-		$('.preview img').attr('src', objinit.preview);
+	var square = [];
+	var recth = [];
+	var rectv = [];
 
-	if (objinit.sizes && objinit.sizes.length) {
+	if (!objinit.sizes || objinit.sizes.length)
+		objinit.sizes = '1x1,2x2,3x3,4x4,5x5,6x6,1x2,1x3,1x4,1x5,1x6,2x1,3x1,4x1,5x1,6x1'.split(',');
 
-		var square = [];
-		var recth = [];
-		var rectv = [];
+	objinit.sizes.forEach(function(val) {
+		if (!val)
+			return;
+		var arr = val.split('x');
+		if (arr[0] === arr[1])
+			return square.push('<option value="{0}">Grid: {0}</option>'.format(val));
+		if (arr[0] === '1')
+			return rectv.push('<option value="{0}">Grid: {0}</option>'.format(val));
+		if (arr[1] === '1')
+			return recth.push('<option value="{0}">Grid: {0}</option>'.format(val));
+	});
 
-		objinit.sizes.forEach(function(val) {
-			if (!val)
-				return;
-			var arr = val.split('x');
-			if (arr[0] === arr[1])
-				return square.push('<option value="{0}">Grid: {0}</option>'.format(val));
-			if (arr[0] === '1')
-				return rectv.push('<option value="{0}">Grid: {0}</option>'.format(val));
-			if (arr[1] === '1')
-				return recth.push('<option value="{0}">Grid: {0}</option>'.format(val));
+	var builder = [];
+
+	if (square.length) {
+		builder.push('<optgroup label="Square">');
+		square.forEach(function(val) {
+			builder.push(val);
 		});
-
-		var builder = [];
-
-		if (square.length) {
-			builder.push('<optgroup label="Square">');
-			square.forEach(function(val) {
-				builder.push(val);
-			});
-			builder.push('</optgroup>');
-		}
-
-		if (rectv.length) {
-			builder.push('<optgroup label="Rectangle - vertical">');
-			rectv.forEach(function(val) {
-				builder.push(val);
-			});
-			builder.push('</optgroup>');
-		}
-
-		if (recth.length) {
-			builder.push('<optgroup label="Rectangle - horizontal">');
-			recth.forEach(function(val) {
-				builder.push(val);
-			});
-			builder.push('</optgroup>');
-		}
-
-		$('#grid').html(builder.join(''));
+		builder.push('</optgroup>');
 	}
+
+	if (rectv.length) {
+		builder.push('<optgroup label="Rectangle - vertical">');
+		rectv.forEach(function(val) {
+			builder.push(val);
+		});
+		builder.push('</optgroup>');
+	}
+
+	if (recth.length) {
+		builder.push('<optgroup label="Rectangle - horizontal">');
+		recth.forEach(function(val) {
+			builder.push(val);
+		});
+		builder.push('</optgroup>');
+	}
+
+	$('#grid').html(builder.join(''));
 
 	loadsettings();
 
@@ -275,7 +272,7 @@ function $WIDGET(name, declaration, init) {
 
 	if (typeof(objinit.example) === 'string') {
 		try {
-		DATASOURCE(JSON.parse(objinit.example), true);
+			DATASOURCE(JSON.parse(objinit.example), true);
 		} catch (e) {};
 	} else
 		DATASOURCE(objinit.example, true);
