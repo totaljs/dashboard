@@ -20,7 +20,7 @@ __Default mode__:
 
 __License__: [MIT](license.txt). 
 
-- install latest Total.js `npm install total.js` (minimal version: __+v2.0.2__)
+- install latest Total.js `npm install total.js` (minimal version: __+v2.1.0__)
 - download source-code
 - run `node debug.js`
 
