@@ -2061,7 +2061,7 @@ function getDeviceWidth(type) {
 			obj.height = 150;
 			break;
 		case 'md':
-			obj.width = 117.98;
+			obj.width = 131.66;
 			obj.height = 107.25;
 			break;
 		case 'sm':
