@@ -68,9 +68,7 @@ function success() {
 }
 
 Tangular.register('default', function(value, def) {
-	if (value == null || value === '')
-		return def;
-	return value;
+	return value == null || value === '' ? def : value;
 });
 
 Tangular.register('indexer', function(index) {
@@ -101,7 +99,5 @@ function IMPORTSET(check, name, value) {
 }
 
 Tangular.register('preview', function(value) {
-	if (value)
-		return value;
-	return '/img/empty.png';
+	return value ? value : '/img/empty.png';
 });
