@@ -50,7 +50,7 @@
 				return;
 			SETTER('loading', 'show');
 			AJAX('DELETE /api/dashboard/{0}/'.format(id), function() {
-				EXEC('dashboard_refresh')(function() {
+				EXEC('dashboard_refresh', function() {
 					SETTER('loading', 'hide', 1000);
 					jR.params[0] === id && jR.redirect('/');
 					SET('formbrowse.search', '');
