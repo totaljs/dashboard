@@ -7,7 +7,7 @@
 This application has to be modified by your requirements.
 
 - Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
-- __Do you need support?__ [Contact our customer service specialists](https://www.totaljs.com/support).
+- [__HelpDesk with professional support__](https://helpdesk.totaljs.com)
 
 __Default mode__:
 
