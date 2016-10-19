@@ -282,14 +282,14 @@ function $WIDGET(name, declaration, init) {
 
 function widget_refresh() {
 	var s = getDimension(size.device);
-	$('#widget,.widget-container').css({ width: s.width, height: s.height });
+	$('#widget,.widget-container').css({ width: s.width, height: s.height, 'font-size': s.fontsize + '%' });
 }
 
 function getDimension(device) {
 	var sizes = $('#grid').val().split('x');
 	var rows = +sizes[0];
 	var cols = +sizes[1];
-	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1 };
+	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, fontsize: (cols * 10) + 40 };
 }
 
 function getDevice() {
@@ -317,6 +317,7 @@ function getDeviceWidth(type) {
 		case 'xs':
 			obj.width = 370;
 			obj.height = 336.36;
+			break;
 	}
 	return obj;
 }
@@ -363,7 +364,7 @@ $(document).ready(function() {
 	$('#grid,#device').on('change', function() {
 		size = getDevice();
 		current.size = getDimension(size.device);
-		$('#widget,.widget-container').css({ width: current.size.width, height: current.size.height });
+		$('#widget,.widget-container').css({ width: current.size.width, height: current.size.height, 'font-size': current.size.fontsize + '%' });
 		var dimension = current.$dimension[size.device + current.size.rows + 'x' + current.size.cols];
 		current.resize && current.resize(current.size, dimension ? dimension() : EMPTYOBJECT);
 		$('.widget-size').html(current.size.width + '<b>x</b>' + current.size.height);

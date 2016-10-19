@@ -71,7 +71,7 @@
 				console.log('---> make', size);
 
 				self.css('background-color', self.options.background);
-				self.css('font-size', self.options.fontsize);
+				self.css('font-size', self.options.fontsize + '%');
 				self.css('color', self.options.color);
 
 				self.html('CONTENT');
@@ -105,7 +105,7 @@
 			// === CONFIGURATION
 			// config(key, label, default, type, max, min, step, validator)
 			config('background', 'Background Color', 'red', 'Color');
-			config('fontsize', 'Font Size', 20, 'Number');
+			config('fontsize', 'Font Size (%)', 500, 'Number');
 			config('color', 'Font Color', 'white', 'Color');
 
 			// === 3rd-party JS or CSS
