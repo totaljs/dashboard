@@ -93,6 +93,9 @@ function WIDGET_COMPONENT(id, name, element, options) {
 	this.element = element;
 	this.options = options;
 	this.dom = element.get(0);
+	this.prepare = function(data) {
+		return data;
+	};
 
 /*
 	this.make = function(size) {};
@@ -284,13 +287,13 @@ WIDGET_COMPONENT.prototype.redraw = function() {
 		obj = response.slice(0);
 	else if (response) {
 		if (typeof(response) === 'object')
-			obj = $.extend({}, response, true);
+			obj = JSON.parse(JSON.stringify(response));
 		else
 			obj = response;
 	} else
 		obj = null;
 
-	obj && self.render && self.render(obj, self.size, self.$render++);
+	obj && self.render && self.render(self.prepare(obj), self.size, self.$render++);
 	return self;
 };
 
@@ -320,7 +323,6 @@ WIDGET_COMPONENT.prototype.refresh = function() {
 			return;
 
 		var datasource = WIDGETS_DATASOURCE[self.datasource];
-
 		if (!datasource)
 			datasource = WIDGETS_DATASOURCE[self.datasource] = {};
 
@@ -365,9 +367,7 @@ function WIDGETS_LOAD(obj) {
 		$('.gridcontainer').find('.col-sm-2').each(function() {
 			var el = $(this);
 			var index = el.index();
-			if (item.index.indexOf(index) === -1)
-				return;
-			el.find('div').addClass('grid-disabled').attr('data-id', item.id);
+			item.index.indexOf(index) !== -1 && el.find('div').addClass('grid-disabled').attr('data-id', item.id);
 		});
 	});
 
@@ -418,9 +418,7 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource, interval) {
 	component.make && component.make(component.size);
 	component.state && component.state(0);
 	component.element.css({ width: component.size.w, height: component.size.h });
-
-	if (WIDGETS_DATASOURCE[datasource] && WIDGETS_DATASOURCE[datasource].response)
-		component.redraw();
+	WIDGETS_DATASOURCE[datasource] && WIDGETS_DATASOURCE[datasource].response && component.redraw();
 }
 
 function WIDGETS_REFRESH_DATASOURCE(init) {
@@ -442,13 +440,11 @@ function WIDGETS_REFRESH_DATASOURCE(init) {
 			WIDGETS_DATASOURCE[widget.datasource] = { url: widget.datasource, response: cache[widget.datasource] || null, counter: 0, interval: 60000 * 10, widgets: [] };
 		WIDGETS_DATASOURCE[widget.datasource].widgets.push(widget);
 		WIDGETS_DATASOURCE[widget.datasource].interval = Math.min(widget.interval, WIDGETS_DATASOURCE[widget.datasource].interval);
-
 		if (cache[widget.datasource])
 			return;
 		WIDGETS_DATASOURCE[widget.datasource].counter = WIDGETS_DATASOURCE[widget.datasource].interval;
 		WIDGETS_DATASOURCE[widget.datasource].widgets.forEach(function(widget) {
-			if (!widget.$render)
-				widget.redraw();
+			!widget.$render && widget.redraw();
 		});
 	});
 

@@ -16,7 +16,7 @@ var widgetready = false;
 function DATASOURCE(value, example) {
 	if (example && currentdata)
 		return;
-	currentdata = value;
+	currentdata = current.prepare(value);
 	currentdata && widgetready && current.render && current.render(currentdata, current.size, current.$render++);
 }
 
@@ -73,6 +73,10 @@ function $WIDGET(name, declaration, init) {
 	obj.css = obj.style = function(name, value) {
 		obj.element.css(name, value);
 		return obj;
+	};
+
+	obj.prepare = function(data) {
+		return data;
 	};
 
 	obj.dimension = function(device, size, values) {
@@ -158,9 +162,7 @@ function $WIDGET(name, declaration, init) {
 	};
 
 	obj.refresh = function() {
-		if (!obj.render)
-			return;
-		setTimeout(function() {
+		obj.render && setTimeout(function() {
 			obj.render(currentdata, obj.size, obj.$render++);
 		}, 100);
 		return obj;

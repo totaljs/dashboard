@@ -100,6 +100,12 @@ WIDGET('WidgetName', function() {  // DECLARATION
         // changes       : array of all changes (keys/properties) when is the widget reconfigured
     };
 
+    self.prepare = function(data) {
+        // optional
+        // this method can prepare data from datasource, this is a default implementation:
+        return; data;
+    };
+
     // ==== CUSTOM EVENTS ====
     
     self.publish('event-name', 'argument1', 1000, 'argumentN');
