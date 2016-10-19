@@ -223,9 +223,10 @@ function $WIDGET(name, declaration, init) {
 	var square = [];
 	var recth = [];
 	var rectv = [];
+	var others = [];
 
 	if (!objinit.sizes || !objinit.sizes.length)
-		objinit.sizes = '1x1,2x2,3x3,4x4,5x5,6x6,1x2,1x3,1x4,1x5,1x6,2x1,3x1,4x1,5x1,6x1'.split(',');
+		objinit.sizes = '1x1,2x2,3x3,4x4,5x5,6x6,1x2,1x3,1x4,1x5,1x6,2x1,3x1,4x1,5x1,6x1,2x3,2x4,2x5,2x6,3x2,3x4,3x5,3x6,4x2,4x3,4x5,4x6,5x2,5x3,5x4,5x6,6x2,6x3,6x4,6x5,3x2,4x2,5x2,6x2,2x3,4x3,5x3,6x3,2x4,3x4,5x4,6x4,2x5,3x5,4x5,6x5,2x6,3x6,4x6,5x6'.split(',');
 
 	objinit.sizes.forEach(function(val) {
 		if (!val)
@@ -237,6 +238,7 @@ function $WIDGET(name, declaration, init) {
 			return rectv.push('<option value="{0}">Grid: {0}</option>'.format(val));
 		if (arr[1] === '1')
 			return recth.push('<option value="{0}">Grid: {0}</option>'.format(val));
+		others.push('<option value="{0}">Grid: {0}</option>'.format(val));
 	});
 
 	var builder = [];
@@ -260,6 +262,14 @@ function $WIDGET(name, declaration, init) {
 	if (recth.length) {
 		builder.push('<optgroup label="Rectangle - horizontal">');
 		recth.forEach(function(val) {
+			builder.push(val);
+		});
+		builder.push('</optgroup>');
+	}
+
+	if (others.length) {
+		builder.push('<optgroup label="Others">');
+		others.forEach(function(val) {
 			builder.push(val);
 		});
 		builder.push('</optgroup>');
@@ -290,7 +300,7 @@ function getDimension(device) {
 	var sizes = $('#grid').val().split('x');
 	var rows = +sizes[0];
 	var cols = +sizes[1];
-	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, fontsize: (cols * 10) + 40 };
+	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, fontsize: (cols * 10) + 40, percentageX: ((cols / 6) * 100) >> 0, percentageY: ((rows / 6) * 100) >> 0 };
 }
 
 function getDevice() {
