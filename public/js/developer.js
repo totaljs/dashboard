@@ -283,6 +283,7 @@ function $WIDGET(name, declaration, init) {
 function widget_refresh() {
 	var s = getDimension(size.device);
 	$('#widget,.widget-container').css({ width: s.width, height: s.height, 'font-size': s.fontsize + '%' });
+	$('#widget').removeClass('xs sm md lg').addClass(size.device);
 }
 
 function getDimension(device) {
@@ -365,6 +366,7 @@ $(document).ready(function() {
 		size = getDevice();
 		current.size = getDimension(size.device);
 		$('#widget,.widget-container').css({ width: current.size.width, height: current.size.height, 'font-size': current.size.fontsize + '%' });
+		$('#widget').removeClass('xs sm md lg').addClass(current.size.device);
 		var dimension = current.$dimension[size.device + current.size.rows + 'x' + current.size.cols];
 		current.resize && current.resize(current.size, dimension ? dimension() : EMPTYOBJECT);
 		$('.widget-size').html(current.size.width + '<b>x</b>' + current.size.height);

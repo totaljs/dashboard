@@ -418,6 +418,7 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource, interval) {
 	component.make && component.make(component.size);
 	component.state && component.state(0);
 	component.element.css({ width: component.size.w, height: component.size.h });
+	element.removeClass('xs sm md lg').addClass(component.size.device);
 	WIDGETS_DATASOURCE[datasource] && WIDGETS_DATASOURCE[datasource].response && component.redraw();
 }
 

@@ -160,6 +160,11 @@ user;              // returns instance of the current user
 - click on the `Repository`
 - add URL to script with your widgets
 
+### Interesting
+
+- each `widget` container element contains a current display size `xs`, `sm`, `md` or `lg` (you can adjust you CSS with display size selector e.g. `.lg .my-widget-text { font-size: 300% }`.
+- each `widget` container element contains a percentual size of font `100% = 14px`, you can adjust `font-size` according to the widget width (`6 cols === 100%`, `1 cols === 50%`).
+
 __License__: [MIT](license.txt).
 
 [license-image]: https://img.shields.io/badge/license-MIT-blue.svg?style=flat
