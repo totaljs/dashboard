@@ -2226,7 +2226,6 @@ COMPONENT('tooltip', function() {
 		} else
 			el.css(css);
 	};
-
 });
 
 COMPONENT('notifications', function() {
