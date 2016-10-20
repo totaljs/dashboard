@@ -87,6 +87,7 @@ function WIDGET(name, make, init) {
 function WIDGET_COMPONENT(id, name, element, options) {
 
 	this.$render = 0;
+	self.$datasource = 0;
 	this.$dimension = {};
 	this.id = id;
 	this.name = name;
@@ -161,6 +162,21 @@ WIDGET_COMPONENT.prototype.confirm = function(message, buttons, callback) {
 	return this;
 };
 
+WIDGET_COMPONENT.prototype.tooltip = function() {
+	var component = FIND('tooltip');
+
+	if (!component)
+		return this;
+
+	if (arguments[0] === false) {
+		component.hide();
+		return this;
+	}
+
+	component.show.apply(component, arguments);
+	return this;
+};
+
 WIDGET_COMPONENT.prototype.config = function(name, value) {
 	if (value === undefined) {
 		var o = WIDGETS_WIDGETSETTINGS[this.id];
@@ -196,6 +212,25 @@ WIDGET_COMPONENT.prototype.subscribe = function(name, fn) {
 		WIDGETS_EVENTS[name] = [];
 	WIDGETS_EVENTS[name].push({ id: this.id, fn: fn, instace: this });
 	return this;
+};
+
+WIDGET_COMPONENT.prototype.datasource = function(url, data, headers) {
+	if (typeof(data) === 'function') {
+		headers = callback;
+		callback = data;
+		data = undefined;
+	} else if (typeof(callback) === 'object') {
+		var tmp = headers;
+		headers = callback;
+		callback = tmp;
+	}
+
+	var index = url.indexOf(' ');
+	var self = this;
+	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers }, function(response, err) {
+		response && self.render && self.render(self.prepare(response), self.size, self.$datasource++);
+	});
+	return self;
 };
 
 WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers) {

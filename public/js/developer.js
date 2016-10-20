@@ -29,6 +29,7 @@ function WIDGET(name, declaration, init) {
 function $WIDGET(name, declaration, init) {
 	var obj = {};
 	current = obj;
+	obj.$datasource = 0;
 	obj.$render = 0;
 	obj.$dimension = {};
 	obj.options = {};
@@ -168,19 +169,57 @@ function $WIDGET(name, declaration, init) {
 		return obj;
 	};
 
-	obj.notify = function() {
+	obj.notify = function(icon, message, callback) {
+		SETTER('notifications', 'append', icon, message, callback);
 		return obj;
 	};
 
-	obj.warning = function() {
+	obj.warning = function(message, icon) {
+		SETTER('message', 'warning', message, icon);
 		return obj;
 	};
 
-	obj.success = function() {
+	obj.success = function(message, icon) {
+		SETTER('message', 'success', message, icon);
 		return obj;
 	};
 
-	obj.confirm = function() {
+	obj.confirm = function(message, buttons, callback) {
+		SETTER('confirm', 'confirm', message, buttons, callback);
+		return obj;
+	};
+
+	obj.tooltip = function() {
+		var component = FIND('tooltip');
+
+		if (!component)
+			return obj;
+
+		if (arguments[0] === false) {
+			component.hide();
+			return obj;
+		}
+
+		component.show.apply(component, arguments);
+		return obj;
+	};
+
+	obj.datasource = function(url, data, headers) {
+
+		if (typeof(data) === 'function') {
+			headers = callback;
+			callback = data;
+			data = undefined;
+		} else if (typeof(callback) === 'object') {
+			var tmp = headers;
+			headers = callback;
+			callback = tmp;
+		}
+
+		var index = url.indexOf(' ');
+		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers }, function(response, err) {
+			response && obj.render && obj.render(obj.prepare(response), obj.size, obj.$datasource++);
+		});
 		return obj;
 	};
 

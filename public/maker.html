@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Dashboard: Widget Maker</title>
+	<title>Dashboard: Widget Maker v2.0</title>
 	<meta charset="utf-8" />
 	<meta http-equiv="X-UA-Compatible" content="IE=11" />
 	<meta name="format-detection" content="telephone=no" />
@@ -30,6 +30,12 @@
 	</style>
 </head>
 <body>
+
+	<div data-component="message" data-button="Close"></div>
+	<div data-component="confirm"></div>
+	<div data-component="loading" class="hidden"></div>
+	<div data-component="notifications" data-date-format="yyyy-MM-dd HH:mm" data-timeout="8000"></div>
+	<div data-component="tooltip"></div>
 
 	<header>
 		<h1><i class="fa fa-plug"></i>Widget Maker</h1>
@@ -116,8 +122,11 @@
 			// STYLE('.my-widget-name { background-color: red; }');
 		});
 
-		// UPDATE datasource value
+		// === Updates datasource value about new data:
 		// DATASOURCE({ values: [1, 2, 3, 4, 5] });
+
+		// === Get a current instance of the widget:
+		// current
 
 		</script>
 

@@ -237,3 +237,7 @@ label span { vertical-align: middle; }
 .ui-dictionary-item .fa:active { margin-top: 1px; }
 .ui-dictionary-item input { width: 100%; background-color: transparent; border: 0; padding: 3px 10px 0; border-radius: 4px; outline: 0; font-size: 12px; color: black; }
 .ui-dictionary-base .fa { display: none; }
+
+.ui-tooltip { position: absolute; z-index: 80; }
+.ui-tooltip-body { padding: 12px 15px; font-size: 11px; background: black linear-gradient(#303030,black); color: white; border-radius: 4px; }
+.ui-tooltip-arrow { font-size: 30px; color: #303030; line-height: 0; text-align: center; height: 20px; }

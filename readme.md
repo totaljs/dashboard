@@ -64,9 +64,12 @@ WIDGET('WidgetName', function() {  // DECLARATION
     // self.config(name, [value])     --> can read and write custom name/value (the configuration persists because is stored in DB on the server)
     // self.success(message)          --> shows a success message
     // self.warning(message)          --> shows a warning message
-    // self.notify(icon, message, [callback])   --> creates a notification
+    // self.tooltip(element, html, [width], [offX], [offY]) --> shows Tooltip
+    // self.tooltip(x, y, html, [width]) --> shows Tooltip
+    // self.notify(font-awesome-icon, message, [callback])   --> creates a notification
     // self.confirm(message, buttons_labels_array, [callback(index)]) --> creates a confirm dialog
-    // self.ajax('url', [data], [callback(err, response)], [headers]) --> self.ajax('POST http://yourserver.com/data/', { dashboard: 'is the best!!!' }, function(err, response) { ... })
+    // self.datasource('METHOD url', [data], [headers]) --> executes prepare && render with `response data`
+    // self.ajax('METHOD url', [data], [callback(err, response)], [headers]) --> self.ajax('POST http://yourserver.com/data/', { dashboard: 'is the best!!!' }, function(err, response) { ... })
     
     // ==== HANDLERS ====
 
