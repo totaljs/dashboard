@@ -1862,9 +1862,7 @@ COMPONENT('dashboard', function() {
 
 			Object.keys(WIDGETS_DATABASE).forEach(function(name) {
 				var widget = WIDGETS_DATABASE[name];
-				var disabled = false;
-				if (widget.sizes && widget.sizes.length && widget.sizes.indexOf(grid) === -1)
-					disabled = true;
+				var disabled = widget.sizes && widget.sizes.length && widget.sizes.indexOf(grid) === -1;
 				widgets.push({ id: name, name: widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled });
 			});
 
@@ -1928,10 +1926,7 @@ COMPONENT('dashboard', function() {
 				el.toggleClass('grid-hover', is);
 			});
 
-			if (drag.is)
-				return;
-
-			grid.filter('.grid-hover').removeClass('grid-hover');
+			!drag.is && grid.filter('.grid-hover').removeClass('grid-hover');
 		});
 
 		$(window).on('resize', function() {
@@ -2046,6 +2041,14 @@ COMPONENT('dashboard', function() {
 			});
 
 			grid.removeClass('visible');
+			$('.widget').each(function(index) {
+				(function(el, index) {
+					setTimeout(function() {
+						el.addClass('widget-visible');
+					}, index * 100);
+				})($(this), index);
+			});
+
 			callback && callback();
 		}, 200);
 	};

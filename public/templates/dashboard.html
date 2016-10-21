@@ -111,7 +111,7 @@
 
 			SETTER('loading', 'show');
 			WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
-			SETTER('loading', 'hide', 800);
+			SETTER('loading', 'hide', 200);
 			$('.iconnew').removeClass('selected');
 			$('.iconbrowse').addClass('selected');
 			dashboard_editbutton(0);
