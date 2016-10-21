@@ -339,7 +339,8 @@ function getDimension(device) {
 	var sizes = $('#grid').val().split('x');
 	var rows = +sizes[0];
 	var cols = +sizes[1];
-	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, fontsize: (cols * 10) + 40, percentageX: ((cols / 6) * 100) >> 0, percentageY: ((rows / 6) * 100) >> 0 };
+	var d = getDeviceWidth(device);
+	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, ratioW: d.ratioW, ratioH: d.ratioH, fontsize: (cols * 10) + 40, percentageW: ((cols / 6) * 100) >> 0, percentageH: ((rows / 6) * 100) >> 0 };
 }
 
 function getDevice() {
@@ -355,18 +356,26 @@ function getDeviceWidth(type) {
 		case 'lg':
 			obj.width = 165;
 			obj.height = 150;
+			obj.ratioW = 1;
+			obj.ratioH = 1;
 			break;
 		case 'md':
 			obj.width = 131.66;
 			obj.height = 107.25;
+			obj.ratioW = 1.253;
+			obj.ratioH = 1.398;
 			break;
 		case 'sm':
 			obj.width = 95;
 			obj.height = 86.36;
+			obj.ratioW = 1.736;
+			obj.ratioH = 1.744;
 			break;
 		case 'xs':
 			obj.width = 370;
 			obj.height = 336.36;
+			obj.ratioW = 0.445;
+			obj.ratioH = 0.446;
 			break;
 	}
 	return obj;
@@ -410,7 +419,6 @@ function loadsettings() {
 }
 
 $(document).ready(function() {
-
 	$('#grid,#device').on('change', function() {
 		size = getDevice();
 		current.size = getDimension(size.device);

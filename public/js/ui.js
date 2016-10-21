@@ -1963,10 +1963,11 @@ COMPONENT('dashboard', function() {
 
 		var widget = self.find('[data-instance="{0}"]'.format(id));
 		var fontsize = (cols * 10) + 40;
+		var ratio = getDeviceRatio(device);
 
 		if (widget.length) {
 			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6').addClass(device + ' cols-' + cols + ' rows-' + rows);
-			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageX:{9},percentageY:{10}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0));
+			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH));
 			widget.find('.widget-container,.widget-body').css({ width: width, height: height, 'font-size': fontsize + '%' });
 			widget.stop().animate({ left: x, top: y, width: width, height: height }, 200, function() {
 				var obj = WIDGETS_DASHBOARD.findItem('id', id);
@@ -1983,7 +1984,7 @@ COMPONENT('dashboard', function() {
 			return self;
 		}
 
-		self.append('<div data-instance="{0}" class="widget {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><div class="widget-remove"><i class="fa fa-times-circle"></i></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ration:1.1,fontsize:{8},percentageX:{9},percentageY:{10}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0), fontsize, device + ' cols-' + cols + ' rows-' + rows));
+		self.append('<div data-instance="{0}" class="widget {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><div class="widget-remove"><i class="fa fa-times-circle"></i></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ration:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH), fontsize, device + ' cols-' + cols + ' rows-' + rows));
 		return self;
 	};
 
@@ -2066,6 +2067,29 @@ COMPONENT('dashboard', function() {
 		});
 	};
 });
+
+function getDeviceRatio(type) {
+	var obj = {};
+	switch (type) {
+		case 'lg':
+			obj.ratioW = 1;
+			obj.ratioH = 1;
+			break;
+		case 'md':
+			obj.ratioW = 1.253;
+			obj.ratioH = 1.398;
+			break;
+		case 'sm':
+			obj.ratioW = 1.736;
+			obj.ratioH = 1.744;
+			break;
+		case 'xs':
+			obj.ratioW = 0.445;
+			obj.ratioH = 0.446;
+			break;
+	}
+	return obj;
+}
 
 function getDeviceWidth(type) {
 	var obj = {};

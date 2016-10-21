@@ -168,7 +168,12 @@ user;              // returns instance of the current user
 - each `widget` container element contains a class of current display size `xs`, `sm`, `md` or `lg` (you can adjust you CSS with display size selector e.g. `.lg .my-widget-text { font-size: 300% }`.
 - each `widget` container element contains a style of percentual size of font `100% = 14px`, you can adjust `font-size` according to the widget width (`6 cols === 100%`, `1 cols === 50%`).
 - each `widets` container element contains a class of current count of columns and rows, e.g. `cols-6 rows-3` or `cols-1 rows-1`.
-- `widget.size` contains these fields: `percentageX` and `percentageY`. Explanation: `percentageX = 100` when `100%: cols === 6`, `0%: cols === 0`. Explanation: `percentageY = 100` when `100%: rows === 6`, `0%: rows === 0`
+
+- `widget.size.percentageW` explanation: `percentageW = 100` when `100%: cols === 6`, `0%: cols === 0`.
+- `widget.size.percentageH` explanation: `percentageH = 100` when `100%: rows === 6`, `0%: rows === 0`
+- `widget.size.ratioW` contains `width` percentual difference between current display size and `lg` (large display)
+- `widget.size.ratioH` contains `height` percentual difference between current display size and `lg` (large display)
+- `widget.size.ratio` contains `1.1` value and this value is size ratio between `lg` and current display size
 
 __License__: [MIT](license.txt).
 
