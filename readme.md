@@ -144,10 +144,10 @@ Widget settings can contain different types of configuration fields. Type is def
 
 __Basic types__:
 
-- type: `string` (when is the value `string` you don't need to define type)
-- type: `number` (when is the value `number` you don't need to define type)
-- type: `boolean` (when is the value `boolean` you don't need to define type)
-- type: `date` (when is the value `date` you don't need to define type)
+- type: `string` (when is the value `string` you don't need to define the type)
+- type: `number` (when is the value `number` you don't need to define the type)
+- type: `boolean` (when is the value `boolean` you don't need to define the type)
+- type: `date` (when is the value `date` you don't need to define the type)
 
 __Simple Array__:
 
