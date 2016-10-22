@@ -171,7 +171,7 @@ config('Background', '#FC6E51', 'Color');
 
 __Path__:
 
-This option is too specific and it need filled a datasource. The user can select some path from the datasource and you can read a value according the path in widget.
+This option is too specific and it needs filled a datasource. The user can select some path from the datasource and you can read a value according the path in widget.
 
 ```javascript
 config('Language', 1, [{ text: 'sk', value: 1}, { text: 'en', value: 2}, { text: 'de', value: 3}]);
