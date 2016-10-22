@@ -142,14 +142,12 @@ WIDGET('WidgetName', function() {  // DECLARATION
 
 Widget settings can contain different types of configuration fields. Type is defined as `[type]` in `config(key, label, value, [type], [max], [min], [step]);`
 
-#### Basic types
+__Basic types__:
 
 - type: `string` (when is the value `string` you don't need to define type)
 - type: `number` (when is the value `number` you don't need to define type)
 - type: `boolean` (when is the value `boolean` you don't need to define type)
 - type: `date` (when is the value `date` you don't need to define type)
-
-#### Aditional types
 
 __Simple Array__:
 
