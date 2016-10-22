@@ -31,7 +31,7 @@ __License__: [MIT](license.txt).
 - jQuery v3
 - D3 v4
 - Chart.js v2
-- jComponent v5
+- jComponent v7
 
 ---
 
@@ -136,6 +136,52 @@ WIDGET('WidgetName', function() {  // DECLARATION
     // Data-source example (can be JSON or plain OBJECT)
     this.example = { count: 10, min: 304, max: 340394 }; // optional
 });
+```
+
+### Widget configuration types
+
+Widget settings can contain different types of configuration fields. Type is defined as `[type]` in `config(key, label, value, [type], [max], [min], [step]);`
+
+#### Basic types
+
+- type: `string` (when is the value `string` you don't need to define type)
+- type: `number` (when is the value `number` you don't need to define type)
+- type: `boolean` (when is the value `boolean` you don't need to define type)
+- type: `date` (when is the value `date` you don't need to define type)
+
+#### Aditional types
+
+__Simple Array__:
+
+```javascript
+config('Language', 'sk', ['sk', 'en', 'de']);
+```
+
+__Advanced Array__:
+
+```javascript
+config('Language', 1, [{ text: 'sk', value: 1}, { text: 'en', value: 2}, { text: 'de', value: 3}]);
+```
+
+__Color__:
+
+Dashboard uses this color scheme: <http://codepen.io/devi8/pen/lvIeh> and the declaration below will show all colors in the widget settings.
+
+```javascript
+config('Background', '#FC6E51', 'Color');
+```
+
+__Path__:
+
+This option is too specific and it need filled a datasource. The user can select some path from the datasource and you can read a value according the path in widget.
+
+```javascript
+config('Language', 1, [{ text: 'sk', value: 1}, { text: 'en', value: 2}, { text: 'de', value: 3}]);
+```
+
+```javascript
+// The code below can be used in a widget scope.
+var value = widget.read(widget.options.path, DATASOURCE, 'optional default value');
 ```
 
 ### Additional helpers
