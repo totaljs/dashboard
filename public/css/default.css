@@ -130,9 +130,9 @@ canvas { display: block; }
 .widget-nocenter .widget-body { display: block; vertical-align: top; }
 .widget-container { display: table; overflow: hidden; }
 .widget-body { display: table-cell; vertical-align: middle; text-align: center; overflow: hidden; }
-.widget-remove { position: absolute; color: red; width: 24px; padding: 4px 0; text-align: center; margin: 0; font-size: 11px; background-color: rgba(200,200,200,0.8); border-radius: 0 0 4px 0; z-index: 15; }
+.widget-remove { position: absolute; color: red; width: 24px; padding: 4px 0; text-align: center; margin: 0; font-size: 11px; background-color: rgba(200,200,200,0.8); border-radius: 0 0 0 4px; z-index: 15; right: 0; }
 .widget-remove:hover { background-color: rgba(210,210,210,0.8); }
-.widget-settings { position: absolute; color: gray; width: 24px; padding: 4px 0; text-align: center; margin: 0; font-size: 11px; background-color: rgba(200,200,200,0.5); border-radius: 0 0 0 4px; z-index: 15; right: 0; }
+.widget-settings { position: absolute; color: gray; width: 24px; padding: 4px 0; text-align: center; margin: 0; font-size: 11px; background-color: rgba(200,200,200,0.5); border-radius: 0 0 4px 0; z-index: 15; }
 .widget-settings:hover { background-color: rgba(210,210,210,0.5); }
 .widget-nodata { position: absolute; width: 100%; height: 100%; left: 0; top: 0; background-image: repeating-linear-gradient(45deg, #F5F5F5, #F5F5F5 10px, #FFFFFF 10px, #FFFFFF 20px); z-index: 10; }
 .widget-nodata > div { display: table; width: 100%; height: 100%; }
