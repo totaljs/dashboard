@@ -360,7 +360,7 @@ function getDimension(device) {
 	var rows = +sizes[0];
 	var cols = +sizes[1];
 	var d = getDeviceWidth(device);
-	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, ratioW: d.ratioW, ratioH: d.ratioH, fontsize: (cols * 10) + 40, percentageW: ((cols / 6) * 100) >> 0, percentageH: ((rows / 6) * 100) >> 0 };
+	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, ratioW: d.ratioW, ratioH: d.ratioH, fontsize: ((cols * 10) + 40) / d.fontsizeratio, percentageW: ((cols / 6) * 100) >> 0, percentageH: ((rows / 6) * 100) >> 0 };
 }
 
 function getDevice() {
@@ -378,24 +378,28 @@ function getDeviceWidth(type) {
 			obj.height = 150;
 			obj.ratioW = 1;
 			obj.ratioH = 1;
+			obj.fontsizeratio = 1;
 			break;
 		case 'md':
 			obj.width = 131.66;
 			obj.height = 107.25;
 			obj.ratioW = 1.253;
 			obj.ratioH = 1.398;
+			obj.fontsizeratio = 1.1;
 			break;
 		case 'sm':
 			obj.width = 95;
 			obj.height = 86.36;
 			obj.ratioW = 1.736;
 			obj.ratioH = 1.744;
+			obj.fontsizeratio = 1.2;
 			break;
 		case 'xs':
 			obj.width = 370;
 			obj.height = 336.36;
 			obj.ratioW = 0.445;
 			obj.ratioH = 0.446;
+			obj.fontsizeratio = 1.2;
 			break;
 	}
 	return obj;

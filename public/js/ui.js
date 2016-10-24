@@ -1962,8 +1962,8 @@ COMPONENT('dashboard', function() {
 			rows = 1;
 
 		var widget = self.find('[data-instance="{0}"]'.format(id));
-		var fontsize = (cols * 10) + 40;
 		var ratio = getDeviceRatio(device);
+		var fontsize = ((cols * 10) + 40) / ratio.fontsizeratio;
 
 		if (widget.length) {
 			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6').addClass(device + ' cols-' + cols + ' rows-' + rows);
@@ -2074,18 +2074,22 @@ function getDeviceRatio(type) {
 		case 'lg':
 			obj.ratioW = 1;
 			obj.ratioH = 1;
+			obj.fontsizeratio = 1;
 			break;
 		case 'md':
 			obj.ratioW = 1.253;
 			obj.ratioH = 1.398;
+			obj.fontsizeratio = 1.1;
 			break;
 		case 'sm':
 			obj.ratioW = 1.736;
 			obj.ratioH = 1.744;
+			obj.fontsizeratio = 1.2;
 			break;
 		case 'xs':
 			obj.ratioW = 0.445;
 			obj.ratioH = 0.446;
+			obj.fontsizeratio = 1.2;
 			break;
 	}
 	return obj;
