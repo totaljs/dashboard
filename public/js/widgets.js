@@ -177,6 +177,26 @@ WIDGET_COMPONENT.prototype.tooltip = function() {
 	return this;
 };
 
+WIDGET_COMPONENT.prototype.nodata = function(visible) {
+
+	if (visible === undefined)
+		visible = true;
+
+	if (!visible) {
+		this.$nodata && this.$nodata.addClass('hidden');
+		return this;
+	}
+
+	if (this.$nodata) {
+		this.$nodata.removeClass('hidden');
+		return this;
+	}
+
+	this.element.append('<div class="widget-nodata"><div><div><i class="fa fa-ban"></i></div></div></div>');
+	this.$nodata = self.find('.widget-nodata');
+	return this;
+};
+
 WIDGET_COMPONENT.prototype.config = function(name, value) {
 	if (value === undefined) {
 		var o = WIDGETS_WIDGETSETTINGS[this.id];

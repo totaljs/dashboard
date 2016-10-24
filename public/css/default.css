@@ -134,6 +134,9 @@ canvas { display: block; }
 .widget-body { display: table-cell; vertical-align: middle; text-align: center; overflow: hidden; }
 .widget-remove { position: absolute; color: red; width: 24px; padding: 4px 0; text-align: center; margin: 0; font-size: 11px; background-color: rgba(200,200,200,0.5); border-radius: 0 0 4px 0; z-index: 10; }
 .widget-remove:hover { background-color: rgba(210,210,210,0.5); }
+.widget-nodata { position: absolute; width: 100%; height: 100%; left: 0; top: 0; background-image: repeating-linear-gradient(45deg, #F5F5F5, #F5F5F5 10px, #FFFFFF 10px, #FFFFFF 20px); z-index: 10; }
+.widget-nodata > div { display: table; width: 100%; height: 100%; }
+.widget-nodata > div > div { display: table-cell; vertical-align: middle; text-align: center; font-size: 50px; color: silver; text-shadow: 1px 1px 5px white; cursor: not-allowed; }
 
 .iconmenu { list-style-type: none; margin: 0; padding: 0; }
 .iconmenu li { position: relative; display: inline-block; margin-right: 5px; }

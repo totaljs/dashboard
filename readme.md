@@ -61,6 +61,7 @@ WIDGET('WidgetName', function() {  // DECLARATION
     // self.redraw()                  --> redraw with the last datasource
     // self.refresh()                 --> refresh datasource and executes `render` when the data are OK.
     // self.center(boolean)           --> toggles centering
+    // self.nodata([visible]);        --> creates a layer with `no data` information
     // self.config(name, [value])     --> can read and write custom name/value (the configuration persists because is stored in DB on the server)
     // self.success(message)          --> shows a success message
     // self.warning(message)          --> shows a warning message

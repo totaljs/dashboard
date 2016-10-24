@@ -169,6 +169,26 @@ function $WIDGET(name, declaration, init) {
 		return obj;
 	};
 
+	obj.nodata = function(visible) {
+
+		if (visible === undefined)
+			visible = true;
+
+		if (!visible) {
+			obj.$nodata && obj.$nodata.addClass('hidden');
+			return obj;
+		}
+
+		if (obj.$nodata) {
+			obj.$nodata.removeClass('hidden');
+			return obj;
+		}
+
+		obj.element.append('<div class="widget-nodata"><div><div><i class="fa fa-ban"></i></div></div></div>');
+		obj.$nodata = self.find('.widget-nodata');
+		return obj;
+	};
+
 	obj.notify = function(icon, message, callback) {
 		SETTER('notifications', 'append', icon, message, callback);
 		return obj;
