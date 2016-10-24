@@ -1842,7 +1842,7 @@ COMPONENT('dashboard', function() {
 			});
 		});
 
-		self.element.on('click', '.widget', function(e) {
+		self.element.on('click', '.widget,.widget-settings', function(e) {
 
 			if (!mode)
 				return;
@@ -1984,7 +1984,7 @@ COMPONENT('dashboard', function() {
 			return self;
 		}
 
-		self.append('<div data-instance="{0}" class="widget {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><div class="widget-remove"><i class="fa fa-times-circle"></i></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ration:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH), fontsize, device + ' cols-' + cols + ' rows-' + rows));
+		self.append('<div data-instance="{0}" class="widget {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><div class="widget-remove"><i class="fa fa-times-circle"></i></div><div class="widget-settings"><i class="fa fa-cogs"></i></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ration:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH), fontsize, device + ' cols-' + cols + ' rows-' + rows));
 		return self;
 	};
 
