@@ -54,19 +54,6 @@ jR.on('location', function(url) {
 	$('header nav').removeClass('mainmenu-visible');
 });
 
-function success() {
-	var el = $('#success');
-	el.show();
-	el.addClass('success-animation');
-	setTimeout(function() {
-		el.removeClass('success-animation');
-		setTimeout(function() {
-			el.hide();
-		}, 1000);
-	}, 1500);
-	FIND('loading').hide(500);
-}
-
 Tangular.register('default', function(value, def) {
 	return value == null || value === '' ? def : value;
 });
