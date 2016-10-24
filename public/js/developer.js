@@ -360,7 +360,7 @@ function getDimension(device) {
 	var rows = +sizes[0];
 	var cols = +sizes[1];
 	var d = getDeviceWidth(device);
-	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width, height: device === 'xs' ? size.height : rows * size.height, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, ratioW: d.ratioW, ratioH: d.ratioH, fontsize: ((cols * 10) + 40) / d.fontsizeratio, percentageW: ((cols / 6) * 100) >> 0, percentageH: ((rows / 6) * 100) >> 0 };
+	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width + (cols - 1) * 30, height: device === 'xs' ? size.height : rows * size.height + (rows - 1) * 30, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, ratioW: d.ratioW, ratioH: d.ratioH, fontsize: ((cols * 10) + 40) / d.fontsizeratio, percentageW: ((cols / 6) * 100) >> 0, percentageH: ((rows / 6) * 100) >> 0 };
 }
 
 function getDevice() {
