@@ -767,10 +767,7 @@ COMPONENT('form', function() {
 		var fh = ui.innerHeight();
 		var wh = $(window).height();
 		var r = (wh / 2) - (fh / 2);
-		if (r > 30)
-			ui.css({ marginTop: (r - 15) + 'px' });
-		else
-			ui.css({ marginTop: '20px' });
+		ui.css({ marginTop: r > 30 ? (r - 15) + 'px' : '20px' });
 	};
 
 	self.make = function() {
@@ -813,6 +810,10 @@ COMPONENT('form', function() {
 	self.getter = null;
 	self.setter = function(value) {
 
+		setTimeout2('noscroll', function() {
+			$('html,body').toggleClass('noscroll', value ? true : false);
+		}, 50);
+
 		var isHidden = !EVALUATE(self.path, self.condition);
 		self.element.toggleClass('hidden', isHidden);
 		EXEC('$calendar.hide');
@@ -824,7 +825,7 @@ COMPONENT('form', function() {
 
 		self.resize();
 		var el = self.element.find('input,select,textarea');
-		el.length > 0 && el.eq(0).focus();
+		el.length && el.eq(0).focus();
 		window.$$form_level++;
 		self.element.css('z-index', window.$$form_level * 10);
 		self.element.animate({ scrollTop: 0 }, 0, function() {
@@ -1848,6 +1849,10 @@ COMPONENT('dashboard', function() {
 				return;
 
 			var el = $(this);
+
+			if (el.hasClass('widget-settings'))
+				el = el.parent();
+
 			var instance = el.attr('data-instance');
 			var id = el.attr('data-widget');
 			var size = WIDGET_GETSIZE(el);
