@@ -1,12 +1,12 @@
 <div class="mainmenu">
 	<ul class="iconmenu">
-		<li class="iconnew"><a href="/" class="jrouting"><i class="fa fa-plus-square-o"></i>@(New)</a></li>
+		<li class="iconnew hidden-xs"><a href="/" class="jrouting"><i class="fa fa-plus-square-o"></i>@(New)</a></li>
 		<li class="iconbrowse"><a href="javascript:void(0)" class="exec" data-exec="dashboard_browse"><i class="fa fa-folder-o"></i>@(Browse)</a></li>
-		<li><a href="javascript:void(0)" class="exec" data-exec="dashboard_import"><i class="fa fa-cloud-download"></i>@(Import)</a></li>
-		<li class="iconmodify" data-save="@(Save)" data-modify="@(Modify)"><a href="javascript:void(0)" class="exec" data-exec="dashboard_edit"><i class="fa fa-braille"></i><span>@(Modify)</span></a></li>
-		<li><a href="javascript:void(0)" class="exec" data-exec="dashboard_repositories"><i class="fa fa-code-fork"></i>@(Repository)</a></li>
-		<li><a href="javascript:void(0)" class="exec" data-exec="dashboard_datasources"><i class="fa fa-database"></i>@(Sources)</a></li>
-		<li data-jc="visible" data-jc-path="dashboard.current" data-if="value" class="hidden"><a href="javascript:void(0)" class="exec" data-exec="dashboard_export"><i class="fa fa-cloud-upload"></i>@(Export)</a></li>
+		<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_import"><i class="fa fa-cloud-download"></i>@(Import)</a></li>
+		<li class="hidden-xs iconmodify" data-save="@(Save)" data-modify="@(Modify)"><a href="javascript:void(0)" class="exec" data-exec="dashboard_edit"><i class="fa fa-braille"></i><span>@(Modify)</span></a></li>
+		<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_repositories"><i class="fa fa-code-fork"></i>@(Repository)</a></li>
+		<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_datasources"><i class="fa fa-database"></i>@(Sources)</a></li>
+		<li class="hidden-xs" data-jc="visible" data-jc-path="dashboard.current" data-if="value" class="hidden"><a href="javascript:void(0)" class="exec" data-exec="dashboard_export"><i class="fa fa-cloud-upload"></i>@(Export)</a></li>
 	</ul>
 	<div class="photo"><img src="/img/widget.png" alt="@(My account)" border="0" /></div>
 </div>

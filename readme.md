@@ -4,7 +4,7 @@
 
 # Dashboard
 
-This application has to be modified by your requirements. Current version __v2.0.0__ (BETA).
+This application has to be modified by your requirements. Current version __v2.0.0__.
 
 - Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
 - [__HelpDesk with professional support__](https://helpdesk.totaljs.com)

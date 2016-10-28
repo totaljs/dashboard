@@ -1770,7 +1770,7 @@ COMPONENT('dashboard', function() {
 	var grid;
 	var mode = 0;  // 0 == readonly, 1 == change
 	var tresize;
-	var template = '<div class="col-sm-2"><div class="grid">&nbsp;</div></div>';
+	var template = '<div class="col-sm-2 hidden-xs"><div class="grid">&nbsp;</div></div>';
 
 	drag.x = 0;
 	drag.y = 0;
@@ -2061,6 +2061,7 @@ COMPONENT('dashboard', function() {
 
 		tresize = setTimeout(function() {
 			var current = WIDTH();
+			var top = 80;
 			self.recalculate();
 			grid.each(function() {
 
@@ -2094,6 +2095,7 @@ COMPONENT('dashboard', function() {
 
 				o.x = x;
 				o.y = y;
+
 				o.width = w;
 				o.height = h;
 			});
@@ -2102,6 +2104,13 @@ COMPONENT('dashboard', function() {
 				var o = widgets[id];
 				var w = ((o.width - o.x) >> 0);
 				var h = ((o.height - o.y) >> 0);
+
+				if (current === 'xs') {
+					o.y = top;
+					o.x = 15;
+					top += h + 15;
+				}
+
 				self.create(id, (o.x >> 0) + 1, (o.y >> 0) + 1, w + 1, h + 1, w / o.w >> 0, h / o.h >> 0, o.w, o.h, current);
 			});
 
@@ -2119,12 +2128,13 @@ COMPONENT('dashboard', function() {
 	};
 
 	self.recalculate = function() {
-		var size = getDeviceWidth(WIDTH());
+		var device = WIDTH();
+		var size = getDeviceWidth(device);
 		grid.each(function() {
 			var el = $(this);
 			var offset = el.offset();
-			this.gridX = offset.left;
-			this.gridY = offset.top;
+			this.gridX = device === 'xs' ? 0 : offset.left;
+			this.gridY = device === 'xs' ? 0 : offset.top;
 			this.gridW = size.width;
 			this.gridH = size.height;
 			el.css('height', size.height);

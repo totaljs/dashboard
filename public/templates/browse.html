@@ -1,10 +1,10 @@
 <div data-jc="form" data-title="@(Select dashboard)" data-jc-path="common.form" data-if="value === 'browse'" data-width="700px" data-jc-id="formbrowse" data-autocenter="false">
 	<div class="filter padding npt">
 		<div class="row">
-			<div class="col-md-8">
-				<div data-jc="textbox" data-control-icon="fa-search" data-placeholder="@(Search dashboards)" data-jc-path="formbrowse.search" data-maxlength="30"></div>
+			<div class="col-sm-8">
+				<div data-jc="textbox" data-jc-type="search" data-placeholder="@(Search dashboards)" data-jc-path="formbrowse.search" data-maxlength="30"></div>
 			</div>
-			<div class="col-md-4">
+			<div class="col-sm-4 hidden-xs">
 				<a href="javascript:void(0)" class="button button-small exec" data-exec="formbrowse_new"><i class="fa fa-plus-circle"></i>@(Create new)</a>
 			</div>
 		</div>
@@ -22,7 +22,7 @@
 			</script>
 		</div>
 	</div>
-	<div data-jc="empty" data-jc-path="dashboard.datasources">@(No data)</div>
+	<div data-jc="empty" data-jc-path="dashboard.items">@(No data)</div>
 	<br />
 	<div class="ui-form-buttons center">
 		<button name="cancel" style="width:150px">@(Cancel)</button>

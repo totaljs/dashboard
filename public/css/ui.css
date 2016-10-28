@@ -88,12 +88,6 @@ button { outline: 0; }
 .ui-notification-message { margin: 1px 0 0 40px; color: gray; max-height: 150px; }
 .ui-notification-datetime { font-size: 10px; color: #A0A0A0; margin-bottom: 4px; padding-top: 5px; }
 
-@media(max-width: 767px) {
-	.ui-notification-container { width: auto; left: 0; padding-left: 20px; }
-	.ui-confirm button { display: block; margin: 10px 0 0; display: block; width: 100%; }
-	.ui-form-container-padding { padding: 0 20px; }
-}
-
 .ui-textbox { border: 2px solid #E0E0E0; padding: 5px 2px 5px 5px; border-radius: 2px; position: relative; width: 100%; background-color: white; display: table; }
 .ui-textbox input { display: table-cell; border: 0; outline: 0; font: normal 14px Arial; color: black; width: 100%; background-color: white; padding: 0; }
 .ui-textbox div { width: 1%; position: relative; vertical-align: middle; display: table-cell; text-align: center; white-space: nowrap; text-overflow: clip; border-left: 1px solid #E0E0E0; width: 30px; color: silver; user-select: none; }
@@ -246,3 +240,10 @@ label span { vertical-align: middle; }
 .ui-tooltip-arrow { font-size: 30px; color: #303030; line-height: 0; text-align: center; height: 20px; }
 
 .ui-empty { padding: 20px 0; text-align: center; font-size: 14px; color: #A0A0A0; border: 1px solid #E0E0E0; max-width: 400px; margin: 50px auto; background-color: white; border-radius: 4px; }
+
+@media(max-width: 767px) {
+	.ui-notification-container { width: auto; left: 0; padding-left: 20px; }
+	.ui-confirm button { display: block; margin: 10px 0 0; display: block; width: 100%; }
+	.ui-form-container-padding { padding: 0 20px; }
+	.ui-empty { max-width: 200px; }
+}

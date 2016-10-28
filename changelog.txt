@@ -5,3 +5,4 @@
 - existing widgets can be replaced with new
 - add `Settings` button in modification mode
 - improve UI
+- dashboard works on mobile devices (readonly mode)
