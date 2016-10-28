@@ -4,7 +4,7 @@
 
 # Dashboard
 
-This application has to be modified by your requirements.
+This application has to be modified by your requirements. Current version __v2.0.0__ (BETA).
 
 - Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
 - [__HelpDesk with professional support__](https://helpdesk.totaljs.com)
@@ -31,7 +31,7 @@ __License__: [MIT](license.txt).
 - jQuery v3
 - D3 v4
 - Chart.js v2
-- jComponent v7
+- jComponent v8
 
 ---
 
@@ -69,8 +69,8 @@ WIDGET('WidgetName', function() {  // DECLARATION
     // self.tooltip(x, y, html, [width]) --> shows Tooltip
     // self.notify(font-awesome-icon, message, [callback])   --> creates a notification
     // self.confirm(message, buttons_labels_array, [callback(index)]) --> creates a confirm dialog
-    // self.datasource('METHOD url', [data], [headers]) --> executes prepare && render with `response data`
-    // self.ajax('METHOD url', [data], [callback(err, response)], [headers]) --> self.ajax('POST http://yourserver.com/data/', { dashboard: 'is the best!!!' }, function(err, response) { ... })
+    // self.use('METHOD url', [data], [headers], [cookies]) --> executes prepare && render with `response data`
+    // self.ajax('METHOD url', [data], [callback(err, response)], [headers], [cookies]) --> self.ajax('POST http://yourserver.com/data/', { dashboard: 'is the best!!!' }, function(err, response) { ... })
     
     // ==== HANDLERS ====
 
@@ -108,6 +108,12 @@ WIDGET('WidgetName', function() {  // DECLARATION
         // optional
         // this method can prepare data from datasource, this is a default implementation:
         return; data;
+    };
+
+    self.hack = function(datasource) {
+        // optional
+        // this method can change a datasource object before is used
+        // datasource = { url: '', method: '', headers: {}, cookies: {}, interval: 60 };
     };
 
     // ==== CUSTOM EVENTS ====
@@ -198,7 +204,7 @@ DAYS;              // returns array with day names e.g. ['Sunday', 'Monday', etc
 DAYS_SHORT;        // returns array with short day names e.g. ['SU', 'MO', etc.]
 MONTH;             // returns array with month names e.g. ['January', 'February', etc.]
 MONTH_SHORT;       // returns array with short month names e.g. ['Jan.', 'Feb.', etc.]
-user;              // returns instance of the current user
+user;              // returns an instance of the current user
 ```
 
 ## How to import own widgets?

@@ -1,0 +1,31 @@
+<div class="padding bg-smoke">
+	<div class="row">
+		<div class="col-md-3 m">
+			<div data-jc="dropdown" data-jc-path="method" data-jc-value="'GET'" data-options="GET;POST;PUT;DELETE;PATH">@(Method)</div>
+			<div class="help">@(Request method.)</div>
+		</div>
+		<div class="col-md-3 m">
+			<div data-jc="textbox" data-jc-path="interval" data-jc-type="number" data-increment="true" data-placeholder="1" data-maxlength="4" data-jc-value="0" data-align="center" data-icon="fa-clock-o">@(Refresh interval)</div>
+			<div class="help">@(Refresh interval in <b>seconds</b>.)</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<div data-jc="textbox" data-jc-path="url" data-jc-type="url" data-placeholder="https://www.yourdatasource.com/data.json" data-jc-value="''">@(URL address)</div>
+			<div class="help">@(URL address to widget datasource. Keep recommended structure from widget.)</div>
+		</div>
+	</div>
+</div>
+<div class="padding">
+	<h2>Custom headers</h2>
+	<div data-jc="dictionary" data-jc-path="headers" data-placeholder-key="@(Header name)" data-placeholder-value="@(Header value and press enter)"></div>
+</div>
+<hr class="nmt" />
+<div class="padding npt">
+	<h2>Cookies</h2>
+	<div data-jc="dictionary" data-jc-path="cookies" data-placeholder-key="@(Cookie name)" data-placeholder-value="@(Cookie value and press enter)"></div>
+</div>
+<hr class="nmt" />
+<div class="padding npt npb">
+	<div data-jc="textarea" data-jc-path="data" data-placeholder="A value can be JSON, URL encoded content or XML." data-height="50px">@(Request body)</div>
+</div>

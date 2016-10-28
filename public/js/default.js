@@ -73,13 +73,13 @@ function mainmenu() {
 function IMPORTSET(check, name, value) {
 
 	if (window[check]) {
-		SET(name, value, 100);
+		name && SET(name, value, 100);
 		return true;
 	}
 
 	SETTER('loading', 'show');
 	IMPORT('ONCE /templates/' + value + '.html', function() {
-		SET(name, value);
+		name && SET(name, value);
 		SETTER('loading', 'hide', 500);
 	});
 	return false;

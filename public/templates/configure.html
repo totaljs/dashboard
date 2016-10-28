@@ -1,34 +1,35 @@
-<div data-component="form" data-title="@(Configure widget)" data-component-path="common.form" data-if="value === 'configure'" data-width="800px" data-component-id="formconfigure" data-autocenter="false">
-	<div class="padding">
-		<div class="row">
-			<div class="col-md-9 m">
-				<div data-component="textbox" data-component-path="formconfigure.datasource" data-component-type="url" data-placeholder="https://www.yourdatasource.com/data.json" data-component-value="''">@(Datasource)</div>
-				<div class="help">@(URL address to widget datasource. Keep recommended structure from widget.)</div>
-			</div>
-			<div class="col-md-3">
-				<div data-component="textbox" data-component-path="formconfigure.interval" data-component-type="number" data-increment="true" data-placeholder="1" data-maxlength="4" data-component-value="0" data-align="center" data-icon="fa-clock-o">@(Refresh interval)</div>
-				<div class="help">@(Refresh interval in <b>seconds</b>.)</div>
-			</div>
-		</div>
-		<div data-component="visible" data-component-path="formconfigure.example" data-if="value" class="hidden">
-			<div data-component="highlightsyntax" data-type="json" data-component-path="formconfigure.example">
-				<div class="fs11"><i class="fa fa-code mr5"></i>@(Datasource example:)</div>
-			</div>
-		</div>
-	</div>
-	<div class="padding npb npt">
-		<ul class="tabmenu" data-component="tabmenu" data-component-path="formconfigure.tab">
+<div data-jc="form" data-title="@(Configure widget)" data-jc-path="common.form" data-if="value === 'configure'" data-width="800px" data-jc-id="formconfigure" data-autocenter="false">
+	<div class="padding npb">
+		<ul class="tabmenu" data-jc="tabmenu" data-jc-path="formconfigure.tab">
 			<li data-value="settings">@(Settings)</li>
+			<li data-value="datasource">@(Data Source)</li>
 			<li data-value="dictionary">@(Dictionary)</li>
+			<li data-value="example">@(Sample data)</li>
 		</ul>
 	</div>
-	<div data-component="visible" data-component-path="formconfigure.tab" data-if="value === 'settings'" class="hidden">
-		<div data-component="multioptions" data-component-path="formconfigure.options" data-component-id="widgetoptions"></div>
+	<div data-jc="visible" data-jc-path="formconfigure.tab" data-if="value === 'datasource'" class="hidden">
+		<div class="padding npt">
+			<div data-jc="dropdown" data-jc-path="formconfigure.datasourceid" data-source="dashboard.datasources" data-empty="">@(Preddefined data sources)</div>
+		</div>
+		<div data-jc="visible" data-jc-path="formconfigure.datasourceid" data-if="!value">
+			<div data-jc-scope="formconfigure.datasource">
+				<div data-jc-url="/templates/rest.html"></div>
+			</div>
+		</div>
+		<br />
 	</div>
-	<div data-component="visible" data-component-path="formconfigure.tab" data-if="value === 'dictionary'" class="padding hidden">
-		<div data-component="dictionary" data-component-path="formconfigure.dictionary" data-placeholder-key="@(Key)" data-placeholder-value="@(New name and press enter)"></div>
+	<div data-jc="visible" data-jc-path="formconfigure.tab" data-if="value === 'settings'" class="hidden">
+		<div data-jc="multioptions" data-jc-path="formconfigure.options" data-jc-id="widgetoptions"></div>
 	</div>
-	<br />
+	<div data-jc="visible" data-jc-path="formconfigure.tab" data-if="value === 'dictionary'" class="padding hidden npt">
+		<div data-jc="dictionary" data-jc-path="formconfigure.dictionary" data-placeholder-key="@(Key)" data-placeholder-value="@(New name and press enter)"></div>
+	</div>
+	<div data-jc="visible" data-jc-path="formconfigure.tab" data-if="value === 'example'" class="padding hidden npt npb">
+		<div data-jc="visible" data-jc-path="formconfigure.example" data-if="value" class="hidden">
+			<div data-jc="highlightsyntax" data-type="json" data-jc-path="formconfigure.example"></div>
+		</div>
+		<br />
+	</div>
 	<div class="ui-form-buttons">
 		<div>
 			<button name="submit">@(SUBMIT)</button>
@@ -56,9 +57,23 @@
 
 			var is = widget.datasource !== formconfigure.datasource;
 			var changes = [];
+			var tmp;
 
-			widget.datasource = formconfigure.datasource;
-			widget.interval = formconfigure.interval * 1000;
+			if (formconfigure.datasourceid) {
+				tmp = dashboard.datasources.findItem('id', formconfigure.datasourceid);
+				if (tmp)
+					formconfigure.datasource = tmp;
+			}
+
+			if (widget.hack) {
+				tmp = widget.hack(formconfigure.datasource);
+				if (tmp != null)
+					formconfigure.datasource = tmp;
+			}
+
+			var d = JSON.stringify(formconfigure.datasource);
+			widget.datasource = JSON.parse(d);
+			widget.datasource_key = HASH(d);
 
 			if (!WIDGETS_USERSETTINGS[formconfigure.id])
 				WIDGETS_USERSETTINGS[formconfigure.id] = {};
@@ -90,15 +105,12 @@
 				return;
 			}
 
-			var data = SINGLETON('analyse');
-			data.url = formconfigure.datasource;
-
 			if (dashboard.paths) {
 				SET('common.subform', 'path');
 				return;
 			}
 
-			AJAX('GET /api/proxy/', data, function(response, err) {
+			AJAX('GET /api/proxy/', formconfigure.datasource, function(response, err) {
 				var output = [];
 				analyse(output, response);
 				SET('dashboard.paths', output);
@@ -106,4 +118,5 @@
 			});
 		};
 	});
+
 </script>

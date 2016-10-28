@@ -68,7 +68,7 @@ button { outline: 0; }
 .ui-calendar-header-prev { float: left; }
 .ui-calendar-header-next { float: right; }
 
-.ui-confirm { background-color: rgba(255,255,255,0.9); position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 100; width: 100%; display: table; height: 100%; transition: 0.5s all; opacity: 0; }
+.ui-confirm { background-color: rgba(255,255,255,0.9); position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 100; width: 100%; display: table; height: 100%; transition: 0.5s all; opacity: 0; user-select: none; }
 .ui-confirm > div { display: table-cell; vertical-align: middle; text-align: center; color: white; padding: 15px; }
 .ui-confirm-body { padding: 30px; position: relative; display: inline-block; border-radius: 4px; max-width: 600px; text-align: left; transform: scale(0.5); transition: 0.3s all; color: gray; border: 1px solid #E0E0E0; background-color: white; box-shadow: 0 0 30px rgba(0,0,0,0.1); }
 .ui-confirm-click { transform: scale(1.07) !important; }
@@ -102,12 +102,15 @@ button { outline: 0; }
 .ui-textbox-label-required:before { color: red; content: '***'; margin-right: 5px; }
 .ui-textbox-invalid { border-color: #E7B8B8 !important; background-color: #FFF3F3 !important; }
 .ui-textbox-invalid input { background-color: #FFF3F3 !important; }
+.ui-textbox .fa-times { color: red; cursor: pointer; }
 .ui-textbox ul { margin: 20px 0 0 -5px; padding: 0; list-style-type: none; position: absolute; width: 100%; background-color: white; z-index: 5; border: 1px solid #E0E0E0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
 .ui-textbox li { display: block; padding: 5px 10px; border-top: 1px solid #E0E0E0; cursor: pointer; }
 .ui-textbox li:first-child { border-top: 0; }
 .ui-textbox li.selected { background-color: #F0F0F0; }
 .ui-textbox button { background-color: transparent; border: 0; padding: 0; margin: 0; }
-.ui-textbox .fa-caret-up, .ui-textbox .fa-caret-down { display:block; line-height:9px; cursor: pointer; }
+.ui-textbox .fa-caret-up, .ui-textbox .fa-caret-down { display:block; line-height: 9px; cursor: pointer; }
+.ui-textbox .fa-calendar { cursor: pointer; }
+
 .ui-textarea { border: 2px solid #E0E0E0; padding: 4px 5px; border-radius: 2px; position: relative; display: block; width: 100%; background-color: white; }
 .ui-textarea textarea { border: 0; width: 100%; outline: 0; font: normal 14px Arial; color: black; resize: none; min-height: 50px; background-color: white; padding: 0; }
 .ui-textarea-label { margin-bottom: 5px; font-size: 12px; text-align: left; }
@@ -241,3 +244,5 @@ label span { vertical-align: middle; }
 .ui-tooltip { position: absolute; z-index: 80; }
 .ui-tooltip-body { padding: 12px 15px; font-size: 11px; background: black linear-gradient(#303030,black); color: white; border-radius: 4px; }
 .ui-tooltip-arrow { font-size: 30px; color: #303030; line-height: 0; text-align: center; height: 20px; }
+
+.ui-empty { padding: 20px 0; text-align: center; font-size: 14px; color: #A0A0A0; border: 1px solid #E0E0E0; max-width: 400px; margin: 50px auto; background-color: white; border-radius: 4px; }

@@ -224,7 +224,7 @@ function $WIDGET(name, declaration, init) {
 		return obj;
 	};
 
-	obj.datasource = function(url, data, headers) {
+	obj.use = function(url, data, headers, cookies) {
 
 		if (typeof(data) === 'function') {
 			headers = callback;
@@ -237,13 +237,13 @@ function $WIDGET(name, declaration, init) {
 		}
 
 		var index = url.indexOf(' ');
-		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers }, function(response, err) {
+		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
 			response && obj.render && obj.render(obj.prepare(response), obj.size, obj.$datasource++);
 		});
 		return obj;
 	};
 
-	obj.ajax = function(url, data, callback, headers) {
+	obj.ajax = function(url, data, callback, headers, cookies) {
 
 		if (typeof(data) === 'function') {
 			headers = callback;
@@ -256,7 +256,7 @@ function $WIDGET(name, declaration, init) {
 		}
 
 		var index = url.indexOf(' ');
-		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers }, function(response, err) {
+		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
 			callback && callback(err, response);
 		});
 	};

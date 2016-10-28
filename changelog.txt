@@ -1,0 +1,7 @@
+======= 2.0.0
+
+- add data sources
+- grid shows possible widgets
+- existing widgets can be replaced with new
+- add `Settings` button in modification mode
+- improve UI

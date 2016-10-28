@@ -13,6 +13,11 @@ exports.install = function() {
 	F.route('/api/repositories/',      json_save,   ['*Repository', 'post']);
 	F.route('/api/repositories/',      json_read,   ['*Repository']);
 	F.route('/api/repositories/{id}/', json_remove, ['*Repository', 'delete']);
+
+	// DataSources
+	F.route('/api/datasources/',      json_query,  ['*DataSource']);
+	F.route('/api/datasources/',      json_save,   ['*DataSource', 'post']);
+	F.route('/api/datasources/{id}/', json_remove, ['*DataSource', 'delete']);
 };
 
 function json_proxy() {

@@ -7,6 +7,7 @@ var WIDGETS_WIDGETSETTINGS = {};
 var WIDGETS_CURRENTREPOSITORY = '';
 var WIDGETS_DATASOURCE = {};
 var WIDGETS_DATASOURCE_KEYS = [];
+var WIDGETS_DIMENSIONS = {};
 
 function WIDGET(name, make, init) {
 
@@ -64,6 +65,14 @@ function WIDGET(name, make, init) {
 					return;
 				done && done(name, obj);
 				done = null;
+
+				obj.sizes && obj.sizes.forEach(function(size) {
+					if (WIDGETS_DIMENSIONS[size])
+						WIDGETS_DIMENSIONS[size]++;
+					else
+						WIDGETS_DIMENSIONS[size] = 1;
+				});
+
 			}, 50);
 		});
 	});
@@ -234,7 +243,7 @@ WIDGET_COMPONENT.prototype.subscribe = function(name, fn) {
 	return this;
 };
 
-WIDGET_COMPONENT.prototype.datasource = function(url, data, headers) {
+WIDGET_COMPONENT.prototype.use = function(url, data, headers, cookies) {
 	if (typeof(data) === 'function') {
 		headers = callback;
 		callback = data;
@@ -247,13 +256,13 @@ WIDGET_COMPONENT.prototype.datasource = function(url, data, headers) {
 
 	var index = url.indexOf(' ');
 	var self = this;
-	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers }, function(response, err) {
+	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
 		response && self.render && self.render(self.prepare(response), self.size, self.$datasource++);
 	});
 	return self;
 };
 
-WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers) {
+WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers, cookies) {
 
 	if (typeof(data) === 'function') {
 		headers = callback;
@@ -266,7 +275,7 @@ WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers) {
 	}
 
 	var index = url.indexOf(' ');
-	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers }, function(response, err) {
+	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
 		callback && callback(err, response);
 	});
 };
@@ -288,8 +297,21 @@ WIDGET_COMPONENT.prototype.configure = function() {
 	obj.id = self.id;
 	obj.options = options;
 	obj.tab = 'settings';
-	obj.datasource = self.datasource;
-	obj.interval = self.interval / 1000;
+	obj.datasource = typeof(self.datasource) !== 'object' ? {} : CLONE(self.datasource) || {};
+
+	if (dashboard.datasources.findItem('id', self.datasource.id))
+		obj.datasourceid = self.datasource.id;
+
+	if (!obj.datasource.headers)
+		obj.datasource.headers = {};
+	if (!obj.datasource.cookies)
+		obj.datasource.cookies = {};
+	if (!obj.datasource.method)
+		obj.datasource.method = 'GET';
+	if (!obj.datasource.interval)
+		obj.datasource.interval = 60;
+
+	obj.interval = obj.datasource.interval;
 	obj.dictionary = self.dictionary || {};
 	obj.example = w.example;
 	obj.preview = w.preview;
@@ -342,7 +364,7 @@ WIDGET_COMPONENT.prototype.redraw = function() {
 		obj = response.slice(0);
 	else if (response) {
 		if (typeof(response) === 'object')
-			obj = JSON.parse(JSON.stringify(response));
+			obj = CLONE(response);
 		else
 			obj = response;
 	} else
@@ -369,19 +391,21 @@ WIDGET_COMPONENT.prototype.refresh = function() {
 	if (!self.datasource)
 		return self;
 
-	var data = SINGLETON('proxy');
-	data.url = self.datasource;
-
-	AJAX('GET /api/proxy/', data, function(response, err) {
+	AJAX('POST /api/ajax/', self.datasource, function(response, err) {
 
 		if (err)
 			return;
+
+		try {
+			response = JSON.parse(response);
+		} catch (e) {
+			return;
+		}
 
 		var datasource = WIDGETS_DATASOURCE[self.datasource];
 		if (!datasource)
 			datasource = WIDGETS_DATASOURCE[self.datasource] = {};
 
-		datasource.counter = 0;
 		datasource.response = response;
 		self.redraw();
 	});
@@ -429,7 +453,7 @@ function WIDGETS_LOAD(obj) {
 	FIND('dashboard').resize(function() {
 
 		obj.widgets.forEach(function(item) {
-			WIDGET_MAKE(item.id, item.name, $('[data-instance="{0}"]'.format(item.id)), item.dictionary, item.datasource, item.interval);
+			WIDGET_MAKE(item.id, item.name, $('[data-instance="{0}"]'.format(item.id)), item.dictionary, item.datasource);
 		});
 
 		WIDGETS_REFRESH_DATASOURCE(true);
@@ -451,7 +475,7 @@ function WIDGET_CONFIG(name, options) {
 	return obj;
 }
 
-function WIDGET_MAKE(id, name, element, dictionary, datasource, interval) {
+function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 	var w = WIDGETS_DATABASE[name];
 
 	if (!w) {
@@ -461,11 +485,29 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource, interval) {
 
 	element.attr('data-widget', name);
 	element.find('.widget-container').append('<div class="widget-body" />');
+	element.removeClass('widget-empty');
+
 	var component = new WIDGET_COMPONENT(id, name, element.find('.widget-body'), WIDGET_CONFIG(name, WIDGETS_USERSETTINGS[id]));
+	var tmp;
+
 	component.$name = name;
 	component.dictionary = dictionary;
-	component.datasource = datasource || '';
-	component.interval = typeof(interval) !== 'number' ? 60000 : interval;
+	component.datasource = datasource || { interval: 60, url: '', method: 'GET' };
+
+	if (component.datasource.id) {
+		tmp = dashboard.datasources.findItem('id', component.datasource.id);
+		if (tmp)
+			component.datasource = CLONE(tmp);
+	}
+
+	if (component.hack) {
+		tmp = component.hack(component.datasource);
+		if (tmp != null)
+			component.datasource = tmp;
+	}
+
+	component.datasource_key = HASH(JSON.stringify(component.datasource));
+
 	WIDGETS_DASHBOARD.push(component);
 	UPDATE('WIDGETS_DASHBOARD');
 	w.make.call(component);
@@ -488,18 +530,21 @@ function WIDGETS_REFRESH_DATASOURCE(init) {
 	});
 
 	WIDGETS_DATASOURCE = {};
-
 	WIDGETS_DASHBOARD.forEach(function(widget) {
-		if (!widget.interval || !widget.datasource)
+
+		if (!widget.datasource || typeof(widget.datasource) === 'string' || !widget.datasource_key)
 			return;
-		if (!WIDGETS_DATASOURCE[widget.datasource])
-			WIDGETS_DATASOURCE[widget.datasource] = { url: widget.datasource, response: cache[widget.datasource] || null, counter: 0, interval: 60000 * 10, widgets: [] };
-		WIDGETS_DATASOURCE[widget.datasource].widgets.push(widget);
-		WIDGETS_DATASOURCE[widget.datasource].interval = Math.min(widget.interval, WIDGETS_DATASOURCE[widget.datasource].interval);
-		if (cache[widget.datasource])
+
+		var obj = WIDGETS_DATASOURCE[widget.datasource_key];
+		if (!obj)
+			obj = WIDGETS_DATASOURCE[widget.datasource_key] = { datasource: widget.datasource, response: cache[widget.datasource] || null, counter: 0, interval: 60000 * 10, widgets: [] };
+
+		obj.widgets.push(widget);
+		obj.interval = Math.min(widget.datasource.interval, obj.datasource.interval);
+		if (cache[widget.datasource_key])
 			return;
-		WIDGETS_DATASOURCE[widget.datasource].counter = WIDGETS_DATASOURCE[widget.datasource].interval;
-		WIDGETS_DATASOURCE[widget.datasource].widgets.forEach(function(widget) {
+		obj.counter = obj.datasource.interval;
+		obj.widgets.forEach(function(widget) {
 			!widget.$render && widget.redraw();
 		});
 	});
@@ -508,21 +553,26 @@ function WIDGETS_REFRESH_DATASOURCE(init) {
 	WIDGETS_SERVICE();
 }
 
-function WIDGET_REMOVE(id) {
+function WIDGET_REMOVE(id, destroy) {
 	var index = WIDGETS_DASHBOARD.findIndex('id', id);
 	if (index === -1)
 		return false;
 
+	destroy = destroy === undefined ? true : destroy;
+
 	var w = WIDGETS_DASHBOARD[index];
-	var container = w.element.parent().parent();
 
 	WIDGETS_DASHBOARD.splice(index, 1);
 	UPDATE('WIDGETS_DASHBOARD');
-	container.hide().off().remove();
 
+	if (destroy)
+		w.element.parent().parent().hide().off().remove();
+
+	w.element.parent().parent().removeClass('widget-nocenter');
 	w.element.off();
 	w.element.find('*').off();
 	w.destroy && w.destroy();
+	w.element.remove();
 	w.dom = null;
 	w.make = null;
 	w.render = null;
@@ -606,26 +656,29 @@ Array.prototype.readdatasource = function(path) {
 };
 
 function WIDGETS_SERVICE() {
+
 	if (!WIDGETS_DATASOURCE_KEYS.length)
 		return;
 
 	WIDGETS_DATASOURCE_KEYS.forEach(function(key) {
 		var item = WIDGETS_DATASOURCE[key];
 
-		item.counter += 3000;
+		item.counter += 3;
 
-		if (item.counter < item.interval)
+		if (item.counter < item.datasource.interval)
 			return;
 
 		item.counter = 0;
-
-		var data = {};
-		data.url = key;
-
-		AJAX('GET /api/proxy/', data, function(response, err) {
+		AJAX('POST /api/ajax/', item.datasource, function(response, err) {
 			if (err)
 				return;
-			item.response = response;
+
+			try {
+				item.response = JSON.parse(response);
+			} catch (e) {
+				return;
+			}
+
 			item.widgets.forEach(function(widget) {
 				widget.redraw();
 			});

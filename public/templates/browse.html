@@ -1,20 +1,20 @@
-<div data-component="form" data-title="@(Select dashboard)" data-component-path="common.form" data-if="value === 'browse'" data-width="700px" data-component-id="formbrowse" data-autocenter="false">
+<div data-jc="form" data-title="@(Select dashboard)" data-jc-path="common.form" data-if="value === 'browse'" data-width="700px" data-jc-id="formbrowse" data-autocenter="false">
 	<div class="filter padding npt">
 		<div class="row">
 			<div class="col-md-8">
-				<div data-component="textbox" data-control-icon="fa-search" data-placeholder="@(Search dashbarods)" data-component-path="formbrowse.search" data-maxlength="30"></div>
+				<div data-jc="textbox" data-control-icon="fa-search" data-placeholder="@(Search dashboards)" data-jc-path="formbrowse.search" data-maxlength="30"></div>
 			</div>
 			<div class="col-md-4">
-				<a href="javascript:void(0)" class="button button-small" data-component="click" data-component-path="formbrowse_new"><i class="fa fa-plus-circle"></i>@(Create new)</a>
+				<a href="javascript:void(0)" class="button button-small exec" data-exec="formbrowse_new"><i class="fa fa-plus-circle"></i>@(Create new)</a>
 			</div>
 		</div>
 	</div>
-	<div data-component="search" data-component-path="formbrowse.search" data-selector=".search">
-		<div data-component="repeater-group" data-component-path="dashboard.items" data-group="group" class="browsecontainer">
+	<div data-jc="search" data-jc-path="formbrowse.search" data-selector=".search">
+		<div data-jc="repeater-group" data-jc-path="dashboard.items" data-group="group" class="browsecontainer">
 			<script type="text/html">
 				<div class="browse-item search" data-search="{{ name }}">
-					<a href="/{{ id }}/" class="browse-item-link jrouting">{{ name }}</a>
-					<a href="javascript:void(0)" data-id="{{ id }}" class="browse-item-remove"><i class="fa fa-times-circle"></i></a>
+					<a href="/{{ id }}/" class="browse-item-link browse-link jrouting">{{ name }}</a>
+					<a href="javascript:void(0)" data-id="{{ id }}" class="browse-item-remove browse-remove"><i class="fa fa-times-circle"></i></a>
 				</div>
 			</script>
 			<script type="text/html">
@@ -22,6 +22,7 @@
 			</script>
 		</div>
 	</div>
+	<div data-jc="empty" data-jc-path="dashboard.datasources">@(No data)</div>
 	<br />
 	<div class="ui-form-buttons center">
 		<button name="cancel" style="width:150px">@(Cancel)</button>
@@ -31,7 +32,7 @@
 <script>
 	var formbrowse = {};
 
-	$(document).on('click', '.browse-item-link', function() {
+	$(document).on('click', '.browse-link', function() {
 		SETTER('loading', 'show');
 		SET('common.form', '', 100);
 	});
@@ -41,7 +42,7 @@
 		SET('common.form', '', 100);
 	}
 
-	$(document).on('click', '.browse-item-remove', function() {
+	$(document).on('click', '.browse-remove', function() {
 		var el = $(this);
 		var id = el.attr('data-id');
 

@@ -1,13 +1,13 @@
-<div data-component="form" data-title="@(Select widget)" data-component-path="common.form" data-if="value === 'widgets'" data-width="960px" data-component-id="formwidgets" data-autocenter="false">
+<div data-jc="form" data-title="@(Select widget)" data-jc-path="common.form" data-if="value === 'widgets'" data-width="960px" data-jc-id="formwidgets" data-autocenter="false">
 	<div class="filter padding npt">
 		<div class="row">
 			<div class="col-md-4">
-				<div data-component="textbox" data-control-icon="fa-search" data-placeholder="@(Search widgets)" data-component-path="formwidgets.widgetsearch"></div>
+				<div data-jc="textbox" data-control-icon="fa-search" data-placeholder="@(Search widgets)" data-jc-path="formwidgets.widgetsearch"></div>
 			</div>
 		</div>
 	</div>
-	<div class="padding npb npt" data-component="search" data-component-path="formwidgets.widgetsearch" data-selector=".widgets-item-search">
-		<div data-component="repeater" data-component-path="formwidgets.widgets" data-group="category" class="widgetscontainer row">
+	<div class="padding npb npt" data-jc="search" data-jc-path="formwidgets.widgetsearch" data-selector=".widgets-item-search">
+		<div data-jc="repeater" data-jc-path="formwidgets.widgets" data-group="category" class="widgetscontainer row">
 			<script type="text/html">
 				<div class="col-sm-3 m widgets-item-search{{ if disabled }} widgets-item-search-disabled{{ fi }}" data-search="{{ name }}" data-size="{{ sizes | join }}">
 					<div class="widgets-item" data-id="{{ id }}">
@@ -34,6 +34,7 @@
 		if (el.parent().hasClass('widgets-item-search-disabled'))
 			return;
 		var container = $('[data-instance="{0}"]'.format(formwidgets.current));
+		WIDGET_REMOVE(formwidgets.current, false);
 		WIDGET_MAKE(formwidgets.current, el.attr('data-id'), container);
 		WIDGETS_REFRESH_DATASOURCE(false);
 		SET('common.form', '');

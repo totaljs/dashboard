@@ -13,7 +13,7 @@ NEWSCHEMA('Settings').make(function(schema) {
 			if (count)
 				return callback(SUCCESS(true));
 			plain.user = controller.user.id;
-			plain.datecreated = new Date();
+			plain.datecreated = F.datetime;
 			NOSQL('settings').insert(plain).callback(() => callback(SUCCESS(true)));
 		});
 	});

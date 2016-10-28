@@ -3,6 +3,7 @@ NEWSCHEMA('Ajax').make(function(schema) {
 	schema.define('url', 'Url', true);
 	schema.define('data', 'String');
 	schema.define('headers', 'Object');
+	schema.define('cookies', 'Object');
 
 	schema.addWorkflow('exec', function(error, model, options, callback) {
 		var flags = [model.method];
@@ -10,6 +11,6 @@ NEWSCHEMA('Ajax').make(function(schema) {
 		U.request(model.url, flags, function(err, response) {
 			err && error.push(err);
 			callback(response);
-		}, null, model.headers);
+		}, model.cookies, model.headers);
 	});
 });

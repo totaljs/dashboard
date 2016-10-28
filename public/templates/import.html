@@ -1,9 +1,9 @@
-<div data-component="form" data-title="@(Importing dashboard)" data-component-path="common.form" data-if="value === 'import'" data-width="600px" data-component-id="formimport" data-autocenter="false">
+<div data-jc="form" data-title="@(Importing dashboard)" data-jc-path="common.form" data-if="value === 'import'" data-width="600px" data-jc-id="formimport" data-autocenter="false">
 	<div class="padding">
-		<div class="m" data-component="textarea" data-component-path="formimport.body" data-required="true" data-height="300px">@(Paste dashboard data)</div>
+		<div class="m" data-jc="textarea" data-jc-path="formimport.body" data-required="true" data-height="300px">@(Paste dashboard data)</div>
 	</div>
 	<div class="ui-form-buttons">
-		<div data-component="validation" data-component-path="formimport">
+		<div data-jc="validation" data-jc-path="formimport">
 			<button name="submit">@(SUBMIT)</button>
 		</div>
 		<button name="cancel">@(Cancel)</button>
@@ -40,7 +40,6 @@
 				});
 
 				SETTER('loading', 'show');
-
 				is && AJAX('POST /api/repositories/', { items: response }, NOOP);
 
 				newrepository.waitFor(function(url, next) {

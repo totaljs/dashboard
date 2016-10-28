@@ -434,6 +434,20 @@ COMPONENT('textbox', function() {
 
 		if (!icon2 && self.type === 'date')
 			icon2 = 'fa-calendar';
+		else if (self.type === 'search') {
+			icon2 = 'fa-search ui-textbox-control-icon';
+			self.element.on('click', '.ui-textbox-control-icon', function() {
+				self.$stateremoved = false;
+				$(this).removeClass('fa-times').addClass('fa-search');
+				self.set('');
+			});
+			self.getter2 = function(value) {
+				if (self.$stateremoved && !value)
+					return;
+				self.$stateremoved = value ? false : true;
+				self.find('.ui-textbox-control-icon').toggleClass('fa-times', value ? true : false).toggleClass('fa-search', value ? false : true);
+			};
+		}
 
 		icon2 && builder.push('<div><span class="fa {0}"></span></div>'.format(icon2));
 		increment && !icon2 && builder.push('<div><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
@@ -811,7 +825,7 @@ COMPONENT('form', function() {
 	self.setter = function(value) {
 
 		setTimeout2('noscroll', function() {
-			$('html,body').toggleClass('noscroll', value ? true : false);
+			$('html').toggleClass('noscroll', $('.ui-form-container').not('.hidden').length ? true : false);
 		}, 50);
 
 		var isHidden = !EVALUATE(self.path, self.condition);
@@ -1741,6 +1755,7 @@ COMPONENT('highlightsyntax', function() {
 			return;
 		}
 
+		value = JSON.stringify(typeof(value) === 'string' ? JSON.parse(value) : value, null, '  ');
 		self.html((text ? text : '') + '<pre><code class="{0}">{1}</code></pre>'.format(self.attr('data-type'), Tangular.helpers.encode(value)));
 		hljs.highlightBlock(self.find('code').get(0));
 		self.toggle('hidden', false);
@@ -1806,14 +1821,12 @@ COMPONENT('dashboard', function() {
 				return;
 			drag.is = false;
 			grid.each(function() {
-				$(this).toggleClass('grid-hover', false);
+				$(this).toggleClass('grid-hover grid-can', false);
 			});
 		});
 
 		self.element.on('click', '.grid', function(e) {
-			if (!mode)
-				return;
-			self.resize();
+			mode && self.resize();
 		});
 
 		self.element.on('click', '.widget-remove', function(e) {
@@ -1843,7 +1856,25 @@ COMPONENT('dashboard', function() {
 			});
 		});
 
-		self.element.on('click', '.widget,.widget-settings', function(e) {
+		self.element.on('click', '.widget-replace', function(e) {
+			var el = $(this);
+			var container = el.parent().parent();
+			var size = WIDGET_GETSIZE(container);
+			var grid = size.rows + 'x' + size.cols;
+			var widgets = [];
+
+			Object.keys(WIDGETS_DATABASE).forEach(function(name) {
+				var widget = WIDGETS_DATABASE[name];
+				var disabled = widget.sizes && widget.sizes.length && widget.sizes.indexOf(grid) === -1;
+				widgets.push({ id: name, name: widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled });
+			});
+
+			IMPORTSET('formwidgets', 'common.form', 'widgets');
+			SET('formwidgets.widgets', widgets);
+			formwidgets.current = container.attr('data-instance');
+		});
+
+		self.element.on('click', '.widget-empty,.widget-settings', function(e) {
 
 			if (!mode)
 				return;
@@ -1851,18 +1882,18 @@ COMPONENT('dashboard', function() {
 			var el = $(this);
 
 			if (el.hasClass('widget-settings'))
-				el = el.parent();
+				el = el.parent().parent();
 
 			var instance = el.attr('data-instance');
 			var id = el.attr('data-widget');
-			var size = WIDGET_GETSIZE(el);
-			var grid = size.rows + 'x' + size.cols;
 
 			if (id) {
 				WIDGETS_DASHBOARD.findItem('id', instance).configure();
 				return;
 			}
 
+			var size = WIDGET_GETSIZE(el);
+			var grid = size.rows + 'x' + size.cols;
 			var widgets = [];
 
 			Object.keys(WIDGETS_DATABASE).forEach(function(name) {
@@ -1881,6 +1912,7 @@ COMPONENT('dashboard', function() {
 				return;
 			drag.is = false;
 			grid.filter('.grid-hover').addClass('grid-disabled').removeClass('grid-hover').attr('data-id', GUID());
+			grid.filter('.grid-can').removeClass('grid-can');
 			self.resize();
 		});
 
@@ -1894,6 +1926,7 @@ COMPONENT('dashboard', function() {
 				drag.beg = this;
 				drag.x = e.pageX;
 				drag.y = e.pageY;
+				drag.size = getDeviceWidth(WIDTH());
 				e.preventDefault();
 				e.stopPropagation();
 				return;
@@ -1909,6 +1942,10 @@ COMPONENT('dashboard', function() {
 			var y1 = y >= 0 ? drag.beg.gridY : this.gridY;
 			var x2 = x >= 0 ? this.gridX : drag.beg.gridX;
 			var y2 = y >= 0 ? this.gridY : drag.beg.gridY;
+			var minX = 10000000;
+			var maxX = 0;
+			var minY = 10000000;
+			var maxY = 0;
 
 			if (!x1 && !x2 && !y1 && !y2) {
 				drag.is = false;
@@ -1929,9 +1966,28 @@ COMPONENT('dashboard', function() {
 				}
 
 				el.toggleClass('grid-hover', is);
+				if (!is)
+					el.removeClass('grid-can');
+
+				if (is) {
+					minX = Math.min(minX, this.gridX >> 0);
+					maxX = Math.max(maxX, this.gridX >> 0);
+					minY = Math.min(minY, this.gridY >> 0);
+					maxY = Math.max(maxY, this.gridY >> 0);
+				}
 			});
 
-			!drag.is && grid.filter('.grid-hover').removeClass('grid-hover');
+			var cols = ((maxX - minX) / drag.size.width >> 0) + 1;
+			var rows = ((maxY - minY) / drag.size.height >> 0) + 1;
+
+			if (drag.cols !== cols || drag.rows !== rows) {
+				drag.cols = cols;
+				drag.rows = rows;
+				var key = cols + 'x' + rows;
+				grid.filter('.grid-hover').toggleClass('grid-can', WIDGETS_DIMENSIONS[key] > 0);
+			}
+
+			!drag.is && grid.filter('.grid-hover').removeClass('grid-hover grid-can');
 		});
 
 		$(window).on('resize', function() {
@@ -1971,9 +2027,12 @@ COMPONENT('dashboard', function() {
 		var fontsize = ((cols * 10) + 40) / ratio.fontsizeratio;
 
 		if (widget.length) {
-			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6').addClass(device + ' cols-' + cols + ' rows-' + rows);
+			var css = { width: width, height: height };
+			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6 widget-empty').addClass(device + ' cols-' + cols + ' rows-' + rows);
 			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH));
-			widget.find('.widget-container,.widget-body').css({ width: width, height: height, 'font-size': fontsize + '%' });
+			widget.find('.widget-body').css(css);
+			css['font-size'] = fontsize + '%';
+			widget.find('.widget-container').css(css);
 			widget.stop().animate({ left: x, top: y, width: width, height: height }, 200, function() {
 				var obj = WIDGETS_DASHBOARD.findItem('id', id);
 				if (!obj)
@@ -1989,7 +2048,7 @@ COMPONENT('dashboard', function() {
 			return self;
 		}
 
-		self.append('<div data-instance="{0}" class="widget {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><div class="widget-remove"><i class="fa fa-times-circle"></i></div><div class="widget-settings"><i class="fa fa-cogs"></i></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ration:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH), fontsize, device + ' cols-' + cols + ' rows-' + rows));
+		self.append('<div data-instance="{0}" class="widget widget-empty {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><a href="javascript:void(0)" class="widget-remove"><i class="fa fa-times-circle"></i></a><div class="widget-buttons"><a href="javascript:void(0)" class="widget-replace"><i class="fa fa-retweet"></i></a><a href="javascript:void(0)" class="widget-settings"><i class="fa fa-cog"></i></a></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ration:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH), fontsize, device + ' cols-' + cols + ' rows-' + rows));
 		return self;
 	};
 
@@ -2339,3 +2398,30 @@ COMPONENT('notifications', function() {
 	};
 });
 
+COMPONENT('exec', function() {
+	var self = this;
+	self.readonly();
+	self.blind();
+	self.make = function() {
+		self.element.on('click', self.attr('data-selector') || '.exec', function() {
+			var el = $(this);
+			var attr = el.attr('data-exec');
+			attr && EXEC(attr, el);
+		});
+	};
+});
+
+COMPONENT('empty', function() {
+
+	var self = this;
+
+	self.readonly();
+
+	self.make = function() {
+		self.element.addClass('ui-empty');
+	};
+
+	self.setter = function(value) {
+		self.element.toggleClass('hidden', value && value.length ? true : false);
+	};
+});

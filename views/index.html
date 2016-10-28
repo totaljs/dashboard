@@ -19,16 +19,16 @@
 	@{import('head', 'default.css', 'favicon.ico')}
 	<script>var user = JSON.parse('@{json(user)}');</script>
 </head>
-<body>
+<body data-jc="exec">
 
-	<div data-component="message" data-button="@(Close)"></div>
-	<div data-component="confirm"></div>
-	<div data-component="loading" class="ui-loading"></div>
-	<div data-component="calendar" data-days="@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)" data-months="@(January,February,March,April,May,Juny,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
-	<div data-component="notifications" data-date-format="@(yyyy-MM-dd HH:mm)" data-timeout="8000"></div>
-	<div data-component="tooltip"></div>
+	<div data-jc="message" data-button="@(Close)"></div>
+	<div data-jc="confirm"></div>
+	<div data-jc="loading" class="ui-loading"></div>
+	<div data-jc="calendar" data-days="@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)" data-months="@(January,February,March,April,May,Juny,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
+	<div data-jc="notifications" data-date-format="@(yyyy-MM-dd HH:mm)" data-timeout="8000"></div>
+	<div data-jc="tooltip"></div>
 
-	<div data-component="resource">
+	<div data-jc="resource">
 		<script type="text/plain">
 			yes:@(Yes)
 			no:@(No)
@@ -37,7 +37,7 @@
 	</div>
 
 	<div id="body">
-		<div data-component="page" data-component-path="common.page" data-if="dashboard" data-template="/templates/dashboard.html"></div>
+		<div data-jc="page" data-jc-path="common.page" data-if="dashboard" data-template="/templates/dashboard.html"></div>
 	</div>
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>

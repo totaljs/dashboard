@@ -1,7 +1,7 @@
 {
   "name": "Dashboard",
   "description": "A customizable dashboard application, compose your dashboard from widgets for free for everyone.",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "release.js",
   "dependencies": {
     "total.js": "latest"
