@@ -519,6 +519,19 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 	WIDGETS_DATASOURCE[datasource] && WIDGETS_DATASOURCE[datasource].response && component.redraw();
 }
 
+function WIDGETS_REFRESH_DATASOURCE2() {
+	WIDGETS_DASHBOARD.forEach(function(component) {
+		if (!component.datasource || !component.datasource.id)
+			return;
+		var tmp = dashboard.datasources.findItem('id', component.datasource.id);
+		if (!tmp)
+			return;
+		component.datasource = CLONE(tmp);
+		component.datasource_key = HASH(JSON.stringify(component.datasource));
+	});
+	WIDGETS_REFRESH_DATASOURCE();
+}
+
 function WIDGETS_REFRESH_DATASOURCE(init) {
 
 	var cache = {};
