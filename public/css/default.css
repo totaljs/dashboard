@@ -125,7 +125,7 @@ canvas { display: block; }
 .gridcontainer.readonly .widget-remove { display: none; }
 .gridcontainer.readonly .widget-buttons { display: none; }
 
-.widget { position: absolute; background: white; color: gray; cursor: default; margin-bottom: 30px; overflow: hidden; opacity: 0; transform: scale(0.7) rotateY(130deg); transition: all 0.3s; }
+.widget { position: absolute; background: white; color: gray; cursor: default; margin-bottom: 30px; overflow: hidden; opacity: 0; transform: scale(0.7) rotateY(130deg); transition: all 0.3s; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
 .widget-visible { opacity: 1; transform: scale(1) rotateY(0deg); }
 .widget-nocenter { display: block; }
 .widget-nocenter .widget-body { display: block; vertical-align: top; }
