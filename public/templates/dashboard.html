@@ -1,16 +1,30 @@
-<div class="mainmenu">
-	<ul class="iconmenu">
-		<li class="iconnew hidden-xs"><a href="/" class="jrouting"><i class="fa fa-plus-square-o"></i>@(New)</a></li>
-		<li class="iconbrowse"><a href="javascript:void(0)" class="exec" data-exec="dashboard_browse"><i class="fa fa-folder-o"></i>@(Browse)</a></li>
-		<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_import"><i class="fa fa-cloud-download"></i>@(Import)</a></li>
-		<li class="hidden-xs iconmodify" data-save="@(Save)" data-modify="@(Modify)"><a href="javascript:void(0)" class="exec" data-exec="dashboard_edit"><i class="fa fa-braille"></i><span>@(Modify)</span></a></li>
-		<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_repositories"><i class="fa fa-code-fork"></i>@(Repository)</a></li>
-		<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_datasources"><i class="fa fa-database"></i>@(Sources)</a></li>
-		<li class="hidden-xs" data-jc="visible" data-jc-path="dashboard.current" data-if="value" class="hidden"><a href="javascript:void(0)" class="exec" data-exec="dashboard_export"><i class="fa fa-cloud-upload"></i>@(Export)</a></li>
-	</ul>
-	<div class="photo"><img src="/img/widget.png" alt="@(My account)" border="0" /></div>
+<div class="mainmenu-container">
+	<div class="mainmenu">
+		<ul class="iconmenu">
+			<li class="iconnew hidden-xs"><a href="/" class="jrouting"><i class="fa fa-plus-square-o"></i>@(New)</a></li>
+			<li class="iconbrowse"><a href="javascript:void(0)" class="exec" data-exec="dashboard_browse"><i class="fa fa-folder-o"></i>@(Browse)</a></li>
+			<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_import"><i class="fa fa-cloud-download"></i>@(Import)</a></li>
+			<li class="hidden-xs iconmodify" data-save="@(Save)" data-modify="@(Modify)"><a href="javascript:void(0)" class="exec" data-exec="dashboard_edit"><i class="fa fa-braille"></i><span>@(Modify)</span></a></li>
+			<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_repositories"><i class="fa fa-code-fork"></i>@(Repository)</a></li>
+			<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_datasources"><i class="fa fa-database"></i>@(Sources)</a></li>
+			<li class="hidden-xs" data-jc="visible" data-jc-path="dashboard.current" data-if="value" class="hidden"><a href="javascript:void(0)" class="exec" data-exec="dashboard_export"><i class="fa fa-cloud-upload"></i>@(Export)</a></li>
+		</ul>
+		<div class="photo"><img src="/img/widget.png" alt="@(My account)" border="0" /></div>
+	</div>
+	<div class="toggle">
+		<i class="fa fa-caret-up"></i>
+	</div>
 </div>
-<div class="container">
+<div class="mainmenu-height"></div>
+<div class="container hidden-xs">
+	<div class="row">
+		<div class="col-md-6">
+			<h1>@(New dashboard)</h1>
+		</div>
+		<div class="col-md-4 col-md-offset-2 theme-selector hidden">
+			<div data-jc="themeselector" data-jc-path="dashboard.theme"></div>
+		</div>
+	</div>
 	<div class="row" data-jc="dashboard" data-jc-path="WIDGETS_DASHBOARD"></div>
 </div>
 
@@ -52,6 +66,7 @@
 		btn.toggleClass('save', type === 1);
 		fa.toggleClass('fa-floppy-o', type === 1);
 		fa.toggleClass('fa-braille', type === 0);
+		$('.theme-selector').toggleClass('hidden', type === 0);
 	}
 
 	function dashboard_repositories() {
@@ -118,6 +133,7 @@
 		if (!item)
 			return;
 
+		dashboard_menu(false);
 		AJAX('GET /api/settings/{0}/'.format(id), function(response) {
 
 			if (response && response.data)
@@ -127,6 +143,11 @@
 
 			document.title = item.name;
 			dashboard.changed = false;
+
+			var body = $('body').removeClass();
+			item.theme && body.addClass(item.theme);
+			SET('dashboard.theme', item.theme);
+			$('h1').text(item.name);
 
 			SETTER('loading', 'show');
 			WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
@@ -203,5 +224,29 @@
 	setTimeout(function() {
 		user.photo && $('.photo img').attr('src', user.photo);
 	}, 200);
+
+	$(document).on('click', '.toggle', function() {
+		dashboard_menu();
+	});
+
+	function dashboard_menu(visible) {
+		var is = visible != null ? visible : undefined;
+		var ist = is != null ? !is : undefined;
+
+		if (is != null) {
+			is = !is;
+			ist = !ist;
+		}
+
+		$('.mainmenu-container').toggleClass('mainmenu-hidden', is).find('.mainmenu-toggle').find('.fa').toggleClass('fa-caret-up', ist).toggleClass('fa-caret-down', is);
+		$('.mainmenu-height').toggleClass('mainmenu-hidden', is);
+		$(window).resize();
+	}
+
+	WATCH('dashboard.theme', function(path, value) {
+		var body = $('body').removeClass();
+		value && body.addClass(value);
+		dashboard.changed = true;
+	});
 
 </script>

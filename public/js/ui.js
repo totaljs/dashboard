@@ -1,3 +1,5 @@
+var COLORS = ['#ED5565', '#DA4453', '#FC6E51', '#E9573F', '#FFCE54', '#F6BB42', '#A0D468', '#8CC152', '#48CFAD', '#37BC9B', '#4FC1E9', '#3BAFDA', '#5D9CEC', '#4A89DC', '#AC92EC', '#967ADC', '#EC87C0', '#D770AD', '#F5F7FA', '#E6E9ED', '#CCD1D9', '#AAB2BD', '#656D78', '#434A54', '#000000'];
+
 COMPONENT('click', function() {
 	var self = this;
 
@@ -608,8 +610,6 @@ COMPONENT('template', function() {
 	self.setter = function(value) {
 		if (NOTMODIFIED(self.id, value))
 			return;
-		if (!value)
-			return self.element.addClass('hidden');
 		KEYPRESS(function() {
 			self.html(self.template(value)).removeClass('hidden');
 		}, 100, self.id);
@@ -1423,7 +1423,7 @@ COMPONENT('tagger', function() {
 COMPONENT('multioptions', function() {
 
 	var self = this;
-	var colors = ['#ED5565', '#DA4453', '#FC6E51', '#E9573F', '#FFCE54', '#F6BB42', '#A0D468', '#8CC152', '#48CFAD', '#37BC9B', '#4FC1E9', '#3BAFDA', '#5D9CEC', '#4A89DC', '#AC92EC', '#967ADC', '#EC87C0', '#D770AD', '#F5F7FA', '#E6E9ED', '#CCD1D9', '#AAB2BD', '#656D78', '#434A54', '#000000'];
+	var colors = COLORS;
 	var Tinput = Tangular.compile('<input class="ui-moi-save ui-moi-value-inputtext" data-name="{{ name }}" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }}{{ if max }} maxlength="{{ max }}"{{ fi }} data-type="text" />');
 	var Tcolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(colors.map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n) }).join('')));
 	var Tselect = Tangular.compile('<div class="ui-moi-value-select"><i class="fa fa-chevron-down"></i><select data-name="{{ name }}" class="ui-moi-save ui-multioptions-select">{{ foreach m in values }}<option value="{{ $index }}"{{ if value === m.value }} selected="selected"{{ fi }}>{{ m.text }}</option>{{ end }}</select></div>');
@@ -2061,7 +2061,8 @@ COMPONENT('dashboard', function() {
 
 		tresize = setTimeout(function() {
 			var current = WIDTH();
-			var top = 80;
+			var top = self.element.offset().top;
+
 			self.recalculate();
 			grid.each(function() {
 
@@ -2119,7 +2120,7 @@ COMPONENT('dashboard', function() {
 				(function(el, index) {
 					setTimeout(function() {
 						el.addClass('widget-visible');
-					}, index * 100);
+					}, index * 50);
 				})($(this), index);
 			});
 
@@ -2433,5 +2434,50 @@ COMPONENT('empty', function() {
 
 	self.setter = function(value) {
 		self.element.toggleClass('hidden', value && value.length ? true : false);
+	};
+});
+
+COMPONENT('themeselector', function() {
+
+	var self = this;
+	var colors = ['#F0F0F0', '#8CC152', '#3BAFDA', '#DA4453', '#F6BB42', '#37BC9B', '#967ADC', '#303030'];
+	var themes = ['', 'theme-green', 'theme-blue', 'theme-red', 'theme-yellow', 'theme-mint', 'theme-lavender', 'theme-dark'];
+	var selected;
+	var list;
+	var required = self.attr('data-required') === 'true';
+
+	self.validate = function(value) {
+		return colors.indexOf(value) === -1
+	};
+
+	if (!required)
+		self.noValid();
+
+	self.make = function() {
+		var builder = [];
+		self.toggle('ui-themeselector');
+		builder.push('<ul>');
+		for (var i = 0, length = colors.length; i < length; i++)
+			builder.push('<li data-index="{0}" style="background-color:{1}"></li>'.format(i, colors[i]));
+		builder.push('</ul>');
+
+		self.html(builder.join(''));
+		list = self.find('li');
+
+		self.element.on('click', 'li', function(e) {
+			var li = $(this);
+			self.change(true);
+			self.set(themes[parseInt(li.attr('data-index'))]);
+		});
+	};
+
+	self.setter = function(value) {
+		var index = themes.indexOf(value || '');
+		if (selected)
+			selected.removeClass('selected');
+		if (index === -1)
+			return;
+		selected = list.eq(index);
+		selected.addClass('selected');
 	};
 });

@@ -26,6 +26,7 @@
 	ON('#formsave', function(component) {
 		component.submit = function(hide) {
 			SETTER('loading', 'show');
+			formsave.theme = dashboard.theme;
 			formsave.data = btoa(encodeURIComponent(JSON.stringify(WIDGETS_SAVE())));
 			AJAX('POST /api/dashboard/', formsave, function(response) {
 
