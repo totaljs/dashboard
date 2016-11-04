@@ -2024,12 +2024,18 @@ COMPONENT('dashboard', function() {
 
 		var widget = self.find('[data-instance="{0}"]'.format(id));
 		var ratio = getDeviceRatio(device);
-		var fontsize = ((cols * 10) + 40) / ratio.fontsizeratio;
+
+		if (cols === 1 || rows === 1)
+			ratio.fontsizeratio += 0.25;
+
+		var fontsizeW = ((cols * 10) + 40) / ratio.fontsizeratio;
+		var fontsizeH = ((rows * 10) + 40) / ratio.fontsizeratio;
+		var fontsize = rows > cols ? fontsizeW : fontsizeH;
 
 		if (widget.length) {
 			var css = { width: width, height: height };
 			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6 widget-empty').addClass(device + ' cols-' + cols + ' rows-' + rows);
-			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH));
+			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio));
 			widget.find('.widget-body').css(css);
 			css['font-size'] = fontsize + '%';
 			widget.find('.widget-container').css(css);
@@ -2048,7 +2054,7 @@ COMPONENT('dashboard', function() {
 			return self;
 		}
 
-		self.append('<div data-instance="{0}" class="widget widget-empty {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><a href="javascript:void(0)" class="widget-remove"><i class="fa fa-times-circle"></i></a><div class="widget-buttons"><a href="javascript:void(0)" class="widget-replace"><i class="fa fa-retweet"></i></a><a href="javascript:void(0)" class="widget-settings"><i class="fa fa-cog"></i></a></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ration:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH), fontsize, device + ' cols-' + cols + ' rows-' + rows));
+		self.append('<div data-instance="{0}" class="widget widget-empty {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><a href="javascript:void(0)" class="widget-remove"><i class="fa fa-times-circle"></i></a><div class="widget-buttons"><a href="javascript:void(0)" class="widget-replace"><i class="fa fa-retweet"></i></a><a href="javascript:void(0)" class="widget-settings"><i class="fa fa-cog"></i></a></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio), fontsize, device + ' cols-' + cols + ' rows-' + rows));
 		return self;
 	};
 
@@ -2440,8 +2446,8 @@ COMPONENT('empty', function() {
 COMPONENT('themeselector', function() {
 
 	var self = this;
-	var colors = ['#F0F0F0', '#8CC152', '#3BAFDA', '#DA4453', '#F6BB42', '#37BC9B', '#967ADC', '#303030'];
-	var themes = ['', 'theme-green', 'theme-blue', 'theme-red', 'theme-yellow', 'theme-mint', 'theme-lavender', 'theme-dark'];
+	var colors = ['#F0F0F0', '#8CC152', '#3BAFDA', '#DA4453', '#F6BB42', '#D770AD', '#37BC9B', '#967ADC', '#303030'];
+	var themes = ['', 'theme-green', 'theme-blue', 'theme-red', 'theme-yellow', 'theme-pink', 'theme-mint', 'theme-lavender', 'theme-dark'];
 	var selected;
 	var list;
 	var required = self.attr('data-required') === 'true';
@@ -2480,4 +2486,122 @@ COMPONENT('themeselector', function() {
 		selected = list.eq(index);
 		selected.addClass('selected');
 	};
+});
+
+COMPONENT('binder', function() {
+
+	var self = this;
+	var keys;
+	var keys_unique;
+
+	self.readonly();
+	self.blind();
+
+	self.make = function() {
+		self.watch('*', self.autobind);
+		self.scan();
+
+		self.on('component', function() {
+			setTimeout2(self.id, self.scan, 200);
+		});
+
+		self.on('destroy', function() {
+			setTimeout2(self.id, self.scan, 200);
+		});
+	};
+
+	self.autobind = function(path, value) {
+		var mapper = keys[path];
+		var template = {};
+		mapper && mapper.forEach(function(item) {
+			var value = self.get(item.path);
+			template.value = value;
+			item.classes && classes(item.element, item.classes(value));
+			item.visible && item.element.toggleClass('hidden', item.visible(value) ? false : true);
+			item.html && item.element.html(item.html(value));
+			item.template && item.element.html(item.template(template));
+		});
+	};
+
+	function classes(element, val) {
+		var add = '';
+		var rem = '';
+		val.split(' ').forEach(function(item) {
+			switch (item.substring(0, 1)) {
+				case '+':
+					add += (add ? ' ' : '') + item.substring(1);
+					break;
+				case '-':
+					rem += (rem ? ' ' : '') + item.substring(1);
+					break;
+				default:
+					add += (add ? ' ' : '') + item;
+					break;
+			}
+		});
+		rem && element.removeClass(rem);
+		add && element.addClass(add);
+	}
+
+	function decode(val) {
+		return val.replace(/\&\#39;/g, '\'');
+	}
+
+	self.scan = function() {
+		keys = {};
+		keys_unique = {};
+		self.find('[data-binder]').each(function() {
+
+			var el = $(this);
+			var path = el.attr('data-binder');
+			var arr = path.split('.');
+			var p = '';
+
+			var classes = el.attr('data-binder-class');
+			var html = el.attr('data-binder-html');
+			var visible = el.attr('data-binder-visible');
+			var obj = el.data('data-binder');
+
+			keys_unique[path] = true;
+
+			if (!obj) {
+				obj = {};
+				obj.path = path;
+				obj.element = el;
+				obj.classes = classes ? FN(decode(classes)) : undefined;
+				obj.html = html ? FN(decode(html)) : undefined;
+				obj.visible = visible ? FN(decode(visible)) : undefined;
+
+				var tmp = el.find('script[type="text/html"]');
+				var str = '';
+				if (tmp.length)
+					str = tmp.html();
+				else
+					str = el.html();
+
+				if (str.indexOf('{{') !== -1) {
+					obj.template = Tangular.compile(str);
+					tmp.length && tmp.remove();
+				}
+
+				el.data('data-binder', obj);
+			}
+
+			for (var i = 0, length = arr.length; i < length; i++) {
+				p += (p ? '.' : '') + arr[i];
+				if (keys[p])
+					keys[p].push(obj);
+				else
+					keys[p] = [obj];
+			}
+
+		});
+
+		Object.keys(keys_unique).forEach(function(key) {
+			self.autobind(key, self.get(key));
+		});
+
+		return self;
+	};
+
 });

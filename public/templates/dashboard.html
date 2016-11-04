@@ -12,14 +12,14 @@
 		<div class="photo"><img src="/img/widget.png" alt="@(My account)" border="0" /></div>
 	</div>
 	<div class="toggle">
-		<i class="fa fa-caret-up"></i>
+		<i class="fa fa-caret-up" data-binder="common.page"></i>
 	</div>
 </div>
 <div class="mainmenu-height"></div>
 <div class="container">
 	<div class="row hidden-xs">
 		<div class="col-md-6">
-			<h1>@(New dashboard)</h1>
+			<h1 data-binder="dashboard.current.name" data-binder-html="n => n ? n : '@(New dashboard)'">@(New dashboard)</h1>
 		</div>
 		<div class="col-md-4 col-md-offset-2 theme-selector hidden">
 			<div data-jc="themeselector" data-jc-path="dashboard.theme"></div>
