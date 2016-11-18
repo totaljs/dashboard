@@ -2035,7 +2035,7 @@ COMPONENT('dashboard', function() {
 		if (widget.length) {
 			var css = { width: width, height: height };
 			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6 widget-empty').addClass(device + ' cols-' + cols + ' rows-' + rows);
-			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio));
+			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, w, h, cols, rows, widget, height, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio));
 			widget.find('.widget-body').css(css);
 			css['font-size'] = fontsize + '%';
 			widget.find('.widget-container').css(css);
@@ -2046,15 +2046,16 @@ COMPONENT('dashboard', function() {
 				var size = WIDGET_GETSIZE(widget);
 				size.device = device;
 				var is = !obj.size || obj.size.w !== size.w || obj.size.h !== size.h;
-				if (is)
+				if (is) {
 					obj.size = size;
-				is && obj.resize && obj.resize(obj.size, obj.dimension());
+					obj.resize && obj.resize(obj.size, obj.dimension());
+				}
 			});
 
 			return self;
 		}
 
-		self.append('<div data-instance="{0}" class="widget widget-empty {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><a href="javascript:void(0)" class="widget-remove"><i class="fa fa-times-circle"></i></a><div class="widget-buttons"><a href="javascript:void(0)" class="widget-replace"><i class="fa fa-retweet"></i></a><a href="javascript:void(0)" class="widget-settings"><i class="fa fa-cog"></i></a></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, width, height, cols, rows, w, h, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio), fontsize, device + ' cols-' + cols + ' rows-' + rows));
+		self.append('<div data-instance="{0}" class="widget widget-empty {7}" data-size="{5}" style="left:{1}px;top:{2}px;width:{3}px;height:{4}px;font-size:{6}%"><a href="javascript:void(0)" class="widget-remove"><i class="fa fa-times-circle"></i></a><div class="widget-buttons"><a href="javascript:void(0)" class="widget-replace"><i class="fa fa-retweet"></i></a><a href="javascript:void(0)" class="widget-settings"><i class="fa fa-cog"></i></a></div><div class="widget-container" style="width:{3}px;height:{4}px;font-size:{6}%"></div></div>'.format(id, x, y, width, height, 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, w, h, cols, rows, width, height, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio), fontsize, device + ' cols-' + cols + ' rows-' + rows));
 		return self;
 	};
 

@@ -78,7 +78,7 @@ function WIDGET(name, make, init) {
 	});
 
 	if (typeof(obj.example) === 'object')
-		obj.example = JSON.stringify(obj.example);
+		obj.example = STRINGIFY(obj.example);
 
 	setTimeout(function() {
 
@@ -256,7 +256,7 @@ WIDGET_COMPONENT.prototype.use = function(url, data, headers, cookies) {
 
 	var index = url.indexOf(' ');
 	var self = this;
-	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
+	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
 		response && self.render && self.render(self.prepare(response), self.size, self.$datasource++);
 	});
 	return self;
@@ -275,7 +275,7 @@ WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers, cookies
 	}
 
 	var index = url.indexOf(' ');
-	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
+	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
 		callback && callback(err, response);
 	});
 };
@@ -353,7 +353,8 @@ WIDGET_COMPONENT.prototype.publish = function(name) {
 
 WIDGET_COMPONENT.prototype.redraw = function() {
 	var self = this;
-	var response = WIDGETS_DATASOURCE[self.datasource];
+	var hash = HASH(STRINGIFY(self.datasource));
+	var response = WIDGETS_DATASOURCE[hash];
 
 	if (!response || !response.response)
 		return self;
@@ -397,7 +398,7 @@ WIDGET_COMPONENT.prototype.refresh = function() {
 			return;
 
 		try {
-			response = JSON.parse(response);
+			response = PARSE(response);
 		} catch (e) {
 			return;
 		}
@@ -506,7 +507,7 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 			component.datasource = tmp;
 	}
 
-	component.datasource_key = HASH(JSON.stringify(component.datasource));
+	component.datasource_key = HASH(STRINGIFY(component.datasource));
 
 	WIDGETS_DASHBOARD.push(component);
 	UPDATE('WIDGETS_DASHBOARD');
@@ -514,7 +515,7 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 	component.size = WIDGET_GETSIZE(element);
 	component.make && component.make(component.size);
 	component.state && component.state(0);
-	component.element.css({ width: component.size.w, height: component.size.h });
+	component.element.css({ width: component.size.width, height: component.size.height });
 	element.removeClass('xs sm md lg').addClass(component.size.device);
 	WIDGETS_DATASOURCE[datasource] && WIDGETS_DATASOURCE[datasource].response && component.redraw();
 }
@@ -527,7 +528,7 @@ function WIDGETS_REFRESH_DATASOURCE2() {
 		if (!tmp)
 			return;
 		component.datasource = CLONE(tmp);
-		component.datasource_key = HASH(JSON.stringify(component.datasource));
+		component.datasource_key = HASH(STRINGIFY(component.datasource));
 	});
 	WIDGETS_REFRESH_DATASOURCE();
 }
@@ -683,11 +684,12 @@ function WIDGETS_SERVICE() {
 
 		item.counter = 0;
 		AJAX('POST /api/ajax/', item.datasource, function(response, err) {
+
 			if (err)
 				return;
 
 			try {
-				item.response = JSON.parse(response);
+				item.response = PARSE(response);
 			} catch (e) {
 				return;
 			}
