@@ -2035,7 +2035,7 @@ COMPONENT('dashboard', function() {
 		if (widget.length) {
 			var css = { width: width, height: height };
 			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6 widget-empty').addClass(device + ' cols-' + cols + ' rows-' + rows);
-			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, w, h, cols, rows, widget, height, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio));
+			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, w, h, cols, rows, width, height, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio));
 			widget.find('.widget-body').css(css);
 			css['font-size'] = fontsize + '%';
 			widget.find('.widget-container').css(css);
@@ -2254,9 +2254,9 @@ COMPONENT('search', function() {
 		options_delay = (self.attr('data-delay') || '200').parseInt();
 	};
 
-	self.setter = function(value, path, type) {
+	self.setter = function(value) {
 
-		if (!options_selector || !options_attribute || value == null)
+		if (!options_selector || !options_attribute)
 			return;
 
 		KEYPRESS(function() {
@@ -2269,26 +2269,12 @@ COMPONENT('search', function() {
 			}
 
 			var search = value.toLowerCase().replace(/y/gi, 'i');
-			var hide = [];
-			var show = [];
 
 			elements.toArray().waitFor(function(item, next) {
 				var el = $(item);
 				var val = (el.attr(options_attribute) || '').toLowerCase().replace(/y/gi, 'i');
-				if (val.indexOf(search) === -1)
-					hide.push(el);
-				else
-					show.push(el);
-				setTimeout(next, 3);
-			}, function() {
-
-				hide.forEach(function(item) {
-					item.toggleClass(options_class, true);
-				});
-
-				show.forEach(function(item) {
-					item.toggleClass(options_class, false);
-				});
+				el.toggleClass(options_class, val.indexOf(search) === -1);
+				setTimeout(next, 5);
 			});
 
 		}, options_delay, 'search' + self.id);
