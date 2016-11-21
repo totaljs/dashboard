@@ -89,14 +89,14 @@ canvas { display: block; }
 .grid { background-color: white; height: 150px; margin-bottom: 25px; user-select: none; cursor: default; }
 .grid-hover { background-color: #D0D0D0; }
 .grid-can { background-image: repeating-linear-gradient(45deg, #8CC152, #8CC152 10px, #A0D468 10px, #A0D468 20px); }
-.grid-disabled { background-color: transparent; }
+.grid-disabled { background-color: transparent !important; }
 .gridcontainer.readonly .grid { background-color: transparent; display: none; }
 .gridcontainer .visible { display: block !important; }
 .gridcontainer.readonly .widget { cursor: default; }
 .gridcontainer.readonly .widget-remove { display: none; }
 .gridcontainer.readonly .widget-buttons { display: none; }
 
-.widget { position: absolute; background: white; color: gray; cursor: default; margin-bottom: 30px; overflow: hidden; opacity: 0; transform: scale(0.7) rotateY(130deg); transition: all 0.3s; box-shadow: 0 3px 10px rgba(0,0,0,0.2); }
+.widget { position: absolute; background: white; color: gray; cursor: default; margin-bottom: 30px; overflow: hidden; opacity: 0; transform: scale(0.7) rotateY(130deg); transition: all 0.3s; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
 .widget-visible { opacity: 1; transform: scale(1) rotateY(0deg); }
 .widget-nocenter { display: block; }
 .widget-nocenter .widget-body { display: block; vertical-align: top; }
@@ -234,3 +234,7 @@ pre { margin-top: 5px; }
 .theme-green .grid { background-color: #739E43; }
 .theme-green .grid-hover { background-color: #598839; }
 
+.theme-pink { background-color: #D770AD; }
+.theme-pink h1 { color: white; }
+.theme-pink .grid { background-color: #D7ABC6; }
+.theme-pink .grid-hover { background-color: #A45585; }
