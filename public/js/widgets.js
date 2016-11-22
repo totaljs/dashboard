@@ -403,9 +403,11 @@ WIDGET_COMPONENT.prototype.refresh = function() {
 			return;
 		}
 
-		var datasource = WIDGETS_DATASOURCE[self.datasource];
+		var key = HASH(STRINGIFY(self.datasource));
+		var datasource = WIDGETS_DATASOURCE[key];
+
 		if (!datasource)
-			datasource = WIDGETS_DATASOURCE[self.datasource] = {};
+			datasource = WIDGETS_DATASOURCE[key] = {};
 
 		datasource.response = response;
 		self.redraw();

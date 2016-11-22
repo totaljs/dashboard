@@ -55,7 +55,7 @@
 			if (!widget)
 				return;
 
-			var is = widget.datasource !== formconfigure.datasource;
+			var is = STRINGIFY(widget.datasource) !== STRINGIFY(formconfigure.datasource);
 			var changes = [];
 			var tmp;
 
