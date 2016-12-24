@@ -17,10 +17,8 @@ h2 .fa { margin-right: 7px; }
 h2 b { font-weight: 700; }
 
 .mainmenu-container { position: absolute; width: 100%; transition: all 0.3s; top: 0; }
-.mainmenu { height: 75px; padding: 10px 15px; border-bottom: 1px solid #F0F0F0; background: #F8F8F8 linear-gradient(white,#F8F8F8); margin-bottom: 30px; overflow: hidden; box-shadow: 0 1px 5px rgba(0,0,0,.08); }
-.mainmenu ul { float: left; }
-.mainmenu .photo { float: right; margin: 5px 0 0 0; }
-.mainmenu .photo img { height: 45px; border-radius: 4px; }
+.mainmenu { height: 75px; padding: 10px 15px; border-bottom: 1px solid #F0F0F0; background: #F8F8F8 linear-gradient(white,#F8F8F8); margin-bottom: 30px; overflow: hidden; box-shadow: 0 1px 5px rgba(0,0,0,.08); text-align: center; }
+.mainmenu ul { position: relative; display: inline-block; }
 .mainmenu-container .toggle { position: absolute; cursor: pointer; width: 60px; text-align: center; background: #F8F8F8 linear-gradient(#F8F8F8, white); height: 24px; border-radius: 0 0 8px 8px; left: 50%; margin-left: -30px; top: 74px; color: #A0A0A0; box-shadow: 0 4px 4px rgba(0,0,0,0.02); z-index: 5; }
 .mainmenu-hidden { top: -78px; }
 .mainmenu-height { height: 100px; transition: all 0.3s; }
@@ -115,7 +113,8 @@ canvas { display: block; }
 .widget-nodata > div > div { display: table-cell; vertical-align: middle; text-align: center; font-size: 50px; color: silver; text-shadow: 1px 1px 5px white; cursor: not-allowed; }
 
 .iconmenu { list-style-type: none; margin: 0; padding: 0; }
-.iconmenu li { position: relative; display: inline-block; margin-right: 5px; }
+.iconmenu li { position: relative; display: inline-block; margin-left: 30px; }
+.iconmenu li:first-child { margin-left: 0; }
 .iconmenu a { text-decoration: none; color: #A0A0A0; display: block; font-size: 11px; outline: 0; padding: 4px 0; width: 60px; border-radius: 4px; transition: all 0.3s; text-align: center; border: 2px solid transparent; }
 .iconmenu a:hover { color: black; }
 .iconmenu .active a { color: black; border-color: #F0F0F0; }
@@ -185,6 +184,7 @@ pre { margin-top: 5px; }
 	#success { top: 2px; left: 2px; }
 	.grid { height: 86.36px; }
 	#body { margin-left: 0; }
+	.iconmenu li { position: relative; display: inline-block; margin-left: 20px; }
 }
 
 @media(max-width: 767px) {
@@ -197,6 +197,7 @@ pre { margin-top: 5px; }
 	.table-xs td { display: block; }
 	.table-xs td:before { content: attr(data-label); font-weight: bold; border-right: 1px solid #E0E0E0; width: 100px; float: left; margin-right: 10px; }
 	.table-xs tr { margin-bottom: 20px; display: block; }
+	.iconmenu li { position: relative; display: inline-block; margin-left: 5px; }
 }
 
 .theme-dark { background-color: #303030; }
