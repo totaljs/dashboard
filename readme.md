@@ -33,6 +33,15 @@ __License__: [MIT](license.txt).
 - Chart.js v2
 - jComponent v8
 
+## Users
+
+- username: `admin`
+- password: `admin`
+
+__How to add a new user__?
+
+Just add a new user into the `databases/users.nosql` database or update existing users.
+
 ---
 
 ## Creating widget
