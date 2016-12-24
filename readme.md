@@ -35,11 +35,12 @@ __License__: [MIT](license.txt).
 
 ## Users
 
+Default user:
+
 - username: `admin`
 - password: `admin`
 
 __How to add a new user__?
-
 Just add a new user into the `databases/users.nosql` database or update existing users.
 
 ---
