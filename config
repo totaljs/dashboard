@@ -2,6 +2,8 @@ name                      : Dashboard
 version                   : 2.0.0
 author                    : Totaljs.com Ltd
 
+cookie                    : __user
+
 // Custom SMTP settings
 mail.smtp                 : YOUR.SMTPSERVER.COM
 // mail.smtp.options         : {"user":"","password":"","timeout":2000}

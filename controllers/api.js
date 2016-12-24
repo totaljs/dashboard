@@ -1,6 +1,9 @@
+const FLAGS = ['get', 'dnscache'];
+
 exports.install = function() {
-	F.route('/api/proxy/', json_proxy, ['get']);
-	F.route('/api/ajax/',  json_ajax,  ['post', '*Ajax']);
+	F.route('/api/proxy/',             json_proxy,  ['get']);
+	F.route('/api/ajax/',              json_exec,   ['post', '*Ajax']);
+	F.route('/api/login/',             json_exec,   ['post', '*Login']);
 
 	// Dashboard
 	F.route('/api/dashboard/',         json_query,  ['*Dashboard']);
@@ -15,14 +18,14 @@ exports.install = function() {
 	F.route('/api/repositories/{id}/', json_remove, ['*Repository', 'delete']);
 
 	// DataSources
-	F.route('/api/datasources/',      json_query,  ['*DataSource']);
-	F.route('/api/datasources/',      json_save,   ['*DataSource', 'post']);
-	F.route('/api/datasources/{id}/', json_remove, ['*DataSource', 'delete']);
+	F.route('/api/datasources/',       json_query,  ['*DataSource']);
+	F.route('/api/datasources/',       json_save,   ['*DataSource', 'post']);
+	F.route('/api/datasources/{id}/',  json_remove, ['*DataSource', 'delete']);
 };
 
 function json_proxy() {
 	var self = this;
-	U.request(self.query.url, ['get', 'dnscache'], (err, response, status, headers) => self.content(response, headers['content-type']));
+	U.request(self.query.url, FLAGS, (err, response, status, headers) => self.content(response, headers['content-type']));
 }
 
 function json_save() {
@@ -47,7 +50,7 @@ function json_remove(id) {
 	self.$remove(self, self.callback());
 }
 
-function json_ajax() {
+function json_exec() {
 	var self = this;
 	self.$workflow('exec', self.callback());
 }

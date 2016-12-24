@@ -1,9 +1,10 @@
 exports.install = function() {
-	F.route('/*', view_dashboard);
+	F.route('/*', dashboard, ['authorize']);
+	F.route('/*',  'login', ['unauthorize']);
 	F.localize('/templates/*.html', ['compress']);
 };
 
-function view_dashboard() {
+function dashboard() {
 	var self = this;
 	GETSCHEMA('Repository').get(self, self.callback('index'));
 }
