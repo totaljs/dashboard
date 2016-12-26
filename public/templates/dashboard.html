@@ -1,26 +1,10 @@
-<div class="mainmenu-container">
-	<div class="mainmenu">
-		<ul class="iconmenu">
-			<li class="iconnew hidden-xs"><a href="/" class="jrouting"><i class="fa fa-plus-square-o"></i>@(New)</a></li>
-			<li class="iconbrowse"><a href="javascript:void(0)" class="exec" data-exec="dashboard_browse"><i class="fa fa-folder-o"></i>@(Browse)</a></li>
-			<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_import"><i class="fa fa-cloud-download"></i>@(Import)</a></li>
-			<li class="hidden-xs iconmodify" data-save="@(Save)" data-modify="@(Modify)"><a href="javascript:void(0)" class="exec" data-exec="dashboard_edit"><i class="fa fa-braille"></i><span>@(Modify)</span></a></li>
-			<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_repositories"><i class="fa fa-code-fork"></i>@(Repository)</a></li>
-			<li class="hidden-xs"><a href="javascript:void(0)" class="exec" data-exec="dashboard_datasources"><i class="fa fa-database"></i>@(Sources)</a></li>
-			<li class="hidden-xs" data-jc="visible" data-jc-path="dashboard.current" data-if="value" class="hidden"><a href="javascript:void(0)" class="exec" data-exec="dashboard_export"><i class="fa fa-cloud-upload"></i>@(Export)</a></li>
-		</ul>
-	</div>
-	<div class="toggle">
-		<i class="fa fa-caret-up" data-binder="common.page"></i>
-	</div>
-</div>
-<div class="mainmenu-height"></div>
+<br />
 <div class="container">
 	<div class="row hidden-xs">
-		<div class="col-md-6">
+		<div class="col-sm-4 col-sm-offset-4 center">
 			<h1 data-binder="dashboard.current.name" data-binder-html="n => n ? n : '@(New dashboard)'">@(New dashboard)</h1>
 		</div>
-		<div class="col-md-4 col-md-offset-2 theme-selector hidden">
+		<div class="col-sm-4 theme-selector hidden">
 			<div data-jc="themeselector" data-jc-path="dashboard.theme"></div>
 		</div>
 	</div>
@@ -39,7 +23,6 @@
 
 	function dashboard_edit() {
 		var com = FIND('dashboard');
-		var btn = $('.iconmodify');
 
 		if (com.getMode() === 0) {
 			dashboard_editbutton(1);
@@ -60,23 +43,11 @@
 
 	function dashboard_editbutton(type) {
 		var btn = $('.iconmodify');
-		var fa = btn.find('.fa');
-		btn.find('span').html(btn.attr('data-' + (type === 0 ? 'modify' : 'save')));
-		btn.toggleClass('save', type === 1);
-		fa.toggleClass('fa-floppy-o', type === 1);
-		fa.toggleClass('fa-braille', type === 0);
 		$('.theme-selector').toggleClass('hidden', type === 0);
 	}
 
-	function dashboard_repositories() {
-		IMPORTSET('formrepository', 'common.form', 'repository');
-	}
-
-	function dashboard_datasources() {
-		IMPORTSET('sources', 'common.form', 'sources');
-	}
 	function dashboard_browse() {
-		IMPORTSET('formbrowse', 'common.form', 'browse')
+		IMPORTSET('formbrowse', 'common.form', 'browse');
 	}
 
 	function dashboard_refresh(callback) {
@@ -113,10 +84,14 @@
 	function dashboard_datasource(callback) {
 		AJAX('GET /api/datasources/', function(response) {
 			SET('dashboard.datasources', response.slice(0));
+
 			var group = {};
+
 			response.forEach(function(key) {
 				group[key.group] = true;
 			});
+
+			delete group[''];
 			SET('dashboard.datasources_groups', Object.keys(group));
 
 			if (callback === true)
@@ -132,7 +107,6 @@
 		if (!item)
 			return;
 
-		dashboard_menu(false);
 		AJAX('GET /api/settings/{0}/'.format(id), function(response) {
 
 			if (response && response.data)
@@ -141,12 +115,12 @@
 				WIDGETS_WIDGETSETTINGS = {};
 
 			document.title = item.name;
-			dashboard.changed = false;
 
 			var body = $('body').removeClass();
 			item.theme && body.addClass(item.theme);
 			SET('dashboard.theme', item.theme);
 			$('h1').text(item.name);
+			dashboard.changed = false;
 
 			SETTER('loading', 'show');
 			WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
@@ -208,8 +182,7 @@
 
 		for (var i = 0, length = data.widgets.length; i < length; i++) {
 			var w = WIDGETS_DATABASE[data.widgets[i].$name];
-			if (w && w.repository && data.repository.indexOf(w.repository) === -1)
-				data.repository.push(w.repository);
+			w && w.repository && data.repository.indexOf(w.repository) === -1 && data.repository.push(w.repository);
 		}
 
 		IMPORTSET('formexport', 'common.form', 'export');
@@ -224,25 +197,7 @@
 		user.photo && $('.photo img').attr('src', user.photo);
 	}, 200);
 
-	$(document).on('click', '.toggle', function() {
-		dashboard_menu();
-	});
-
-	function dashboard_menu(visible) {
-		var is = visible != null ? visible : undefined;
-		var ist = is != null ? !is : undefined;
-
-		if (is != null) {
-			is = !is;
-			ist = !ist;
-		}
-
-		$('.mainmenu-container').toggleClass('mainmenu-hidden', is).find('.mainmenu-toggle').find('.fa').toggleClass('fa-caret-up', ist).toggleClass('fa-caret-down', is);
-		$('.mainmenu-height').toggleClass('mainmenu-hidden', is);
-		$(window).resize();
-	}
-
-	WATCH('dashboard.theme', function(path, value) {
+	WATCH('dashboard.theme', function(path, value, type) {
 		var body = $('body').removeClass();
 		value && body.addClass(value);
 		dashboard.changed = true;

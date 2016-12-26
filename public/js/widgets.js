@@ -527,10 +527,10 @@ function WIDGETS_REFRESH_DATASOURCE2() {
 		if (!component.datasource || !component.datasource.id)
 			return;
 		var tmp = dashboard.datasources.findItem('id', component.datasource.id);
-		if (!tmp)
-			return;
-		component.datasource = CLONE(tmp);
-		component.datasource_key = HASH(STRINGIFY(component.datasource));
+		if (tmp) {
+			component.datasource = CLONE(tmp);
+			component.datasource_key = HASH(STRINGIFY(component.datasource));
+		}
 	});
 	WIDGETS_REFRESH_DATASOURCE();
 }
@@ -678,6 +678,9 @@ function WIDGETS_SERVICE() {
 
 	WIDGETS_DATASOURCE_KEYS.forEach(function(key) {
 		var item = WIDGETS_DATASOURCE[key];
+
+		if (!item.datasource || !item.datasource.url)
+			return;
 
 		item.counter += 3;
 

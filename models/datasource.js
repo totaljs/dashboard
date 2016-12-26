@@ -10,26 +10,34 @@ NEWSCHEMA('DataSource').make(function(schema) {
 	schema.define('headers', 'Object');
 	schema.define('cookies', 'Object');
 	schema.define('data', 'Object');
+	schema.define('all', Boolean);
 
 	schema.setQuery(function(error, controller, callback) {
-		NOSQL('datasources').find().where('user', controller.user.id).callback((err, response) => callback(response));
+		NOSQL('datasources').find().make(function(builder) {
+			builder.or();
+			builder.where('user', controller.user.id);
+			builder.where('all', true);
+			builder.end();
+			builder.callback((err, response) => callback(response));
+		});
 	});
 
 	schema.setSave(function(error, model, controller, callback) {
+
 		var nosql = NOSQL('datasources');
 
-		if (!model.id) {
-			model.id = UID();
-			model.user = controller.user.id;
-			nosql.insert(model).callback(() => callback(SUCCESS(true)));
+		if (model.id) {
+			nosql.modify(model).make(function(builder) {
+				builder.where('id', model.id);
+				!model.all && builder.where('user', controller.user.id);
+				builder.callback(() => callback(SUCCESS(true)));
+			});
 			return;
 		}
 
-		nosql.modify(model).make(function(builder) {
-			builder.where('id', model.id);
-			builder.where('user', controller.user.id);
-			builder.callback(() => callback(SUCCESS(true)));
-		});
+		model.id = UID();
+		model.user = controller.user.id;
+		nosql.insert(model).callback(() => callback(SUCCESS(true)));
 	});
 
 	schema.setRemove(function(error, controller, callback) {

@@ -795,7 +795,7 @@ COMPONENT('form', function() {
 
 		var el = $('#' + self._id);
 		el.find('.ui-form').get(0).appendChild(self.element.get(0));
-
+		self.element.removeClass('hidden');
 		self.element = el;
 
 		self.element.on('scroll', function() {
@@ -1770,7 +1770,7 @@ COMPONENT('dashboard', function() {
 	var grid;
 	var mode = 0;  // 0 == readonly, 1 == change
 	var tresize;
-	var template = '<div class="col-sm-2 hidden-xs"><div class="grid">&nbsp;</div></div>';
+	var template = '<div class="col-sm-2 hidden-xs"><div class="grid" data-indexer="{0}">&nbsp;</div></div>';
 
 	drag.x = 0;
 	drag.y = 0;
@@ -1790,7 +1790,7 @@ COMPONENT('dashboard', function() {
 		}
 
 		mode = type;
-		self.element.toggleClass('readonly', type === 0);
+		self.element.toggleClass('readonly', type === 0).css('height', 'auto');
 		return type;
 	};
 
@@ -1805,7 +1805,7 @@ COMPONENT('dashboard', function() {
 		var builder = [];
 
 		for (var i = 0; i < COUNT; i++)
-			builder.push(template);
+			builder.push(template.format(i));
 
 		self.html(builder);
 		grid = self.find('.grid');
@@ -1907,7 +1907,7 @@ COMPONENT('dashboard', function() {
 			formwidgets.current = instance;
 		});
 
-		self.element.on('mouseup',function(e) {
+		self.element.on('mouseup touchend touchcancel',function(e) {
 			if (!drag.is)
 				return;
 			drag.is = false;
@@ -1916,16 +1916,26 @@ COMPONENT('dashboard', function() {
 			self.resize();
 		});
 
-		self.element.on('mousedown mousemove', '.grid', function(e) {
+		self.element.on('mousedown mousemove touchstart touchmove', function(e) {
 
-			if (!mode)
+			if (!mode || !e.target.classList.contains('grid'))
 				return;
 
-			if (e.type === 'mousedown') {
+			var el = e.touches ? e.touches[0].target : e.target;
+
+			if (e.type === 'mousedown' || e.type === 'touchstart') {
+
 				drag.is = true;
-				drag.beg = this;
-				drag.x = e.pageX;
-				drag.y = e.pageY;
+				drag.beg = el;
+
+				if (e.touches) {
+					drag.x = e.touches[0].pageX;
+					drag.y = e.touches[0].pageY;
+				} else {
+					drag.x = e.pageX;
+					drag.y = e.pageY;
+				}
+
 				drag.size = getDeviceWidth(WIDTH());
 				e.preventDefault();
 				e.stopPropagation();
@@ -1935,13 +1945,16 @@ COMPONENT('dashboard', function() {
 			if (!drag.is)
 				return;
 
-			var x = e.pageX - drag.x;
-			var y = e.pageY - drag.y;
+			e.preventDefault();
+			e.stopPropagation();
 
-			var x1 = x >= 0 ? drag.beg.gridX : this.gridX;
-			var y1 = y >= 0 ? drag.beg.gridY : this.gridY;
-			var x2 = x >= 0 ? this.gridX : drag.beg.gridX;
-			var y2 = y >= 0 ? this.gridY : drag.beg.gridY;
+			var x = (e.touches ? e.touches[0].pageX : e.pageX);
+			var y = (e.touches ? e.touches[0].pageY : e.pageY);
+			var x1 = drag.beg.gridX;
+			var y1 = drag.beg.gridY;
+			var x2 = x;
+			var y2 = y;
+
 			var minX = 10000000;
 			var maxX = 0;
 			var minY = 10000000;
@@ -1966,8 +1979,7 @@ COMPONENT('dashboard', function() {
 				}
 
 				el.toggleClass('grid-hover', is);
-				if (!is)
-					el.removeClass('grid-can');
+				!is && el.removeClass('grid-can');
 
 				if (is) {
 					minX = Math.min(minX, this.gridX >> 0);
@@ -2068,7 +2080,8 @@ COMPONENT('dashboard', function() {
 
 		tresize = setTimeout(function() {
 			var current = WIDTH();
-			var top = self.element.offset().top;
+			var top = current === 'xs' ? 60 : 0;
+			var topmax = 0;
 
 			self.recalculate();
 			grid.each(function() {
@@ -2115,11 +2128,14 @@ COMPONENT('dashboard', function() {
 
 				if (current === 'xs') {
 					o.y = top;
-					o.x = 15;
-					top += h + 15;
+					o.x = 20;
+					top += h + 20;
 				}
 
-				self.create(id, (o.x >> 0) + 1, (o.y >> 0) + 1, w + 1, h + 1, w / o.w >> 0, h / o.h >> 0, o.w, o.h, current);
+				topmax = Math.max(o.y + h + 1, topmax);
+
+				var cols = w / o.w >> 0;
+				self.create(id, (o.x >> 0) + 1, (o.y >> 0) + 1, w + 1 - 10, h + 1, cols, h / o.h >> 0, o.w, o.h, current);
 			});
 
 			grid.removeClass('visible');
@@ -2131,6 +2147,7 @@ COMPONENT('dashboard', function() {
 				})($(this), index);
 			});
 
+			self.element.css({ height: topmax + 30 });
 			callback && callback();
 		}, 200);
 	};
@@ -2619,4 +2636,135 @@ COMPONENT('binder', function() {
 		return self;
 	};
 
+});
+
+COMPONENT('contextmenu', function() {
+	var self = this;
+	var $window = $(window);
+	var is = false;
+	var timeout;
+	var container;
+	var arrow;
+
+	self.template = Tangular.compile('<div data-value="{{ value }}" class="item{{ if selected }} selected{{ fi }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
+	self.singleton();
+	self.readonly();
+	self.callback = null;
+
+	self.make = function() {
+
+		self.element.addClass('ui-contextmenu');
+		self.element.append('<span class="ui-contextmenu-arrow fa fa-caret-up"></span><div class="ui-contextmenu-items"></div>');
+		container = self.element.find('.ui-contextmenu-items');
+		arrow = self.element.find('.ui-contextmenu-arrow');
+
+		self.element.on('touchstart mousedown', 'div[data-value]', function(e) {
+			self.callback && self.callback($(this).attr('data-value'), $(self.target));
+			self.hide();
+			e.preventDefault();
+			e.stopPropagation();
+		});
+
+		$(document).on('touchstart mousedown', function(e) {
+			FIND('contextmenu').hide();
+		});
+	};
+
+	self.show = function(orientation, target, items, callback, offsetX) {
+
+		if (is) {
+			clearTimeout(timeout);
+			var obj = target instanceof jQuery ? target.get(0) : target;
+			if (self.target === obj) {
+				self.hide(0);
+				return;
+			}
+		}
+
+		target = $(target);
+		var type = typeof(items);
+		var item;
+
+		if (type === 'string')
+			items = self.get(items);
+		else if (type === 'function') {
+			callback = items;
+			items = (target.attr('data-options') || '').split(';');
+			for (var i = 0, length = items.length; i < length; i++) {
+				item = items[i];
+				if (!item)
+					continue;
+				var val = item.split('|');
+				items[i] = { name: val[0], icon: val[1], value: val[2] || val[0] };
+			}
+		}
+
+		if (!items) {
+			self.hide(0);
+			return;
+		}
+
+		self.callback = callback;
+
+		var builder = [];
+		for (var i = 0, length = items.length; i < length; i++) {
+			item = items[i];
+
+			if (typeof(item) === 'string') {
+				builder.push('<div class="divider">{0}</div>'.format(item));
+				continue;
+			}
+
+			item.index = i;
+			if (!item.value)
+				item.value = item.name;
+			if (!item.icon)
+				item.icon = 'fa-caret-right';
+			builder.push(self.template(item));
+		}
+
+		self.target = target.get(0);
+		var offset = target.offset();
+
+		container.html(builder);
+
+		switch (orientation) {
+			case 'left':
+				arrow.css({ left: '15px' });
+				break;
+			case 'right':
+				arrow.css({ left: '210px' });
+				break;
+			case 'center':
+				arrow.css({ left: '107px' });
+				break;
+		}
+
+		var options = { left: orientation === 'center' ? (Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) + (offsetX || 0)) : orientation === 'left' ? (offset.left - 8 + (offsetX || 0)) : ((offset.left - self.element.width()) + target.innerWidth() + (offsetX || 0)), top: offset.top + target.innerHeight() + 10 };
+		self.element.css(options);
+
+		if (is)
+			return;
+
+		self.element.show();
+		setTimeout(function() {
+			self.element.addClass('ui-contextmenu-visible');
+			self.emit('contextmenu', true, self, self.target);
+		}, 100);
+
+		is = true;
+	};
+
+	self.hide = function(sleep) {
+		if (!is)
+			return;
+		clearTimeout(timeout);
+		timeout = setTimeout(function() {
+			self.element.hide().removeClass('ui-contextmenu-visible');
+			self.emit('contextmenu', false, self, self.target);
+			self.callback = null;
+			self.target = null;
+			is = false;
+		}, sleep ? sleep : 100);
+	};
 });

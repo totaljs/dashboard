@@ -23,6 +23,7 @@
 
 	<div data-jc="message" data-button="@(Close)"></div>
 	<div data-jc="confirm"></div>
+	<div data-jc="contextmenu"></div>
 	<div data-jc="loading" class="ui-loading"></div>
 	<div data-jc="calendar" data-days="@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)" data-months="@(January,February,March,April,May,Juny,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
 	<div data-jc="notifications" data-date-format="@(yyyy-MM-dd HH:mm)" data-timeout="8000"></div>
@@ -37,6 +38,9 @@
 	</div>
 
 	<div id="body" data-jc="binder">
+		<div class="container" style="position:relative">
+			<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-navicon"></i></a>
+		</div>
 		<div data-jc="page" data-jc-path="common.page" data-if="dashboard" data-template="/templates/dashboard.html"></div>
 	</div>
 
@@ -52,6 +56,50 @@
 		<script src="@{m}"></script>
 	@{end}
 
-	<script>WIDGETS_CURRENTREPOSITORY='';</script>
+	<script>
+		WIDGETS_CURRENTREPOSITORY='';
+		function mainmenu(el) {
+
+			var device = WIDTH();
+			var items = [];
+
+			items.push('@(Dashboard)');
+			items.push({ name: '@(Change dashboard)', icon: 'fa-folder-o', value: 'browse' });
+			device !== 'xs' && items.push({ name: '@(New dashboard)', icon: 'fa-plus-square-o', value: 'new' });
+
+			if (common.page === 'dashboard' && device !== 'xs') {
+				var mode = FIND('dashboard').getMode();
+				var save = mode === 1 && dashboard.changed ? true : false;
+				items.push({ name: save ? '@(Save dashboard)' : '@(Edit dashboard)', icon: save ? 'fa-floppy-o' : 'fa-pencil', value: 'edit' });
+			}
+
+			items.push('Internal Settings');
+			items.push({ name: '@(Repositories)', icon: 'fa-code-fork', value: 'repositories' });
+			items.push({ name: '@(Sources)', icon: 'fa-database', value: 'sources' });
+			items.push({ name: '@(Users)', icon: 'fa-users', value: 'users' });
+			items.push({ name: '@(Sign out)', icon: 'fa-power-off', value: 'logoff' });
+
+			FIND('contextmenu').show(device === 'xs' ? 'center' : 'left', el, items, function(value) {
+				switch (value) {
+					case 'sources':
+						IMPORTSET('sources', 'common.form', 'sources');
+						break;
+					case 'repositories':
+						IMPORTSET('formrepository', 'common.form', 'repository');
+						break;
+					case 'browse':
+						EXEC('dashboard_browse');
+						break;
+					case 'edit':
+						EXEC('dashboard_edit');
+						dashboard.changed = false;
+						break;
+					case 'new':
+						jR.redirect('/');
+						break;
+				}
+			}, device === 'xs' ? 5 : -3);
+		}
+	</script>
 </body>
 </html>

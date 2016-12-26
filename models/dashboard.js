@@ -5,7 +5,6 @@ NEWSCHEMA('Dashboard').make(function(schema) {
 	schema.define('group', 'String(50)');
 	schema.define('theme', 'String(30)');
 	schema.define('icon', 'String(15)');
-	schema.define('theme', 'String(30)');
 	schema.define('data', 'String', true);
 
 	schema.setQuery(function(error, controller, callback) {
@@ -13,8 +12,8 @@ NEWSCHEMA('Dashboard').make(function(schema) {
 	});
 
 	schema.setSave(function(error, model, controller, callback) {
-		var plain = model.$plain();
 
+		var plain = model.$plain();
 		if (model.id) {
 			plain.id = undefined;
 			NOSQL('dashboard').modify(plain).where('id', model.id).where('user', controller.user.id).callback(() => callback(SUCCESS(true)));

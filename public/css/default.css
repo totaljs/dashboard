@@ -3,27 +3,21 @@
 $font   : 'Arial';
 
 html,body { margin: 0; height: 100%; position: relative; }
-body { background-color: #F0F0F0; padding: 0; color: gray; font-smoothing: antialiased; overflow-y: scroll; overflow-x: hidden; overflow-scrolling: touch; font-size: 14px; }
+body { background-color: #F0F0F0; padding: 0; color: gray; font-smoothing: antialiased; overflow-y: scroll; overflow-x: hidden; overflow-scrolling: touch; font-size: 14px; transition: background-color 0.5s; }
 
 .developer { background-color: #D0D0D0; font-size: 11px; text-align: center; padding: 5px 0; display: block; color: gray; }
 .developer:hover { text-decoration: none; background-color: #F0F0F0; }
 .noscroll { overflow: hidden; }
 
-h1 { font-weight: 200; font-family: $font; margin: 0 0 25px 0; padding: 0; color: black; font-size: 30px; }
+h1 { font-weight: 200; font-family: $font; margin: 0 0 25px 0; padding: 0; color: black; font-size: 30px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 h1 b { font-weight: 400; }
 
 h2 { font-weight: 400; font-family: $font; margin: 0 0 20px 0; padding: 0; color: gray; font-size: 16px; }
 h2 .fa { margin-right: 7px; }
 h2 b { font-weight: 700; }
 
-.mainmenu-container { position: absolute; width: 100%; transition: all 0.3s; top: 0; }
-.mainmenu { height: 75px; padding: 10px 15px; border-bottom: 1px solid #F0F0F0; background: #F8F8F8 linear-gradient(white,#F8F8F8); margin-bottom: 30px; overflow: hidden; box-shadow: 0 1px 5px rgba(0,0,0,.08); text-align: center; }
-.mainmenu ul { position: relative; display: inline-block; }
-.mainmenu-container .toggle { position: absolute; cursor: pointer; width: 60px; text-align: center; background: #F8F8F8 linear-gradient(#F8F8F8, white); height: 24px; border-radius: 0 0 8px 8px; left: 50%; margin-left: -30px; top: 74px; color: #A0A0A0; box-shadow: 0 4px 4px rgba(0,0,0,0.02); z-index: 5; }
-.mainmenu-hidden { top: -78px; }
-.mainmenu-height { height: 100px; transition: all 0.3s; }
-.mainmenu-height.mainmenu-hidden { height: 25px; }
-
+.mainmenu { position: absolute; left: 15px; top: 24px; font-size: 26px; color: #A0A0A0; opacity: 0.8; transition: all 0.5s; }
+.mainmenu:hover { color: black; opacity: 1; }
 .padding { padding: 25px; }
 .m { margin-bottom: 20px; }
 .cl { clear: both; }
@@ -113,9 +107,9 @@ canvas { display: block; }
 .widget-nodata > div > div { display: table-cell; vertical-align: middle; text-align: center; font-size: 50px; color: silver; text-shadow: 1px 1px 5px white; cursor: not-allowed; }
 
 .iconmenu { list-style-type: none; margin: 0; padding: 0; }
-.iconmenu li { position: relative; display: inline-block; margin-left: 30px; }
-.iconmenu li:first-child { margin-left: 0; }
-.iconmenu a { text-decoration: none; color: #A0A0A0; display: block; font-size: 11px; outline: 0; padding: 4px 0; width: 60px; border-radius: 4px; transition: all 0.3s; text-align: center; border: 2px solid transparent; }
+.iconmenu li { position: relative; display: inline-block; border-left: 1px dashed #E0E0E0; text-align: center; width: 90px; }
+.iconmenu li:first-child { margin-left: 0; border-left: 0; }
+.iconmenu a { text-decoration: none; color: #A0A0A0; display: block; font-size: 11px; outline: 0; padding: 4px 0; width: 60px; border-radius: 4px; transition: all 0.3s; text-align: center; border: 2px solid transparent; margin: 0 auto; }
 .iconmenu a:hover { color: black; }
 .iconmenu .active a { color: black; border-color: #F0F0F0; }
 .iconmenu .selected a { color: black; border-color: black; }
@@ -185,6 +179,7 @@ pre { margin-top: 5px; }
 	.grid { height: 86.36px; }
 	#body { margin-left: 0; }
 	.iconmenu li { position: relative; display: inline-block; margin-left: 20px; }
+	h1 { font-size: 20px; padding: 8px 0 0; }
 }
 
 @media(max-width: 767px) {
@@ -198,44 +193,54 @@ pre { margin-top: 5px; }
 	.table-xs td:before { content: attr(data-label); font-weight: bold; border-right: 1px solid #E0E0E0; width: 100px; float: left; margin-right: 10px; }
 	.table-xs tr { margin-bottom: 20px; display: block; }
 	.iconmenu li { position: relative; display: inline-block; margin-left: 5px; }
+	.mainmenu { left: 50%; margin-left: -14px; }
 }
 
 .theme-dark { background-color: #303030; }
 .theme-dark h1 { color: white; }
 .theme-dark .grid { background-color: black; }
 .theme-dark .grid-hover { background-color: #404040; }
+.theme-dark .mainmenu { color: gray; }
 
 .theme-yellow { background-color: #F6BB42; }
 .theme-yellow h1 { color: white; }
 .theme-yellow .grid { background-color: #F6CF7A; }
 .theme-yellow .grid-hover { background-color: #B98F32; }
+.theme-yellow .mainmenu { color: #F6E3B5; }
 
 .theme-lavender { background-color: #967ADC; }
 .theme-lavender h1 { color: white; }
 .theme-lavender .grid { background-color: #AD9CDC; }
 .theme-lavender .grid-hover { background-color: #644BAF; }
+.theme-lavender .mainmenu { color: #CABEF0; }
 
 .theme-mint { background-color: #37BC9B; }
 .theme-mint h1 { color: white; }
 .theme-mint .grid { background-color: #75BCAC; }
 .theme-mint .grid-hover { background-color: #2C977E; }
+.theme-mint .mainmenu { color: #C6E9E2; }
 
 .theme-red { background-color: #DA4453; }
 .theme-red h1 { color: white; }
 .theme-red .grid { background-color: #BD6167; }
 .theme-red .grid-hover { background-color: #993039; }
+.theme-red .mainmenu { color: #DE7E86; }
 
 .theme-blue { background-color: #3BAFDA; }
 .theme-blue h1 { color: white; }
 .theme-blue .grid { background-color: #6EBFDA; }
 .theme-blue .grid-hover { background-color: #2A7E9B; }
+.theme-blue .mainmenu { color: #B2DEEB; }
 
 .theme-green { background-color: #8CC152; }
 .theme-green h1 { color: white; }
 .theme-green .grid { background-color: #739E43; }
 .theme-green .grid-hover { background-color: #598839; }
+.theme-green .mainmenu { color: #DFF4C8; }
 
 .theme-pink { background-color: #D770AD; }
 .theme-pink h1 { color: white; }
 .theme-pink .grid { background-color: #D7ABC6; }
 .theme-pink .grid-hover { background-color: #A45585; }
+.theme-pink .mainmenu { color: #E1B9D2; }
+

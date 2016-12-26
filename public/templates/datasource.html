@@ -9,6 +9,7 @@
 				<div data-jc="dropdown" data-jc-path="formdatasource.group" data-empty="" data-source="dashboard.datasources_groups">@(Existing group)</div>
 			</div>
 		</div>
+		<div data-jc="checkbox" data-jc-path="formdatasource.all" class="m">@(Enabled for all users)</div>
 	</div>
 	<div data-jc-scope="formdatasource">
 		<div data-jc-url="/templates/rest.html"></div>
@@ -40,7 +41,7 @@
 				}
 
 				hide();
-				EXEC('dashboard_datasource');
+				EXEC('dashboard_datasource', true);
 			});
 		};
 	});

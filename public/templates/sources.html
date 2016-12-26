@@ -1,4 +1,4 @@
-<div data-jc="form" data-title="@(Sources)" data-jc-path="common.form" data-if="value === 'sources'" data-width="800px" data-jc-id="formsources" data-autocenter="false">
+<div data-jc="form" data-title="@(Sources)" data-jc-path="common.form" data-if="value === 'sources'" data-width="800px" data-jc-id="formsources" data-autocenter="false" class="hidden">
 	<div class="filter padding npt">
 		<div class="row">
 			<div class="col-sm-8">
@@ -36,7 +36,7 @@
 
 	function formsources_new() {
 		IMPORTSET('formdatasource', 'common.subform', 'datasource');
-		SET('formdatasource', { headers: {}, cookies: {}, method: 'GET', interval: 60, datasourceid: '' }, true);
+		SET('formdatasource', { headers: {}, cookies: {}, method: 'GET', interval: 60, datasourceid: '', all: true }, true);
 	}
 
 	$(document).on('click', '.source-link', function(e) {
@@ -62,7 +62,7 @@
 			AJAX('DELETE /api/datasources/{0}/'.format(id), function() {
 				SETTER('loading', 'hide', 1000);
 				SET('formsources.search', '');
-				EXEC('dashboard_datasource');
+				EXEC('dashboard_datasource', true);
 			});
 		});
 	});

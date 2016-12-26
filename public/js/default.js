@@ -10,6 +10,8 @@ common.form = '';
 // Current subform
 common.subform = '';
 
+common.default = false;
+
 ON('@calendar', function(component) {
 	window.MONTHS = component.months;
 	window.MONTHS_SHORT = component.months_short;
@@ -30,19 +32,27 @@ function isError(arguments) {
 }
 
 jR.route('/', function() {
+
 	SET('common.page', 'dashboard');
 	WAIT(function() {
 		return window.dashboard_new;
 	}, function() {
-		dashboard_new();
+		var id = CACHE('default');
+		if (id && !common.default) {
+			jR.redirect('/{0}/'.format(id));
+		} else
+			dashboard_new();
+		common.default = true;
 	});
 });
 
 jR.route('/{id}/', function(id) {
+	common.default = true;
 	SET('common.page', 'dashboard');
 	WAIT(function() {
 		return window.dashboard_load;
 	}, function() {
+		CACHE('default', id, '5 days');
 		dashboard_load(id);
 	});
 });
@@ -65,10 +75,6 @@ Tangular.register('indexer', function(index) {
 Tangular.register('join', function(value) {
 	return value ? value.join(',') : '';
 });
-
-function mainmenu() {
-	$('header nav').toggleClass('mainmenu-visible');
-}
 
 function IMPORTSET(check, name, value) {
 
