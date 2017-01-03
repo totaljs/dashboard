@@ -22,7 +22,9 @@ function WIDGET(name, make, init) {
 	obj.example = '';
 	obj.category = '';
 	obj.url = '';
+	obj.keywords = '';
 	obj.repository = WIDGETS_CURRENTREPOSITORY;
+	obj.dictionary = {};
 
 	var done = function(name, obj) {
 		WIDGETS_DATABASE[name] = obj;
@@ -103,6 +105,7 @@ function WIDGET_COMPONENT(id, name, element, options) {
 	this.element = element;
 	this.options = options;
 	this.dom = element.get(0);
+	this.dictionary = {};
 	this.prepare = function(data) {
 		return data;
 	};
@@ -281,7 +284,7 @@ WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers, cookies
 };
 
 WIDGET_COMPONENT.prototype.rename = function(name) {
-	return this.dictionary ? (this.dictionary[name] || name) : name;
+	return this.dictionary[name] || name;
 };
 
 WIDGET_COMPONENT.prototype.configure = function() {
@@ -312,7 +315,7 @@ WIDGET_COMPONENT.prototype.configure = function() {
 		obj.datasource.interval = 60;
 
 	obj.interval = obj.datasource.interval;
-	obj.dictionary = self.dictionary || {};
+	obj.dictionary = self.dictionary;
 	obj.example = w.example;
 	obj.preview = w.preview;
 	obj.author = w.author;
@@ -480,7 +483,6 @@ function WIDGET_CONFIG(name, options) {
 
 function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 	var w = WIDGETS_DATABASE[name];
-
 	if (!w) {
 		window.console && console.warn('Widget "{0}" not found.'.format(name));
 		return;
@@ -494,7 +496,11 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 	var tmp;
 
 	component.$name = name;
-	component.dictionary = dictionary;
+
+	dictionary && Object.keys(dictionary).forEach(function(key) {
+		component.dictionary[key] = dictionary[key];
+	});
+
 	component.datasource = datasource || { interval: 60, url: '', method: 'GET' };
 
 	if (component.datasource.id) {
@@ -517,7 +523,7 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 	component.size = WIDGET_GETSIZE(element);
 	component.make && component.make(component.size);
 	component.state && component.state(0);
-	component.element.css({ width: component.size.width, height: component.size.height });
+	component.element.css({ width: component.size.width, height: component.size.height, 'font-size': component.size.fontsize + '%' });
 	element.removeClass('xs sm md lg').addClass(component.size.device);
 	WIDGETS_DATASOURCE[datasource] && WIDGETS_DATASOURCE[datasource].response && component.redraw();
 }

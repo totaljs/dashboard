@@ -3,6 +3,7 @@ NEWSCHEMA('DataSource').make(function(schema) {
 	schema.define('id', 'UID');
 	schema.define('name', 'String(50)', true);
 	schema.define('group', 'String(30)');
+	schema.define('keywords', 'Lower(50)');
 	schema.define('icon', 'String(15)');
 	schema.define('url', 'Url', true);
 	schema.define('interval', Number);

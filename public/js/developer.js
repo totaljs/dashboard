@@ -38,6 +38,7 @@ function $WIDGET(name, declaration, init) {
 	obj.id = 'xd0upct0ch';
 	obj.$name = obj.name = name;
 	obj.dom = obj.element.get(0);
+	obj.dictionary = {};
 
 	obj.publish = function(name) {
 
@@ -156,7 +157,7 @@ function $WIDGET(name, declaration, init) {
 	};
 
 	obj.rename = function(name) {
-		return name;
+		return obj.dictionary[name] || name;
 	};
 
 	obj.refresh = function() {
@@ -263,6 +264,7 @@ function $WIDGET(name, declaration, init) {
 
 	var objinit = {};
 	var counter = 0;
+	objinit.dictionary = {};
 
 	init && init.call(objinit, function(key, label, def, type, max, min, step, validator) {
 		obj.options[key] = def;
@@ -273,6 +275,10 @@ function $WIDGET(name, declaration, init) {
 			counter = counter - 1;
 			!counter && obj.$make();
 		});
+	});
+
+	Object.keys(objinit.dictionary).forEach(function(key) {
+		obj.dictionary[key] = objinit.dictionary[key];
 	});
 
 	$('.preview-title').html(objinit.title || name);
