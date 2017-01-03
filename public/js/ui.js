@@ -2046,7 +2046,7 @@ COMPONENT('dashboard', function() {
 
 		if (widget.length) {
 			var css = { width: width, height: height };
-			widget.removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6 widget-empty').addClass(device + ' cols-' + cols + ' rows-' + rows);
+			widget.removeClass('xs sm md lg cols1 cols2 cols3 cols4 cols5 cols6 rows1 rows2 rows3 rows4 rows5 rows6 g1x1 g1x2 g1x3 g1x4 g1x5 g1x6 g2x1 g2x2 g2x3 g2x4 g2x5 g2x6 g3x1 g3x2 g3x3 g3x4 g3x5 g3x6 g4x1 g4x2 g4x3 g4x4 g4x5 g4x6 g5x1 g5x2 g5x3 g5x4 g5x5 g5x6 g6x1 g6x2 g6x3 g6x4 g6x5 g6x6 widget-empty').addClass(device + ' cols' + cols + ' rows' + rows + ' g' + cols + 'x' + rows);
 			widget.attr('data-size', 'x:{0},y:{1},w:{2},h:{3},cols:{4},rows:{5},width:{6},height:{7},ratio:1.1,fontsize:{8},percentageW:{9},percentageH:{10},ratioW:{11},ratioH:{12},fontsizeW:{13},fontsizeH:{14},fontsizeratio:{15}'.format(x, y, w, h, cols, rows, width, height, fontsize, ((cols / 6) * 100) >> 0, ((rows / 6) * 100) >> 0, ratio.ratioW, ratio.ratioH, fontsizeW, fontsizeH, ratio.fontsizeratio));
 			widget.find('.widget-body').css(css);
 			css['font-size'] = fontsize + '%';

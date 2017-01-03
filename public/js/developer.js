@@ -5,6 +5,7 @@ window.MONTHS = ['January', 'February', 'March', 'April', 'May', 'Juny', 'July',
 window.MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Juny', 'July', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
 window.user = { id: '1234567890', name: 'Peter Širka', photo: 'https://dashboard.totaljs.com/img/petersirka.jpg' };
 
+var CLASS_SIZE = 'xs sm md lg cols1 cols2 cols3 cols4 cols5 cols6 rows1 rows2 rows3 rows4 rows5 rows6 g1x1 g1x2 g1x3 g1x4 g1x5 g1x6 g2x1 g2x2 g2x3 g2x4 g2x5 g2x6 g3x1 g3x2 g3x3 g3x4 g3x5 g3x6 g4x1 g4x2 g4x3 g4x4 g4x5 g4x6 g5x1 g5x2 g5x3 g5x4 g5x5 g5x6 g6x1 g6x2 g6x3 g6x4 g6x5 g6x6';
 var size = { device: 'lg', width: 165, height: 150 };
 var options = {};
 var current = null;
@@ -84,16 +85,12 @@ function $WIDGET(name, declaration, init) {
 
 		if (!device) {
 			var tmp = obj.$dimension[obj.size.device + obj.size.cols + 'x' + obj.size.rows];
-			if (tmp)
-				return tmp();
-			return EMPTYOBJECT;
+			return tmp ? tmp() : EMPTYOBJECT;
 		}
 
 		if (!values) {
 			var tmp = obj.$dimension[device + size];
-			if (tmp)
-				return tmp();
-			return EMPTYOBJECT;
+			return tmp ? tmp() : EMPTYOBJECT;
 		}
 
 		obj.$dimension[device + size] = new Function('return { ' + values.trim() + '}');
@@ -265,12 +262,17 @@ function $WIDGET(name, declaration, init) {
 	obj.$make();
 
 	var objinit = {};
+	var counter = 0;
 
 	init && init.call(objinit, function(key, label, def, type, max, min, step, validator) {
 		obj.options[key] = def;
 	}, function(url) {
+		counter++;
 		clearTimeout(window.async);
-		IMPORT('ONCE ' + url, obj.$make);
+		IMPORT('ONCE ' + url, function() {
+			counter = counter - 1;
+			!counter && obj.$make();
+		});
 	});
 
 	$('.preview-title').html(objinit.title || name);
@@ -352,7 +354,7 @@ function $WIDGET(name, declaration, init) {
 function widget_refresh() {
 	var s = getDimension(size.device);
 	$('#widget,.widget-container,.widget-body').css({ width: s.width, height: s.height, 'font-size': s.fontsize + '%' });
-	$('#widget').removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6').addClass(size.device + ' cols-' + s.cols + ' rows-' + s.cols);
+	$('#widget').removeClass(CLASS_SIZE).addClass(size.device + ' cols' + s.cols + ' rows' + s.rows + ' g' + s.cols + 'x' + s.rows);
 }
 
 function getDimension(device) {
@@ -407,7 +409,7 @@ function getDeviceWidth(type) {
 			obj.height = 336.36;
 			obj.ratioW = 0.445;
 			obj.ratioH = 0.446;
-			obj.fontsizeratio = 1.2;
+			obj.fontsizeratio = 1;
 			break;
 	}
 	return obj;
@@ -455,7 +457,7 @@ $(document).ready(function() {
 		size = getDevice();
 		current.size = getDimension(size.device);
 		$('#widget,.widget-container,.widget-body').css({ width: current.size.width, height: current.size.height, 'font-size': current.size.fontsize + '%' });
-		$('#widget').removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6').addClass(current.size.device + ' cols-' + current.size.cols + ' rows-' + current.size.rows);
+		$('#widget').removeClass(CLASS_SIZE).addClass(current.size.device + ' cols' + current.size.cols + ' rows' + current.size.rows + 'g' + current.size.cols + 'x' + current.size.rows);
 		var dimension = current.$dimension[size.device + current.size.rows + 'x' + current.size.cols];
 		current.resize && current.resize(current.size, dimension ? dimension() : EMPTYOBJECT);
 		$('.widget-size').html(current.size.width + '<b>x</b>' + current.size.height);
