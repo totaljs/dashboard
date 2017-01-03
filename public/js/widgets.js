@@ -277,10 +277,18 @@ WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers, cookies
 		callback = tmp;
 	}
 
-	var index = url.indexOf(' ');
-	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
-		callback && callback(err, response);
-	});
+	var m = url.substring(0, index).trim();
+	var u = url.substring(index).trim();
+
+	if (u.substring(index, 1) === '/') {
+		AJAX(m + ' ' + u + (headers ? ' --> ' + STRINGIFY(headers) : ''), data, function(err, response) {
+			callback && callback(err, response);
+		});
+	} else {
+		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
+			callback && callback(err, response);
+		});
+	}
 };
 
 WIDGET_COMPONENT.prototype.rename = function(name) {
@@ -356,9 +364,7 @@ WIDGET_COMPONENT.prototype.publish = function(name) {
 
 WIDGET_COMPONENT.prototype.redraw = function() {
 	var self = this;
-	var hash = HASH(STRINGIFY(self.datasource));
-	var response = WIDGETS_DATASOURCE[hash];
-
+	var response = WIDGETS_DATASOURCE[self.datasource_key];
 	if (!response || !response.response)
 		return self;
 
@@ -395,26 +401,30 @@ WIDGET_COMPONENT.prototype.refresh = function() {
 	if (!self.datasource)
 		return self;
 
-	AJAX('POST /api/ajax/', self.datasource, function(response, err) {
+	var callback = function(response, err) {
 
 		if (err)
 			return;
 
 		try {
-			response = PARSE(response);
+			response = typeof(response) === 'object' ? response : PARSE(response);
 		} catch (e) {
 			return;
 		}
 
-		var key = HASH(STRINGIFY(self.datasource));
-		var datasource = WIDGETS_DATASOURCE[key];
-
+		var datasource = WIDGETS_DATASOURCE[self.datasource_key];
 		if (!datasource)
-			datasource = WIDGETS_DATASOURCE[key] = {};
+			datasource = WIDGETS_DATASOURCE[self.datasource_key] = {};
 
 		datasource.response = response;
 		self.redraw();
-	});
+	};
+
+	var ds = self.datasource;
+	if (ds.url.substring(0, 1) === '/')
+		AJAX(ds.method + ' ' + ds.url + (Object.keys(ds.headers).length ? ' --> ' + STRINGIFY(ds.headers) : ''), ds.data, callback);
+	else
+		AJAX('POST /api/ajax/', ds, callback);
 
 	return self;
 };
@@ -515,7 +525,7 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 			component.datasource = tmp;
 	}
 
-	component.datasource_key = HASH(STRINGIFY(component.datasource));
+	component.datasource_key = component.datasource.id || GUID(10);
 
 	WIDGETS_DASHBOARD.push(component);
 	UPDATE('WIDGETS_DASHBOARD');
@@ -535,7 +545,7 @@ function WIDGETS_REFRESH_DATASOURCE2() {
 		var tmp = dashboard.datasources.findItem('id', component.datasource.id);
 		if (tmp) {
 			component.datasource = CLONE(tmp);
-			component.datasource_key = HASH(STRINGIFY(component.datasource));
+			component.datasource_key = tmp.id;
 		}
 	});
 	WIDGETS_REFRESH_DATASOURCE();
@@ -694,13 +704,14 @@ function WIDGETS_SERVICE() {
 			return;
 
 		item.counter = 0;
-		AJAX('POST /api/ajax/', item.datasource, function(response, err) {
+
+		var callback = function(response, err) {
 
 			if (err)
 				return;
 
 			try {
-				item.response = PARSE(response);
+				item.response = typeof(response) === 'object' ? response : PARSE(response);
 			} catch (e) {
 				return;
 			}
@@ -708,7 +719,14 @@ function WIDGETS_SERVICE() {
 			item.widgets.forEach(function(widget) {
 				widget.redraw();
 			});
-		});
+		};
+
+		var ds = item.datasource;
+
+		if (ds.url.substring(0, 1) === '/')
+			AJAX(ds.method + ' ' + ds.url + (Object.keys(ds.headers).length ? ' --> ' + STRINGIFY(ds.headers) : ''), ds.data, callback);
+		else
+			AJAX('POST /api/ajax/', ds, callback);
 	});
 }
 

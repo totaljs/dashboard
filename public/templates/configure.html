@@ -71,9 +71,10 @@
 					formconfigure.datasource = tmp;
 			}
 
-			var d = JSON.stringify(formconfigure.datasource);
-			widget.datasource = JSON.parse(d);
-			widget.datasource_key = HASH(d);
+			widget.datasource = CLONE(formconfigure.datasource);
+
+			if (formconfigure.datasourceid)
+				widget.datasource_key = formconfigure.datasourceid;
 
 			if (!WIDGETS_USERSETTINGS[formconfigure.id])
 				WIDGETS_USERSETTINGS[formconfigure.id] = {};
@@ -92,7 +93,7 @@
 			widget.state && widget.state(1, changes);
 
 			dashboard.changed = true;
-			is && widget.refresh();
+			is && WIDGETS_REFRESH_DATASOURCE2();
 		};
 	});
 
