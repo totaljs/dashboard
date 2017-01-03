@@ -42,6 +42,7 @@ h2 b { font-weight: 700; }
 .black { color: black; }
 .gray { color: gray; }
 .green { color: #68B25B !important; }
+.white { color: white !important; }
 .right { text-align: right; }
 
 footer { border-top: 1px solid #E0E0E0; padding: 30px 0 0; text-align: center; font-size: 12px; background-color: #F8F8F8; height: 100px; }
@@ -87,15 +88,16 @@ canvas { display: block; }
 .gridcontainer.readonly .widget { cursor: default; }
 .gridcontainer.readonly .widget-remove { display: none; }
 .gridcontainer.readonly .widget-buttons { display: none; }
+.gridcontainer { font-size: 100px; }
 
 .widget { position: absolute; background: white; color: gray; cursor: default; margin-bottom: 30px; overflow: hidden; opacity: 0; transform: scale(0.7) rotateY(130deg); transition: all 0.3s; box-shadow: 0 3px 10px rgba(0,0,0,0.1); }
 .widget-visible { opacity: 1; transform: scale(1) rotateY(0deg); }
 .widget-nocenter { display: block; }
-.widget-nocenter .widget-body { display: block; vertical-align: top; }
+.widget-nocenter .widget-body { display: block; vertical-align: top; text-align: left; }
 .widget-container { display: table; overflow: hidden; }
-.widget-body { display: table-cell; vertical-align: middle; text-align: center; overflow: hidden; }
+.widget-body { display: table-cell; vertical-align: middle; text-align: center; overflow: hidden; position: relative; }
 
-.widget-buttons { position: absolute; z-index: 15; left: 5px; top: 5px; }
+.widget-buttons { position: absolute; z-index: 15; left: 5px; top: 5px; font-size: 14px; }
 .widget-buttons a { display: inline-block; color: gray; width: 24px; padding: 3px 0; text-align: center; margin: 0; font-size: 11px; background-color: white; margin-right: 5px; border-radius: 2px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border: 1px solid #E0E0E0; outline: 0; }
 .widget-buttons a:hover { opacity: 0.9; }
 .widget-remove { position: absolute; color: red; width: 24px; padding: 3px 0; text-align: center; margin: 0; font-size: 11px; background-color: white; z-index: 15; right: 5px; top: 5px; border-radius: 2px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border: 1px solid #E0E0E0; outline: 0; }

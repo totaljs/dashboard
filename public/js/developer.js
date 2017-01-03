@@ -351,7 +351,7 @@ function $WIDGET(name, declaration, init) {
 
 function widget_refresh() {
 	var s = getDimension(size.device);
-	$('#widget,.widget-container').css({ width: s.width, height: s.height, 'font-size': s.fontsize + '%' });
+	$('#widget,.widget-container,.widget-body').css({ width: s.width, height: s.height, 'font-size': s.fontsize + '%' });
 	$('#widget').removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6').addClass(size.device + ' cols-' + s.cols + ' rows-' + s.cols);
 }
 
@@ -454,7 +454,7 @@ $(document).ready(function() {
 	$('#grid,#device').on('change', function() {
 		size = getDevice();
 		current.size = getDimension(size.device);
-		$('#widget,.widget-container').css({ width: current.size.width, height: current.size.height, 'font-size': current.size.fontsize + '%' });
+		$('#widget,.widget-container,.widget-body').css({ width: current.size.width, height: current.size.height, 'font-size': current.size.fontsize + '%' });
 		$('#widget').removeClass('xs sm md lg cols-1 cols-2 cols-3 cols-4 cols-5 cols-6 rows-1 rows-2 rows-3 rows-4 rows-5 rows-6').addClass(current.size.device + ' cols-' + current.size.cols + ' rows-' + current.size.rows);
 		var dimension = current.$dimension[size.device + current.size.rows + 'x' + current.size.cols];
 		current.resize && current.resize(current.size, dimension ? dimension() : EMPTYOBJECT);
