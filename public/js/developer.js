@@ -5,7 +5,7 @@ window.MONTHS = ['January', 'February', 'March', 'April', 'May', 'Juny', 'July',
 window.MONTHS_SHORT = ['Jan.', 'Feb.', 'Mar.', 'Apr.', 'May', 'Juny', 'July', 'Aug.', 'Sep.', 'Oct.', 'Nov.', 'Dec.'];
 window.user = { id: '1234567890', name: 'Peter Širka', photo: 'https://dashboard.totaljs.com/img/petersirka.jpg' };
 
-var CLASS_SIZE = 'xs sm md lg cols1 cols2 cols3 cols4 cols5 cols6 rows1 rows2 rows3 rows4 rows5 rows6 g1x1 g1x2 g1x3 g1x4 g1x5 g1x6 g2x1 g2x2 g2x3 g2x4 g2x5 g2x6 g3x1 g3x2 g3x3 g3x4 g3x5 g3x6 g4x1 g4x2 g4x3 g4x4 g4x5 g4x6 g5x1 g5x2 g5x3 g5x4 g5x5 g5x6 g6x1 g6x2 g6x3 g6x4 g6x5 g6x6';
+var CLASS_SIZE = 'noxs xs sm md lg cols1 cols2 cols3 cols4 cols5 cols6 rows1 rows2 rows3 rows4 rows5 rows6 g1x1 g1x2 g1x3 g1x4 g1x5 g1x6 g2x1 g2x2 g2x3 g2x4 g2x5 g2x6 g3x1 g3x2 g3x3 g3x4 g3x5 g3x6 g4x1 g4x2 g4x3 g4x4 g4x5 g4x6 g5x1 g5x2 g5x3 g5x4 g5x5 g5x6 g6x1 g6x2 g6x3 g6x4 g6x5 g6x6';
 var size = { device: 'lg', width: 165, height: 150 };
 var options = {};
 var current = null;
@@ -14,11 +14,37 @@ var globalevents = {};
 var currentdata = null;
 var widgetready = false;
 
-function DATASOURCE(value, example) {
-	if (example && currentdata)
-		return;
-	currentdata = current.prepare(value);
-	currentdata && widgetready && current.render && current.render(currentdata, current.size, current.$render++);
+function DATA(type, value) {
+
+	if (value === undefined) {
+		value = type;
+		type = undefined;
+	}
+
+	if (value)
+		currentdata = value;
+
+	var seltype;
+
+	if (type) {
+		if (typeof(type) === 'string')
+			type = [type];
+
+		if (current.$type.length) {
+			var has = false;
+			for (var i = 0, length = type.length; i < length; i++) {
+				if (current.$type.indexOf(type[i]) !== -1) {
+					seltype = type[i];
+					has = true;
+					break;
+				}
+			}
+			if (!has)
+				return;
+		}
+	}
+
+	currentdata && widgetready && current.render && current.render(currentdata, current.size, current.$render++, seltype);
 }
 
 function WIDGET(name, declaration, init) {
@@ -40,7 +66,7 @@ function $WIDGET(name, declaration, init) {
 	obj.dom = obj.element.get(0);
 	obj.dictionary = {};
 
-	obj.publish = function(name) {
+	obj.emit = function(name) {
 
 		var items = globalevents[name];
 		if (!items)
@@ -61,7 +87,7 @@ function $WIDGET(name, declaration, init) {
 		return obj;
 	};
 
-	obj.subscribe = function(name, fn) {
+	obj.on = function(name, fn) {
 		if (!globalevents[name])
 			globalevents[name] = [];
 		globalevents[name].push({ id: obj.id, fn: fn, instace: this });
@@ -76,10 +102,6 @@ function $WIDGET(name, declaration, init) {
 	obj.css = obj.style = function(name, value) {
 		obj.element.css(name, value);
 		return obj;
-	};
-
-	obj.prepare = function(data) {
-		return data;
 	};
 
 	obj.dimension = function(device, size, values) {
@@ -102,11 +124,6 @@ function $WIDGET(name, declaration, init) {
 		return obj.size.device + obj.size.rows + 'x' + obj.size.cols;
 	};
 
-	obj.redraw = function() {
-		currentdata && obj.render && obj.render(currentdata, obj.size, obj.$render++);
-		return obj;
-	};
-
 	obj.center = function(enable) {
 		obj.element.parent().parent().toggleClass('widget-nocenter', !enable);
 		return obj;
@@ -124,10 +141,6 @@ function $WIDGET(name, declaration, init) {
 			obj.state && obj.state(0);
 			currentdata && obj.refresh();
 		}, 50);
-	};
-
-	obj.read = function(path, value, def) {
-		return readdatasource(path, value, def);
 	};
 
 	obj.config = function(name, value) {
@@ -160,9 +173,9 @@ function $WIDGET(name, declaration, init) {
 		return obj.dictionary[name] || name;
 	};
 
-	obj.refresh = function() {
+	obj.refresh = function(type) {
 		obj.render && setTimeout(function() {
-			obj.render(currentdata, obj.size, obj.$render++);
+			obj.render(currentdata, obj.size, obj.$render++, type);
 		}, 100);
 		return obj;
 	};
@@ -234,11 +247,9 @@ function $WIDGET(name, declaration, init) {
 			callback = tmp;
 		}
 
-		var index = url.indexOf(' ');
-		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
-			response && obj.render && obj.render(obj.prepare(response), obj.size, obj.$datasource++);
-		});
-		return obj;
+		return obj.ajax(url, data, function(err, response) {
+			!err && response && obj.data(response);
+		}, headers, cookies);
 	};
 
 	obj.ajax = function(url, data, callback, headers, cookies) {
@@ -253,10 +264,19 @@ function $WIDGET(name, declaration, init) {
 			callback = tmp;
 		}
 
-		var index = url.indexOf(' ');
-		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? JSON.stringify(data) : data, headers: headers, cookies: cookies }, function(response, err) {
-			callback && callback(err, response);
-		});
+		var m = url.substring(0, index).trim();
+		var u = url.substring(index).trim();
+		if (u.substring(index, 1) === '/') {
+			AJAX(m + ' ' + u + (headers ? ' --> ' + STRINGIFY(headers) : ''), data, function(err, response) {
+				callback && callback(err, response);
+			});
+		} else {
+			AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
+				callback && callback(err, response);
+			});
+		}
+
+		return obj;
 	};
 
 	declaration.call(obj);
@@ -276,6 +296,8 @@ function $WIDGET(name, declaration, init) {
 			!counter && obj.$make();
 		});
 	});
+
+	obj.$type = objinit.type instanceof Array ? objinit.type : objinit.type ? [objinit.type] : EMPTYARRAY;
 
 	Object.keys(objinit.dictionary).forEach(function(key) {
 		obj.dictionary[key] = objinit.dictionary[key];
@@ -351,16 +373,16 @@ function $WIDGET(name, declaration, init) {
 
 	if (typeof(objinit.example) === 'string') {
 		try {
-			DATASOURCE(JSON.parse(objinit.example), true);
+			DATA(JSON.parse(objinit.example));
 		} catch (e) {};
 	} else
-		DATASOURCE(objinit.example, true);
+		DATA(objinit.example);
 };
 
 function widget_refresh() {
 	var s = getDimension(size.device);
 	$('#widget,.widget-container,.widget-body').css({ width: s.width, height: s.height, 'font-size': s.fontsize + '%' });
-	$('#widget').removeClass(CLASS_SIZE).addClass(size.device + ' cols' + s.cols + ' rows' + s.rows + ' g' + s.cols + 'x' + s.rows);
+	$('#widget').removeClass(CLASS_SIZE).addClass(size.device + ' cols' + s.cols + ' rows' + s.rows + ' g' + s.cols + 'x' + s.rows + (s.device !== 'xs' ? ' noxs' : ''));
 }
 
 function getDimension(device) {
@@ -415,36 +437,11 @@ function getDeviceWidth(type) {
 			obj.height = 336.36;
 			obj.ratioW = 0.445;
 			obj.ratioH = 0.446;
-			obj.fontsizeratio = 1;
+			obj.fontsizeratio = 0.6;
 			break;
 	}
 	return obj;
 }
-
-function readdatasource(field, response, def) {
-	var fn = field.replace(/\.\[\].*?$/, function(text) {
-		return '.readdatasource(\"{0}\")'.format(text.substring(3).replace(/\"/g, '\''));
-	});
-
-	try {
-		return new Function('a', 'return a' + fn)(response);
-	} catch(e) {
-		return def;
-	}
-}
-
-Array.prototype.readdatasource = function(path) {
-
-	var fn = new Function('a', path ? 'return a' + path : ' return a');
-	var values = [];
-
-	for (var i = 0, length = this.length; i < length; i++) {
-		var val = fn(this[i]);
-		val != null && values.push(val);
-	}
-
-	return values;
-};
 
 function loadsettings() {
 	var data = localStorage.getItem(HASH(location.href));
@@ -463,10 +460,78 @@ $(document).ready(function() {
 		size = getDevice();
 		current.size = getDimension(size.device);
 		$('#widget,.widget-container,.widget-body').css({ width: current.size.width, height: current.size.height, 'font-size': current.size.fontsize + '%' });
-		$('#widget').removeClass(CLASS_SIZE).addClass(current.size.device + ' cols' + current.size.cols + ' rows' + current.size.rows + 'g' + current.size.cols + 'x' + current.size.rows);
+		$('#widget').removeClass(CLASS_SIZE).addClass(current.size.device + ' cols' + current.size.cols + ' rows' + current.size.rows + ' g' + current.size.cols + 'x' + current.size.rows + (current.size.device !== 'xs' ? ' noxs' : ''));
 		var dimension = current.$dimension[size.device + current.size.rows + 'x' + current.size.cols];
 		current.resize && current.resize(current.size, dimension ? dimension() : EMPTYOBJECT);
 		$('.widget-size').html(current.size.width + '<b>x</b>' + current.size.height);
 		localStorage.setItem(HASH(location.href), JSON.stringify({ grid: $('#grid').val(), device: $('#device').val() }));
 	});
 });
+
+Number.prototype.filesize = function(decimals, type) {
+
+	if (typeof(decimals) === 'string') {
+		var tmp = type;
+		type = decimals;
+		decimals = tmp;
+	}
+
+	var value;
+
+	// this === bytes
+	switch (type) {
+		case 'bytes':
+			value = this;
+			break;
+		case 'KB':
+			value = this / 1024;
+			break;
+		case 'MB':
+			value = filesizehelper(this, 2);
+			break;
+		case 'GB':
+			value = filesizehelper(this, 3);
+			break;
+		case 'TB':
+			value = filesizehelper(this, 4);
+			break;
+		default:
+
+			type = 'bytes';
+			value = this;
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'KB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'MB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'GB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'TB';
+			}
+
+			break;
+	}
+
+	type = ' ' + type;
+	return (decimals === undefined ? value.format(2).replace('.00', '') : value.format(decimals)) + type;
+};
+
+function filesizehelper(number, count) {
+	while (count--) {
+		number = number / 1024;
+		if (number.toFixed(3) === '0.000')
+			return 0;
+	}
+	return number;
+}

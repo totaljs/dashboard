@@ -24,7 +24,7 @@
 		.preview img { border: 1px solid #E0E0E0; }
 		.preview-title { font-size: 14px; color: black; margin-top: 10px; }
 		.preview-author { font-size: 11px; color: gray; }
-		header { border-bottom: 1px solid #E0E0E0; padding: 0 40px 20px; }
+		header { border-bottom: 1px solid #E0E0E0; padding: 0 40px 20px; height: auto }
 		h1 { font-family: Arial; font-size: 20px; margin-top: 0; }
 		h1 .fa { margin-right: 10px; width: 20px; }
 	</style>
@@ -100,13 +100,15 @@
 
 		}, function(config, inject) {
 
-			// === META
 			this.example = { values: [1, 2, 3, 4] }; // datasource example
 			this.preview = ''; // URL TO preview 200x150
 			this.author = '';
 			this.title = 'My Widget';
 			this.category = 'IoT';
 			this.url = '';
+
+			// Data type
+			this.type = ['my-data-type'];
 
 			// this.sizes = ['1x1', '2x2'];
 
@@ -115,17 +117,10 @@
 			config('background', 'Background Color', 'red', 'Color');
 			config('fontsize', 'Font Size (%)', 500, 'Number');
 			config('color', 'Font Color', 'white', 'Color');
-
-			// === 3rd-party JS or CSS
-			// inject(url)
-			// inject('https://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.6.3/fabric.min.js');
-
-			// Register your own styles via:
-			// STYLE('.my-widget-name { background-color: red; }');
 		});
 
 		// === Updates datasource value about new data:
-		// DATASOURCE({ values: [1, 2, 3, 4, 5] });
+		// DATA([type], { values: [1, 2, 3, 4, 5] });
 
 		// === Get a current instance of the widget:
 		// current

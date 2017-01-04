@@ -9,19 +9,19 @@
 	<meta name="format-detection" content="telephone=no" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 	<meta name="robots" content="all,follow" />
-	@{head}
 	<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Sans+Pro:400,200,700&subset=latin,latin-ext" />
-	@{import('default.css', 'favicon.ico')}
+	@{import('head', 'default.css', 'favicon.ico')}
 </head>
 <body style="background-color:white">
 
-	<div data-jc="loading" class="ui-loading"></div>
+	<div data-jc="loading"></div>
 	<br />
 	<br />
 	<div class="ui-center">
-		<i class="fa fa-dashboard fa-5x silver"></i>
-		<h1>@{config.name} <b>v@{config.version}</b></h1>
+		<i class="fa fa-dashboard" style="color:#967ADC;font-size:130px;margin-bottom:10px"></i>
+		<h1 class="nmb">@{config.name} <b>v@{config.version}</b></h1>
+		<p>Coming soon for testing.</p>
 	</div>
 	<br />
 	<div class="container">

@@ -8,6 +8,10 @@ NEWSCHEMA('Settings').make(function(schema) {
 	});
 
 	schema.setSave(function(error, model, controller, callback) {
+
+		callback(SUCCESS(true));
+		return;
+
 		var plain = model.$plain();
 		NOSQL('settings').modify(plain).where('id', model.id).where('user', controller.user.id).callback(function(err, count) {
 			if (count)

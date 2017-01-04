@@ -4,6 +4,8 @@ author                    : Peter Širka
 
 cookie                    : __user
 
+groups (Array)            : ['Monitoring']
+
 // Custom SMTP settings
 mail.smtp                 : YOUR.SMTPSERVER.COM
 // mail.smtp.options         : {"user":"","password":"","timeout":2000}

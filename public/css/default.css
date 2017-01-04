@@ -9,7 +9,9 @@ body { background-color: #F0F0F0; padding: 0; color: gray; font-smoothing: antia
 .developer:hover { text-decoration: none; background-color: #F0F0F0; }
 .noscroll { overflow: hidden; }
 
-h1 { font-weight: 200; font-family: $font; margin: 0 0 25px 0; padding: 0; color: black; font-size: 30px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+header { height: 70px; }
+
+h1 { font-weight: 200; font-family: $font; margin: 0 0 25px 0; padding: 5px 0 0 0; color: black; font-size: 25px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
 h1 b { font-weight: 400; }
 
 h2 { font-weight: 400; font-family: $font; margin: 0 0 20px 0; padding: 0; color: gray; font-size: 16px; }
@@ -18,6 +20,7 @@ h2 b { font-weight: 700; }
 
 .mainmenu { position: absolute; left: 15px; top: 24px; font-size: 26px; color: #A0A0A0; opacity: 0.8; transition: all 0.5s; }
 .mainmenu:hover { color: black; opacity: 1; }
+.mainmenu .fa-spin { color: black; opacity: 1; }
 .padding { padding: 25px; }
 .m { margin-bottom: 20px; }
 .cl { clear: both; }
@@ -97,6 +100,9 @@ canvas { display: block; }
 .widget-container { display: table; overflow: hidden; }
 .widget-body { display: table-cell; vertical-align: middle; text-align: center; overflow: hidden; position: relative; }
 
+.widget-loading { z-index: 5; position: absolute; left: 0; right: 0; bottom: 0; background-image: url(/img/preloader.gif), repeating-linear-gradient(45deg, #F5F5F5, #F5F5F5 10px, #FFFFFF 10px, #FFFFFF 20px); background-repeat: no-repeat, no-repeat; background-position: 50% 50%, 0 0; display: none; width: 100%; height: 100%; }
+.widget-instance .widget-loading-show { display: block !important; }
+
 .widget-buttons { position: absolute; z-index: 15; left: 5px; top: 5px; font-size: 14px; }
 .widget-buttons a { display: inline-block; color: gray; width: 24px; padding: 3px 0; text-align: center; margin: 0; font-size: 11px; background-color: white; margin-right: 5px; border-radius: 2px; box-shadow: 0 0 10px rgba(0,0,0,0.1); border: 1px solid #E0E0E0; outline: 0; }
 .widget-buttons a:hover { opacity: 0.9; }
@@ -138,10 +144,6 @@ canvas { display: block; }
 .widgets-item-search-disabled .widgets-item { cursor: not-allowed; }
 .widgets-item-search-disabled div { color: #A0A0A0; }
 
-.pathcontainer {}
-.pathcontainer .path-item { cursor: pointer; padding: 2px 10px; border-bottom: 1px solid #F0F0F0; font-family: monospace; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pathcontainer .path-item:hover { background-color: #F8F8F8; }
-
 .browsecontainer {}
 .browse-item { cursor: pointer; padding: 4px 25px; border-bottom: 1px solid #F0F0F0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .browse-item:hover { background-color: #F8F8F8; }
@@ -149,10 +151,6 @@ canvas { display: block; }
 .browse-item-link:hover { text-decoration: none; }
 .browse-item-remove { float: right; width: 30%; text-align: right; color: #D63B32; }
 .browse-category { font-size: 11px; padding: 5px 25px; margin: 10px 0 2px; }
-
-.repositoriescontainer {}
-.repositoriescontainer .repository-item { cursor: pointer; padding: 2px 10px; border-bottom: 1px solid #F0F0F0; font-size: 14px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.repositoriescontainer .repository-item:hover { background-color: #F8F8F8; }
 
 .dashboard-edit { position: fixed; right: 0; top: 0; width: 32px; height: 32px; text-align: center; background-color: black; color: white; padding: 5px 0 0 0; z-index: 5; border-radius: 0 0 0 4px; }
 .dashboard-edit:hover { background-color: #303030; }

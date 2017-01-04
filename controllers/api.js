@@ -1,31 +1,31 @@
 const FLAGS = ['get', 'dnscache'];
 
 exports.install = function() {
-	F.route('/api/proxy/',             json_proxy,  ['get']);
-	F.route('/api/ajax/',              json_exec,   ['post', '*Ajax']);
-	F.route('/api/login/',             json_exec,   ['post', '*Login']);
 
-	// Dashboard
-	F.route('/api/dashboard/',         json_query,  ['*Dashboard']);
-	F.route('/api/dashboard/',         json_save,   ['*Dashboard', 'post']);
-	F.route('/api/dashboard/{id}/',    json_remove, ['*Dashboard', 'delete']);
-	F.route('/api/settings/{id}/',     json_read,   ['*Settings', 'get']);
-	F.route('/api/settings/',          json_save,   ['*Settings', 'post']);
+	F.route('/api/login/', json_exec, ['post', '*Login']);
 
-	// Repositories
-	F.route('/api/repositories/',      json_save,   ['*Repository', 'post']);
-	F.route('/api/repositories/',      json_read,   ['*Repository']);
-	F.route('/api/repositories/{id}/', json_remove, ['*Repository', 'delete']);
+	F.group(['authorize'], function() {
+		F.route('/api/proxy/',             json_proxy);
+		F.route('/api/ajax/',              json_exec,   ['post', '*Ajax']);
 
-	// DataSources
-	F.route('/api/datasources/',       json_query,  ['*DataSource']);
-	F.route('/api/datasources/',       json_save,   ['*DataSource', 'post']);
-	F.route('/api/datasources/{id}/',  json_remove, ['*DataSource', 'delete']);
+		F.route('/api/groups/',            json_groups);
+		F.route('/api/dashboard/',         json_query,  ['*Dashboard']);
+		F.route('/api/dashboard/',         json_save,   ['*Dashboard#create', 'post']);
+		F.route('/api/dashboard/',         json_save,   ['*Dashboard#update', 'put']);
+		F.route('/api/dashboard/{id}/',    json_remove, ['*Dashboard', 'delete']);
+
+		F.route('/api/settings/{id}/',     json_read,   ['*Settings', 'get']);
+		F.route('/api/settings/',          json_save,   ['*Settings', 'post']);
+	});
 };
 
 function json_proxy() {
 	var self = this;
 	U.request(self.query.url, FLAGS, (err, response, status, headers) => self.content(response, headers['content-type']));
+}
+
+function json_groups() {
+	this.json(F.config.groups);
 }
 
 function json_save() {

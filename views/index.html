@@ -24,7 +24,7 @@
 	<div data-jc="message" data-button="@(Close)"></div>
 	<div data-jc="confirm"></div>
 	<div data-jc="contextmenu"></div>
-	<div data-jc="loading" class="ui-loading"></div>
+	<div data-jc="loading"></div>
 	<div data-jc="calendar" data-days="@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)" data-months="@(January,February,March,April,May,Juny,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
 	<div data-jc="notifications" data-date-format="@(yyyy-MM-dd HH:mm)" data-timeout="8000"></div>
 	<div data-jc="tooltip"></div>
@@ -47,14 +47,7 @@
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.2.8/d3.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
-
 	@{import('default.js')}
-
-	@{foreach m in model}
-		<script>WIDGETS_CURRENTREPOSITORY='@{m}';</script>
-		<script src="@{m}"></script>
-	@{end}
 
 	<script>
 		WIDGETS_CURRENTREPOSITORY='';
@@ -65,28 +58,21 @@
 
 			items.push('@(Dashboard)');
 			items.push({ name: '@(Change dashboard)', icon: 'fa-folder-o', value: 'browse' });
-			device !== 'xs' && items.push({ name: '@(New dashboard)', icon: 'fa-plus-square-o', value: 'new' });
 
-			if (common.page === 'dashboard' && device !== 'xs') {
+			if (common.page === 'dashboard' && device !== 'xs' && dashboard.current) {
 				var mode = FIND('dashboard').getMode();
 				var save = mode === 1 && dashboard.changed ? true : false;
 				items.push({ name: save ? '@(Save dashboard)' : '@(Edit dashboard)', icon: save ? 'fa-floppy-o' : 'fa-pencil', value: 'edit' });
 			}
 
+			device !== 'xs' && items.push({ name: '@(New dashboard)', icon: 'fa-plus-square-o', value: 'new' });
+
 			items.push('Internal Settings');
-			items.push({ name: '@(Repositories)', icon: 'fa-code-fork', value: 'repositories' });
-			items.push({ name: '@(Sources)', icon: 'fa-database', value: 'sources' });
 			items.push({ name: '@(Users)', icon: 'fa-users', value: 'users' });
 			items.push({ name: '@(Sign out)', icon: 'fa-power-off', value: 'logoff' });
 
 			FIND('contextmenu').show(device === 'xs' ? 'center' : 'left', el, items, function(value) {
 				switch (value) {
-					case 'sources':
-						IMPORTSET('sources', 'common.form', 'sources');
-						break;
-					case 'repositories':
-						IMPORTSET('formrepository', 'common.form', 'repository');
-						break;
 					case 'browse':
 						EXEC('dashboard_browse');
 						break;
@@ -95,7 +81,7 @@
 						dashboard.changed = false;
 						break;
 					case 'new':
-						jR.redirect('/');
+						dashboard_new();
 						break;
 				}
 			}, device === 'xs' ? 5 : -3);

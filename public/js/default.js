@@ -31,37 +31,28 @@ function isError(arguments) {
 	return false;
 }
 
-jR.route('/', function() {
+$(window).on('hashchange', function() {
+	var hash = location.hash.substring(1);
+	if (hash)
+		dashboard_load(hash);
+	else
+		dashboard_new();
+});
 
+jR.route('/', function() {
 	SET('common.page', 'dashboard');
 	WAIT(function() {
 		return window.dashboard_new;
 	}, function() {
-		var id = CACHE('default');
+		var id = location.hash || CACHE('default');
 		if (id && !common.default) {
-			jR.redirect('/{0}/'.format(id));
+			id = id.replace('#', '');
+			location.hash = id;
+			dashboard_load(id);
 		} else
-			dashboard_new();
+			dashboard_browse();
 		common.default = true;
 	});
-});
-
-jR.route('/{id}/', function(id) {
-	common.default = true;
-	SET('common.page', 'dashboard');
-	WAIT(function() {
-		return window.dashboard_load;
-	}, function() {
-		CACHE('default', id, '5 days');
-		dashboard_load(id);
-	});
-});
-
-jR.on('location', function(url) {
-	var nav = $('header nav');
-	nav.find('.selected').removeClass('selected');
-	nav.find('a[href="' + url + '"]').addClass('selected');
-	$('header nav').removeClass('mainmenu-visible');
 });
 
 Tangular.register('default', function(value, def) {
@@ -94,3 +85,71 @@ function IMPORTSET(check, name, value) {
 Tangular.register('preview', function(value) {
 	return value ? value : '/img/empty.png';
 });
+
+Number.prototype.filesize = function(decimals, type) {
+
+	if (typeof(decimals) === 'string') {
+		var tmp = type;
+		type = decimals;
+		decimals = tmp;
+	}
+
+	var value;
+
+	// this === bytes
+	switch (type) {
+		case 'bytes':
+			value = this;
+			break;
+		case 'KB':
+			value = this / 1024;
+			break;
+		case 'MB':
+			value = filesizehelper(this, 2);
+			break;
+		case 'GB':
+			value = filesizehelper(this, 3);
+			break;
+		case 'TB':
+			value = filesizehelper(this, 4);
+			break;
+		default:
+
+			type = 'bytes';
+			value = this;
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'KB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'MB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'GB';
+			}
+
+			if (value > 1023) {
+				value = value / 1024;
+				type = 'TB';
+			}
+
+			break;
+	}
+
+	type = ' ' + type;
+	return (decimals === undefined ? value.format(2).replace('.00', '') : value.format(decimals)) + type;
+};
+
+function filesizehelper(number, count) {
+	while (count--) {
+		number = number / 1024;
+		if (number.toFixed(3) === '0.000')
+			return 0;
+	}
+	return number;
+}

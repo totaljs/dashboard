@@ -36,7 +36,6 @@
 		var container = $('[data-instance="{0}"]'.format(formwidgets.current));
 		WIDGET_REMOVE(formwidgets.current, false);
 		WIDGET_MAKE(formwidgets.current, el.attr('data-id'), container);
-		WIDGETS_REFRESH_DATASOURCE(false);
 		SET('common.form', '');
 		dashboard.changed = true;
 	});

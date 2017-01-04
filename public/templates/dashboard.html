@@ -1,13 +1,15 @@
 <br />
 <div class="container">
-	<div class="row hidden-xs">
-		<div class="col-sm-4 col-sm-offset-4 center">
-			<h1 data-binder="dashboard.current.name" data-binder-html="n => n ? n : '@(New dashboard)'">@(New dashboard)</h1>
+	<header>
+		<div class="row hidden-xs">
+			<div class="col-sm-4 col-sm-offset-4 center">
+				<h1 data-binder="dashboard.current.name" data-binder-visible="n => n" data-binder-html="n => n ? n : '@(New dashboard)'"></h1>
+			</div>
+			<div class="col-sm-4 theme-selector hidden">
+				<div data-jc="themeselector" data-jc-path="dashboard.theme"></div>
+			</div>
 		</div>
-		<div class="col-sm-4 theme-selector hidden">
-			<div data-jc="themeselector" data-jc-path="dashboard.theme"></div>
-		</div>
-	</div>
+	</header>
 	<div class="row" data-jc="dashboard" data-jc-path="WIDGETS_DASHBOARD"></div>
 </div>
 
@@ -20,6 +22,7 @@
 	dashboard.items = [];
 	dashboard.initialized = false;
 	dashboard.oldsettings = '';
+	dashboard.id = '';
 
 	function dashboard_edit() {
 		var com = FIND('dashboard');
@@ -36,9 +39,8 @@
 		}
 
 		IMPORTSET('formsave', 'common.form', 'save');
-		var item = dashboard.items.findItem('id', jR.params[0]);
-		SET('formsave', item || {}, true);
-		item && setTimeout(function() { CHANGE('formsave.name', true); }, 1000);
+		SET('formsave', dashboard.current, true);
+		setTimeout(function() { CHANGE('formsave.name', true); }, 1000);
 	}
 
 	function dashboard_editbutton(type) {
@@ -71,44 +73,19 @@
 
 			SET('dashboard.categories', categories);
 			SET('dashboard.items', response);
-
 			typeof(callback) === 'function' && callback();
-
-			if (!callback || jR.url !== '/')
-				return;
-
-			response.length && dashboard_browse();
-		});
-	}
-
-	function dashboard_datasource(callback) {
-		AJAX('GET /api/datasources/', function(response) {
-			SET('dashboard.datasources', response.slice(0));
-
-			var group = {};
-
-			response.forEach(function(key) {
-				group[key.group] = true;
-			});
-
-			delete group[''];
-			SET('dashboard.datasources_groups', Object.keys(group));
-
-			if (callback === true)
-				WIDGETS_REFRESH_DATASOURCE2();
-			else
-				callback && callback();
 		});
 	}
 
 	function dashboard_load(id) {
 
-		var item = dashboard.items.findItem('id', id);
-		if (!item)
+		if (dashboard.current && dashboard.current.id === id)
 			return;
 
-		AJAX('GET /api/settings/{0}/'.format(id), function(response) {
+		var item = dashboard.items.findItem('id', id);
+		item && AJAX('GET /api/settings/{0}/'.format(id), function(response) {
 
+			CACHE('default', id, '10 days');
 			if (response && response.data)
 				WIDGETS_WIDGETSETTINGS = JSON.parse(decodeURIComponent(atob(response.data)));
 			else
@@ -123,79 +100,51 @@
 			dashboard.changed = false;
 
 			SETTER('loading', 'show');
-			WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
+			item.data && WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
 			SETTER('loading', 'hide', 200);
-			$('.iconnew').removeClass('selected');
-			$('.iconbrowse').addClass('selected');
 			dashboard_editbutton(0);
 			FIND('dashboard').mode(0);
 			SET('dashboard.current', item);
+			setTimeout2('dashboard.load', function() {
+				EMIT('dashboard', item);
+			}, 200);
 		});
 	}
 
 	function dashboard_new() {
-		SETTER('loading', 'show');
-		SETTER('dashboard', 'clear');
-		SETTER('loading', 'hide', 800);
-		$('.iconnew').addClass('selected');
-		$('.iconbrowse').removeClass('selected');
-		dashboard_editbutton(1);
-		FIND('dashboard').mode(1);
-		document.title = dashboard.title;
-		WIDGETS_WIDGETSETTINGS = {};
+		DEFAULT('formnew.*');
+		IMPORTSET('formnew', 'common.form', 'new');
+	}
+
+	function dashboard_clear() {
+		dashboard_editbutton(0);
+		FIND('dashboard').mode(0);
+		EMIT('dashboard', null);
 		SET('dashboard.current', null);
+		CACHE('default', '', '10 days');
+		SETTER('dashboard', 'clear');
+		dashboard_browse();
 	}
 
 	setInterval(function() {
-		if (!jR.params.length || FIND('dashboard').getMode())
+		if ((!dashboard.current || !dashboard.current.id) || FIND('dashboard').getMode())
 			return;
-		var item = dashboard.items.findItem('id', jR.params[0]);
+		var item = dashboard.items.findItem('id', dashboard.id);
 		if (!item)
 			return;
 
 		var obj = {};
 		obj.data = btoa(encodeURIComponent(JSON.stringify(WIDGETS_WIDGETSETTINGS)));
 
-		if (obj.data === dashboard.oldsettings)
-			return;
-
-		obj.id = item.id;
-		dashboard.oldsettings = obj.data;
-		AJAX('POST /api/settings/', obj, NOOP);
+		if (obj.data !== dashboard.oldsettings) {
+			obj.id = item.id;
+			dashboard.oldsettings = obj.data;
+			AJAX('POST /api/settings/', obj, NOOP);
+		}
 	}, 10000);
 
-	function dashboard_import() {
-		IMPORTSET('formimport', 'common.form', 'import');
-		SET('formimport', {}, true);
-	}
-
-	function dashboard_export() {
-
-		var item = dashboard.items.findItem('id', jR.params[0]);
-		if (!item)
-			return;
-
-		var data = WIDGETS_SAVE();
-		data.repository = [];
-		data.name = item.name;
-		data.group = item.group;
-
-		for (var i = 0, length = data.widgets.length; i < length; i++) {
-			var w = WIDGETS_DATABASE[data.widgets[i].$name];
-			w && w.repository && data.repository.indexOf(w.repository) === -1 && data.repository.push(w.repository);
-		}
-
-		IMPORTSET('formexport', 'common.form', 'export');
-		SET('formexport.body', btoa(encodeURIComponent(JSON.stringify(data))));
-	}
-
-	dashboard_datasource(function() {
-		dashboard_refresh(true);
-	});
-
-	setTimeout(function() {
-		user.photo && $('.photo img').attr('src', user.photo);
-	}, 200);
+	dashboard_refresh(true);
+	AJAX('GET /api/groups/', 'dashboard.groups');
 
 	WATCH('dashboard.theme', function(path, value, type) {
 		var body = $('body').removeClass();
