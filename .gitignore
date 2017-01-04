@@ -2,6 +2,7 @@ sftp-config.json
 /logs/
 /tmp/
 dependencies
-public/iot/
-public/private/
-public/superadmin/
+/public/iot/
+/public/private/
+/public/superadmin/
+/public/server/
