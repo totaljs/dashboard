@@ -4,7 +4,7 @@
 
 # Dashboard
 
-This application has to be modified by your requirements. Current version __v2.0.0__.
+This application has to be modified by your requirements. Current version __v3.0.0__.
 
 - Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
 - [__HelpDesk with professional support__](https://helpdesk.totaljs.com)
@@ -20,7 +20,7 @@ __Default mode__:
 
 __License__: [MIT](license.txt). 
 
-- install latest Total.js `npm install total.js` (minimal version: __+v2.1.0__)
+- install latest Total.js `npm install total.js` (minimal version: __+v2.4.0__)
 - download source-code
 - run `node debug.js`
 
