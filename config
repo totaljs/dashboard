@@ -17,3 +17,21 @@ mail.smtp                 : YOUR.SMTPSERVER.COM
 // Office365 SMTP settings
 // mail.smtp                : smtp.office365.com
 // mail.smtp.options        : {"port":587,"secure":false,"user":"ENTER_YOUR_EMAIL","password":"ENTER_YOUR_PASSWORD","tls":{"ciphers":"SSLv3"}}
+
+
+// Monitoring settings
+monitoring.network.ports    (Array)   : [80]
+monitoring.interval         (Number)  : 10000
+
+// ====================================================
+// CODELISTS
+// ====================================================
+
+// Names of processes
+monitoring.processes        (Array)   : ['nginx', 'postgres', 'mongod', 'total']
+
+// Name of processs + internal stats
+monitoring.history          (Array)   : ['nginx', 'postgres', 'mongod', 'cpu', 'memory', 'disk', 'network', 'total']
+
+// Paths for logs
+monitoring.logs             (Array)   : ['/var/log/nginx/error.log']
