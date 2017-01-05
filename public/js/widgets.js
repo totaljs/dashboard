@@ -306,8 +306,26 @@ WIDGET_COMPONENT.prototype.configure = function() {
 	if (window.dashboard && window.dashboard.paths)
 		window.dashboard.paths = null;
 
-	IMPORTSET('formconfigure', 'common.form', 'configure');
-	SET('formconfigure', obj);
+	var reg = /^(\/\w+|https\:\/|http\:\/)/i;
+
+	Object.keys(options).waitFor(function(key, next) {
+		var item = options[key];
+		if (!reg.test(item.type))
+			return next();
+		AJAX('GET ' + item.type, function(response) {
+			if (response instanceof Array) {
+				item.type = 'array';
+				item.values = [];
+				response.forEach(function(val) {
+					item.values.push({ text: val.text || val, value: val.text != null ? val : val });
+				});
+			}
+			next();
+		});
+	}, function() {
+		IMPORTSET('formconfigure', 'common.form', 'configure', 'form-configure');
+		SET('formconfigure', obj);
+	});
 	return self;
 };
 

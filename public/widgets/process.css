@@ -1,0 +1,21 @@
+.process .info { height: 20%; background-color: #F8F8F8; overflow: hidden; line-height: 94%; font-size: 80%; }
+.process .info .fa { margin-right: 5px; }
+.process .info > div { float: left; width: 33.333%; text-align: center; border-left: 1px solid #E0E0E0; padding: 4% 0 3%; }
+.process .info > div:first-child { border-left: 0; }
+.process .info b { font-size: 60%; display: block; text-transform: uppercase; font-weight: bold; color: black; padding-bottom: 3%; }
+.process .progress { height: 2%; width: 94%; background: linear-gradient(90deg, #F0F0F0, #E0E0E0); margin: 5% auto 6%; }
+.process .progress > div { height: 100%; width: 0; }
+.process .chart { height: 37%; }
+.process .chart rect { fill: #D0D0D0; }
+.process .uptime { height: 5%; text-align: center; font-size: 60%; padding: 2% 0 0; margin-top: 3%; }
+.process .uptime .fa { margin-right: 5px; vertical-align: middle; }
+.process .uptime span { vertical-align: middle; }
+.process .threads { background: linear-gradient(#F8F8F8, #F0F0F0); font-size: 50%; text-align: center; position: relative; display: inline-block; padding: 3% 4%; border-radius: 0 0 4px 4px; border-top: 1px solid #E0E0E0; }
+.process .center { line-height: 0; }
+.process .blinking { animation: 1s process-blink infinite; }
+
+@keyframes process-blink {
+	0% { opacity: 1; }
+	50% { opacity: 0.2; }
+	100% { opacity: 1; }
+}

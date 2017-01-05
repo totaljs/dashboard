@@ -18,6 +18,7 @@ F.onAuthorize = function(req, res, flags, next) {
 	NOSQL('users').find().make(function(builder) {
 		builder.where('id', user.id);
 		builder.first();
+		builder.fields('id', 'name', 'sa');
 		builder.callback(function(err, doc) {
 			if (err || !doc)
 				return next(false);

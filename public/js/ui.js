@@ -1869,7 +1869,7 @@ COMPONENT('dashboard', function() {
 				widgets.push({ id: name, name: widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled });
 			});
 
-			IMPORTSET('formwidgets', 'common.form', 'widgets');
+			IMPORTSET('formwidgets', 'common.form', 'widgets', 'form-widgets');
 			SET('formwidgets.widgets', widgets);
 			formwidgets.current = container.attr('data-instance');
 		});
@@ -1902,7 +1902,7 @@ COMPONENT('dashboard', function() {
 				widgets.push({ id: name, name: widget.title || widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled });
 			});
 
-			IMPORTSET('formwidgets', 'common.form', 'widgets');
+			IMPORTSET('formwidgets', 'common.form', 'widgets', 'form-widgets');
 			SET('formwidgets.widgets', widgets);
 			formwidgets.current = instance;
 		});
@@ -2145,7 +2145,7 @@ COMPONENT('dashboard', function() {
 				})($(this), index);
 			});
 
-			self.element.css({ height: topmax + 30 });
+			self.element.css({ height: topmax - 30 });
 			callback && callback();
 		}, 200);
 	};

@@ -68,20 +68,23 @@
 			device !== 'xs' && items.push({ name: '@(New dashboard)', icon: 'fa-plus-square-o', value: 'new' });
 
 			items.push('Internal Settings');
-			items.push({ name: '@(Users)', icon: 'fa-users', value: 'users' });
+			user.sa && items.push({ name: '@(Users)', icon: 'fa-users', value: 'users' });
 			items.push({ name: '@(Sign out)', icon: 'fa-power-off', value: 'logoff' });
 
 			FIND('contextmenu').show(device === 'xs' ? 'center' : 'left', el, items, function(value) {
 				switch (value) {
+					case 'users':
+						IMPORTSET('formusers', 'common.form', 'users', 'form-users');
+						break;
 					case 'browse':
-						EXEC('dashboard_browse');
+						EMIT('browse');
 						break;
 					case 'edit':
 						EXEC('dashboard_edit');
 						dashboard.changed = false;
 						break;
 					case 'new':
-						dashboard_new();
+						EMIT('new');
 						break;
 				}
 			}, device === 'xs' ? 5 : -3);

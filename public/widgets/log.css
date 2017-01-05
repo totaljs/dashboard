@@ -1,0 +1,4 @@
+.log ul { list-style-type: none; margin: 0; padding: 0; overflow: hidden; }
+.log li { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; padding: 1px 5px; border-top: 1px solid #E0E0E0; }
+.log li:nth-child(even) { background-color: #F0F0F0; }
+.log li:first-child { border-top: 0; }

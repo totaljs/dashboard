@@ -1,4 +1,5 @@
 var ws_monitoring;
+var currentdata = {};
 
 ON('dashboard', function(dashboard) {
 	if (dashboard.group.toLowerCase() === 'monitoring') {
@@ -14,6 +15,7 @@ ON('dashboard', function(dashboard) {
 		ws_monitoring.onmessage = function(e) {
 			var data = JSON.parse(decodeURIComponent(e.data));
 			DATA(data.type, data.value);
+			currentdata[data.type] = data.value;
 		};
 	} else
 		ws_monitoring && ws_monitoring.close();

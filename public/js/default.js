@@ -1,5 +1,6 @@
 window.TAU = 2 * Math.PI;
 var common = {};
+var dashboard = {};
 
 // Current page
 common.page = '';
@@ -22,9 +23,6 @@ ON('@calendar', function(component) {
 $(document).ready(function() {
 	jR.clientside('.jrouting');
 	FIND('loading', FN('() => this.hide(500)'));
-	$('.mainmenu-logo').on('click', function() {
-		jR.redirect('/');
-	});
 });
 
 function isError(arguments) {
@@ -34,24 +32,63 @@ function isError(arguments) {
 $(window).on('hashchange', function() {
 	var hash = location.hash.substring(1);
 	if (hash)
-		dashboard_load(hash);
+		EMIT('load', hash);
 	else
-		dashboard_new();
+		EMIT('new');
 });
 
 jR.route('/', function() {
 	SET('common.page', 'dashboard');
 	WAIT(function() {
-		return window.dashboard_new;
+		return window.dashboard_edit;
 	}, function() {
 		var id = location.hash || CACHE('default');
 		if (id && !common.default) {
 			id = id.replace('#', '');
 			location.hash = id;
-			dashboard_load(id);
+			EMIT('load', id);
 		} else
-			dashboard_browse();
+			EMIT('browse');
 		common.default = true;
+	});
+});
+
+// New dashboard
+ON('new', function() {
+	jR.redirect('/');
+	DEFAULT('formnew.*');
+	IMPORTSET('formnew', 'common.form', 'new', 'form-new');
+});
+
+// Browse dashboards
+ON('browse', function() {
+	EMIT('refresh');
+	IMPORTSET('formbrowse', 'common.form', 'browse', 'form-browse');
+});
+
+// Refresh dashboards
+ON('refresh', function() {
+	AJAX('GET /api/groups/', 'dashboard.groups');
+	AJAX('GET /api/dashboard/', function(response) {
+
+		var categories = {};
+
+		response.forEach(function(item) {
+			if (item.group)
+				categories[item.group] = true;
+		});
+
+		categories = Object.keys(categories);
+		categories.sort(function(a, b) {
+			return a.toLowerCase().removeDiacritics().substring(0, 5).localeCompare(b.toLowerCase().removeDiacritics().substring(0, 5));
+		});
+
+		response.sort(function(a, b) {
+			return a.name.toLowerCase().removeDiacritics().substring(0, 5).localeCompare(b.name.toLowerCase().removeDiacritics().substring(0, 5));
+		});
+
+		SET('dashboard.categories', categories);
+		SET('dashboard.items', response);
 	});
 });
 
@@ -67,7 +104,7 @@ Tangular.register('join', function(value) {
 	return value ? value.join(',') : '';
 });
 
-function IMPORTSET(check, name, value) {
+function IMPORTSET(check, name, value, template) {
 
 	if (window[check]) {
 		name && SET(name, value, 100);
@@ -75,7 +112,7 @@ function IMPORTSET(check, name, value) {
 	}
 
 	SETTER('loading', 'show');
-	IMPORT('ONCE /templates/' + value + '.html', function() {
+	IMPORT('ONCE /templates/' + (template || value) + '.html', function() {
 		name && SET(name, value);
 		SETTER('loading', 'hide', 500);
 	});

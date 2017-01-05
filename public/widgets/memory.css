@@ -8,10 +8,10 @@
 .memory .trend { position: absolute; width: 100%; font-size: 200%; text-align: center; top: 37%; }
 .memory .trend .fa-long-arrow-up { color: #D63B32; }
 .memory .trend .fa-long-arrow-down { color: #68B25B; }
-
 .rows5 .memory .info > div { padding-top: 2%; }
 
 .noxs.g1x1 .memory .info { display: none; }
 .noxs.g1x1 .memory .chart { height: 100%; }
 .noxs.g1x1 .memory .header { display: none; }
-.g1x1 .memory .trend { top: 40%; font-size: 400%; }
+.noxs.g1x1 .memory .trend { top: 40%; font-size: 400%; }
+.xs .memory .trend { top: 36%; }

@@ -8,7 +8,7 @@ WIDGET('Memory', function() {
 	self.make = function(size) {
 		self.center(false);
 		self.toggle('memory');
-		self.html('<div class="header"><i class="fa fa-braille"></i>Memory consuption</div><div class="trend"><i class="fa"></i></div><div class="chart"><svg height="100%" width="100%"></svg></div><div class="info"><div><b><i class="fa fa-circle"></i>Total</b><span data-name="total">...</span></div><div><b><i class="fa fa-circle green"></i>Free</b><span data-name="free">...</span></div><div><b><i class="fa fa-circle red"></i>Used</b><span data-name="used">...</span></div></div></div>');
+		self.html('<div class="header"><i class="fa fa-braille"></i>Memory</div><div class="trend"><i class="fa"></i></div><div class="chart"><svg height="100%" width="100%"></svg></div><div class="info"><div><b><i class="fa fa-circle"></i>Total</b><span data-name="total">...</span></div><div><b><i class="fa fa-circle green"></i>Free</b><span data-name="free">...</span></div><div><b><i class="fa fa-circle red"></i>Used</b><span data-name="used">...</span></div></div></div>');
 		g = d3.select(self.dom).select('svg').append('g');
 		svg = self.find('svg');
 		Etrend = self.find('.trend').find('.fa');
@@ -59,9 +59,9 @@ WIDGET('Memory', function() {
 	this.example = { free: 2150699008, total: 3895230464, used: 1744531456, history: [] };
 	this.author = 'Peter Širka';
 	this.title = 'Memory';
-	this.category = 'Server Monitoring';
+	this.category = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
-	this.preview = '/server/memory.png';
+	this.preview = '/widgets/memory.png';
 	this.sizes = ['1x1', '2x2', '3x3', '4x4', '5x5'];
 	this.type = ['memory'];
 });

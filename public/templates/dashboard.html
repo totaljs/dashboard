@@ -15,8 +15,6 @@
 
 <script>
 
-	var dashboard = {};
-
 	dashboard.changed = false;
 	dashboard.title = document.title;
 	dashboard.items = [];
@@ -38,7 +36,7 @@
 			return;
 		}
 
-		IMPORTSET('formsave', 'common.form', 'save');
+		IMPORTSET('formsave', 'common.form', 'save', 'form-save');
 		SET('formsave', dashboard.current, true);
 		setTimeout(function() { CHANGE('formsave.name', true); }, 1000);
 	}
@@ -48,36 +46,17 @@
 		$('.theme-selector').toggleClass('hidden', type === 0);
 	}
 
-	function dashboard_browse() {
-		IMPORTSET('formbrowse', 'common.form', 'browse');
+	function dashboard_clear() {
+		dashboard_editbutton(0);
+		FIND('dashboard').mode(0);
+		EMIT('dashboard', null);
+		SET('dashboard.current', null);
+		CACHE('default', '', '10 days');
+		SETTER('dashboard', 'clear');
+		IMPORTSET('formbrowse', 'common.form', 'browse', 'form-browse');
 	}
 
-	function dashboard_refresh(callback) {
-		AJAX('GET /api/dashboard/', function(response) {
-
-			var categories = {};
-
-			response.forEach(function(item) {
-				if (item.group)
-					categories[item.group] = true;
-			});
-
-			categories = Object.keys(categories);
-			categories.sort(function(a, b) {
-				return a.toLowerCase().removeDiacritics().substring(0, 5).localeCompare(b.toLowerCase().removeDiacritics().substring(0, 5));
-			});
-
-			response.sort(function(a, b) {
-				return a.name.toLowerCase().removeDiacritics().substring(0, 5).localeCompare(b.name.toLowerCase().removeDiacritics().substring(0, 5));
-			});
-
-			SET('dashboard.categories', categories);
-			SET('dashboard.items', response);
-			typeof(callback) === 'function' && callback();
-		});
-	}
-
-	function dashboard_load(id) {
+	ON('load', function(id) {
 
 		if (dashboard.current && dashboard.current.id === id)
 			return;
@@ -96,7 +75,6 @@
 			var body = $('body').removeClass();
 			item.theme && body.addClass(item.theme);
 			SET('dashboard.theme', item.theme);
-			$('h1').text(item.name);
 			dashboard.changed = false;
 
 			SETTER('loading', 'show');
@@ -109,22 +87,7 @@
 				EMIT('dashboard', item);
 			}, 200);
 		});
-	}
-
-	function dashboard_new() {
-		DEFAULT('formnew.*');
-		IMPORTSET('formnew', 'common.form', 'new');
-	}
-
-	function dashboard_clear() {
-		dashboard_editbutton(0);
-		FIND('dashboard').mode(0);
-		EMIT('dashboard', null);
-		SET('dashboard.current', null);
-		CACHE('default', '', '10 days');
-		SETTER('dashboard', 'clear');
-		dashboard_browse();
-	}
+	});
 
 	setInterval(function() {
 		if ((!dashboard.current || !dashboard.current.id) || FIND('dashboard').getMode())
@@ -143,8 +106,7 @@
 		}
 	}, 10000);
 
-	dashboard_refresh(true);
-	AJAX('GET /api/groups/', 'dashboard.groups');
+	EMIT('refresh');
 
 	WATCH('dashboard.theme', function(path, value, type) {
 		var body = $('body').removeClass();

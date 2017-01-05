@@ -33,6 +33,7 @@
 				FIND('dashboard').mode();
 				EXEC('dashboard_refresh')('dashboard_editbutton', 0);
 				SET('dashboard.current.name', formsave.name);
+				document.title = formsave.name;
 			});
 		};
 	});

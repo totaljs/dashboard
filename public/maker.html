@@ -15,7 +15,7 @@
 	<script src="https://dashboard.totaljs.com/developer.js"></script>
 	<style type="text/css">
 		body { padding: 20px 0 30px; font-family: Arial; font-size: 14px; color: gray; font-smoothing: antialiased; overflow-y: scroll; overflow-x: hidden; overflow-scrolling: touch; }
-		#widget { background-color: #F8F8F8; overflow: hidden; margin-top: 30px; position: absolute; left: 330px; }
+		#widget { background-color: #F8F8F8; overflow: hidden; margin-top: 30px; position: absolute; left: 330px; box-shadow: 0 5px 10px rgba(0,0,0,0.1); }
 		.widget-container { display: table; }
 		.widget-body { display: table-cell; vertical-align: middle; text-align: center; overflow: hidden; }
 		.widget-size { position: absolute; margin-top: 10px; font-size: 11px; left: 330px; }
@@ -107,7 +107,7 @@
 			this.category = 'IoT';
 			this.url = '';
 
-			// Data type
+			// Data type, it works with DATA([type], value) method
 			this.type = ['my-data-type'];
 
 			// this.sizes = ['1x1', '2x2'];
@@ -117,6 +117,7 @@
 			config('background', 'Background Color', 'red', 'Color');
 			config('fontsize', 'Font Size (%)', 500, 'Number');
 			config('color', 'Font Color', 'white', 'Color');
+			// config('app', 'Application', 'nginx', '/modules/monitoring/codelist/applications/');
 		});
 
 		// === Updates datasource value about new data:

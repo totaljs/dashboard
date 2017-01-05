@@ -82,7 +82,7 @@ canvas { display: block; }
 .operations button:first-child { border-radius: 4px 0 0 4px; border-left: 0; }
 .operations button:last-child { border-radius: 0 4px 4px 0; }
 
-.grid { background-color: white; height: 150px; margin-bottom: 25px; user-select: none; cursor: default; }
+.grid { background-color: white; height: 150px; margin-bottom: 38px; user-select: none; cursor: default; }
 .grid-hover { background-color: #D0D0D0; }
 .grid-can { background-image: repeating-linear-gradient(45deg, #8CC152, #8CC152 10px, #A0D468 10px, #A0D468 20px); }
 .grid-disabled { background-color: transparent !important; }
@@ -152,6 +152,20 @@ canvas { display: block; }
 .browse-item-remove { float: right; width: 30%; text-align: right; color: #D63B32; }
 .browse-category { font-size: 11px; padding: 5px 25px; margin: 10px 0 2px; }
 
+<<<<<<< Updated upstream
+=======
+.userscontainer {}
+.users-item { padding: 4px 25px; border-bottom: 1px solid #F0F0F0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.users-item-inputs { float: left; width: 80%; }
+.users-item-remove { float: right; width: 20%; text-align: right; color: #D63B32; }
+.users-item .users-item-name { float: left; width: 40%; padding-right: 10px; }
+.users-item .users-item-password { float: left; width: 40%; padding-right: 10px; }
+.users-item .users-item-sa { float: left; width: 20%; font-size: 11px; margin-top: 1px; }
+.users-item .users-item-sa span { margin-left: 3px; }
+.users-item .users-item-sa label { cursor: pointer; }
+.users-item-inputs input[type="text"] { width: 100%; border: 0; outline: 0; background: transparent; }
+
+>>>>>>> Stashed changes
 .dashboard-edit { position: fixed; right: 0; top: 0; width: 32px; height: 32px; text-align: center; background-color: black; color: white; padding: 5px 0 0 0; z-index: 5; border-radius: 0 0 0 4px; }
 .dashboard-edit:hover { background-color: #303030; }
 

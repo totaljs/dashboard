@@ -37,6 +37,7 @@ WIDGET('CPU', function() {
 		var grow = 0;
 		var a = value.history[0];
 		var b = value.history[1];
+		var bar = (100 / corescount);
 
 		if (a)
 			a = a.cpu;
@@ -56,7 +57,7 @@ WIDGET('CPU', function() {
 				delete css.height;
 			} else
 				css.height = val + '%';
-			div.css(css).html(size.fontsize > 60 && val > 10 ? (val.format(1, '', '.') + '%') : '');
+			div.css(css).html(size.fontsize > 60 && val > 10 && bar > 10 ? (val.format(1, '', '.') + '%') : '');
 		});
 	};
 
@@ -72,9 +73,9 @@ WIDGET('CPU', function() {
 	this.example = { all: 59, cores: [32, 20, 38, 15, 18, 12, 3, 8, 19], hours: [{ created: new Date(), value: 29 }, { created: new Date(), value: 39 }] };
 	this.author = 'Peter Širka';
 	this.title = 'CPU';
-	this.category = 'Server Monitoring';
+	this.category = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
-	this.preview = '/server/cpu.png';
+	this.preview = '/widgets/cpu.png';
 	this.sizes = ['2x2', '3x3', '4x4', '5x5', '3x2'];
 	this.type = ['cpu'];
 });
