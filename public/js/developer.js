@@ -382,7 +382,7 @@ function $WIDGET(name, declaration, init) {
 function widget_refresh() {
 	var s = getDimension(size.device);
 	$('#widget,.widget-container,.widget-body').css({ width: s.width, height: s.height, 'font-size': s.fontsize + '%' });
-	$('#widget').removeClass(CLASS_SIZE).addClass(size.device + ' cols' + s.cols + ' rows' + s.rows + ' g' + s.cols + 'x' + s.rows + (s.device !== 'xs' ? ' noxs' : ''));
+	$('#widget').removeClass(CLASS_SIZE).addClass(size.device + ' cols' + s.cols + ' rows' + s.rows + ' g' + s.rows + 'x' + s.cols + (s.device !== 'xs' ? ' noxs' : ''));
 }
 
 function getDimension(device) {
@@ -460,7 +460,7 @@ $(document).ready(function() {
 		size = getDevice();
 		current.size = getDimension(size.device);
 		$('#widget,.widget-container,.widget-body').css({ width: current.size.width, height: current.size.height, 'font-size': current.size.fontsize + '%' });
-		$('#widget').removeClass(CLASS_SIZE).addClass(current.size.device + ' cols' + current.size.cols + ' rows' + current.size.rows + ' g' + current.size.cols + 'x' + current.size.rows + (current.size.device !== 'xs' ? ' noxs' : ''));
+		$('#widget').removeClass(CLASS_SIZE).addClass(current.size.device + ' cols' + current.size.cols + ' rows' + current.size.rows + ' g' + current.size.rows + 'x' + current.size.cols + (current.size.device !== 'xs' ? ' noxs' : ''));
 		var dimension = current.$dimension[size.device + current.size.rows + 'x' + current.size.cols];
 		current.resize && current.resize(current.size, dimension ? dimension() : EMPTYOBJECT);
 		$('.widget-size').html(current.size.width + '<b>x</b>' + current.size.height);
