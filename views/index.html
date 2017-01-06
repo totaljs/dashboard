@@ -83,6 +83,9 @@
 						EXEC('dashboard_edit');
 						dashboard.changed = false;
 						break;
+					case 'logoff':
+						location.href = '/logoff/';
+						break;
 					case 'new':
 						EMIT('new');
 						break;
