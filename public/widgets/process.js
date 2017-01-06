@@ -5,7 +5,7 @@ WIDGET('Process', function() {
 	self.make = function(size) {
 		self.toggle('process');
 		self.center(false);
-		self.html('<div class="header"><i class="fa fa-circle-o blinking"></i>Process: <span></span></div><div class="info"><div><b><i class="fa fa-microchip"></i>CPU</b><span data-name="cpu">...</span></div><div><b><i class="fa fa-braille"></i>Memory</b><span data-name="memory">...</span></div><div><b><i class="fa fa-folder-o"></i>Open Files</b><span data-name="files">...</span></div></div></div></div><div class="center"><div class="threads">Count of all threads: <span>...</span></div></div><div class="uptime"><i class="fa fa-clock-o"></i><span>...</span></div><div class="progress"><div></div></div><div class="chart"><svg width="100%" height="100%"></svg></div>');
+		self.html('<div class="header"><i class="fa fa-circle-o blinking"></i>Process: <span></span></div><div class="info"><div><b><i class="fa fa-microchip"></i>CPU</b><span data-name="cpu">...</span></div><div><b><i class="fa fa-braille"></i>RSS</b><span data-name="memory">...</span></div><div><b><i class="fa fa-folder-o"></i>Open Files</b><span data-name="files">...</span></div></div></div></div><div class="center"><div class="threads">Count of all threads: <span>...</span></div></div><div class="uptime"><i class="fa fa-clock-o"></i><span>...</span></div><div class="progress"><div></div></div><div class="chart"><svg width="100%" height="100%"></svg></div>');
 		Eprogress = self.find('.progress').find('div');
 		Ecpu = self.find('[data-name="cpu"]');
 		Ememory = self.find('[data-name="memory"]');
