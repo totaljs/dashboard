@@ -30,7 +30,6 @@ __License__: [MIT](license.txt).
 
 - jQuery v3
 - D3 v4
-- Chart.js v2
 - jComponent v8
 
 ## Users
