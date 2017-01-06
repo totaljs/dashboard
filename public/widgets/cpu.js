@@ -35,7 +35,7 @@ WIDGET('CPU', function() {
 		var css = SINGLETON('cpu-css');
 		css['background-color'] = 'white';
 
-		Eavg.html(value.avg);
+		Eavg.html(value.avg || '...');
 
 		var grow = 0;
 		var a = value.history[0];
