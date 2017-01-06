@@ -13,7 +13,7 @@
 .process .uptime { height: 5%; text-align: center; font-size: 60%; padding: 2% 0 0; margin-top: 3%; }
 .process .uptime .fa { margin-right: 5px; vertical-align: middle; }
 .process .uptime span { vertical-align: middle; }
-.process .threads { background: linear-gradient(#F8F8F8, #F0F0F0); font-size: 50%; text-align: center; position: relative; display: inline-block; padding: 3% 4%; border-radius: 0 0 4px 4px; border-top: 1px solid #E0E0E0; }
+.process .threads { border: 1px solid #E0E0E0; font-size: 50%; text-align: center; position: relative; display: inline-block; padding: 3% 4%; border-radius: 0 0 4px 4px; border-top: 0; }
 .process .center { line-height: 0; }
 .process .blinking { animation: 1s process-blink infinite; }
 
