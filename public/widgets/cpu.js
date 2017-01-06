@@ -47,6 +47,9 @@ WIDGET('CPU', function() {
 		grow = a > b ? 1 : a < b ? -1 : 0;
 		Ecpu.html((grow === 1 ? '<i class="fa fa-long-arrow-up"></i>' : grow === -1 ? '<i class="fa fa-long-arrow-down"></i>' : '') + value.all.format(1, '', '.') + '%');
 
+		if (size.device !== 'xs' && size.rows === 1 && size.cols === 1)
+			return;
+
 		cores.each(function(index) {
 			var el = $(this);
 			var val = value.cores[index];
@@ -57,7 +60,7 @@ WIDGET('CPU', function() {
 				delete css.height;
 			} else
 				css.height = val + '%';
-			div.css(css).html(size.fontsize > 60 && val > 10 && bar > 10 ? (val.format(1, '', '.') + '%') : '');
+			div.css(css).html((size.rows === 1 || size.fontsize > 60) && val > 10 && bar > 10 ? (val.format(1, '', '.') + '%') : '');
 		});
 	};
 
@@ -76,6 +79,6 @@ WIDGET('CPU', function() {
 	this.category = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.preview = '/widgets/cpu.png';
-	this.sizes = ['2x2', '3x3', '4x4', '5x5', '3x2'];
+	this.sizes = ['1x1', '1x2', '1x3', '1x4', '1x5', '1x6', '2x2', '3x3', '4x4', '5x5', '3x2', '2x3', '2x4', '2x5', '2x6'];
 	this.type = ['cpu'];
 });

@@ -1,6 +1,6 @@
 WIDGET('Process', function() {
 	var self = this;
-	var Eprogress, Ecpu, Ememory, Echart, g, svg, Etitle, Efiles, Euptime, Ethreads;
+	var Eprogress, Ecpu, Ememory, Echart, g, gCpu, svg, Etitle, Efiles, Euptime, Ethreads, tooltip;
 
 	self.make = function(size) {
 		self.toggle('process');
@@ -16,6 +16,7 @@ WIDGET('Process', function() {
 		Ethreads = self.find('.threads').find('span');
 		svg = d3.select(Echart.find('svg').get(0));
 		g = svg.append('g');
+		gCpu = svg.append('g');
 	};
 
 	self.render = function(value, size, counter) {
@@ -35,34 +36,72 @@ WIDGET('Process', function() {
 		Eprogress.css('background-color', p < 20 ? '#A0D468' : p < 40 ? '#F6BB42' : p < 60 ? '#FC6E51' : 'DA4453');
 
 		var builder = [];
-		var max = 1000;
-		var history = [];
-		var key = value.type + '_memory';
+		var max_memory = 1000;
+		var max_cpu = 100;
+		var history_memory = [];
+		var history_cpu = [];
 
-		value.history.forEach(function(item) {
-			if (item[key]) {
-				max = Math.max(item[key], max);
-				history.push(item);
+		var key_memory = value.type + '_memory';
+		var key_cpu = value.type + '_cpu';
+
+		value.history.reverse();
+		var tmp = value.history.take(12);
+		tmp.reverse();
+
+		tmp.forEach(function(item) {
+			if (item[key_memory]) {
+				max_memory = Math.max(item[key_memory], max_memory);
+				history_memory.push(item);
 			}
+			item[key_cpu] !== undefined && history_cpu.push(item);
 		});
 
-		for (var i = history.length; i < 24; i++) {
-			var obj = {};
-			obj[key] = 0;
-			history.push(obj);
-		}
+		var obj = {};
+		obj[key_memory] = 0;
+		obj[key_cpu] = 0;
+
+		for (var i = history_memory.length; i < 12; i++)
+			history_memory.push(obj);
+
+		for (var i = history_cpu.length; i < 12; i++)
+			history_cpu.push(obj);
 
 		var width = Echart.width();
 		var height = Echart.height();
 
 		var x = d3.scaleBand().rangeRound([0, width]).padding(0.2);
 		var y = d3.scaleLinear().rangeRound([height, 0]);
+		var line = d3.line().x(function(d, index) { return x(index); }).y(function(d) { return y(d[key_cpu]); });
 
-		x.domain(d3.range(24));
-		y.domain([0, max]);
+		x.domain(d3.range(16));
+		y.domain([0, max_memory]);
 
-		g.selectAll('rect').remove();
-		g.selectAll('.data').data(history).enter().append('rect').attr('x', function(d, i) { return x(i); }).attr('y', function(d) { return y(d[key]); }).attr('width', x.bandwidth()).attr('height', function(d) { var tmp = height - y(d[key]); return tmp < 0 ? 0 : tmp; });
+		g.selectAll('rect,text').remove();
+
+		MAKE(g.selectAll('.memorychart').data(history_memory).enter(), function() {
+			this.append('rect').attr('x', function(d, i) { return x(i); }).attr('y', function(d) { return y(d[key_memory]); }).attr('width', x.bandwidth()).attr('height', function(d) { var tmp = height - y(d[key_memory]); return tmp < 0 ? 0 : tmp; }).on('mouseenter mouseleave', function(item) {
+				var e = d3.event;
+
+				if (e.type === 'mouseleave') {
+					self.tooltip(false);
+					tooltip = null;
+					return;
+				}
+
+				if (tooltip === e.target)
+					return;
+
+				tooltip = e.target;
+				var el = d3.select(e.target);
+				self.tooltip(e.target, 'Memory: <b>{0}</b><br />CPU: <b>{1}%</b><br />Created: <b>{2}</b>'.format(item[key_memory].filesize(), item[key_cpu], item.updated.parseDate().format('yyyy-MM-dd HH:mm')), 180);
+			});
+			(size.device === 'xs' || size.device === 'lg') && this.append('text').attr('transform', 'translate(8,0)').attr('text-anchor', 'middle').attr('x', function(d, i) { return x(i); }).attr('y', height - 3).text(function(d) { return d.hour; });
+		});
+
+		y = d3.scaleLinear().rangeRound([height.inc('-15%'), 0]);
+		y.domain([0, max_cpu]);
+		gCpu.selectAll('path').remove('path');
+		gCpu.append('path').datum(history_cpu).attr('d', line);
 	};
 
 	self.resize = function(size) {

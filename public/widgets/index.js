@@ -15,7 +15,11 @@ ON('dashboard', function(dashboard) {
 		ws_monitoring.onmessage = function(e) {
 			var data = JSON.parse(decodeURIComponent(e.data));
 			DATA(data.type, data.value);
-			currentdata[data.type] = data.value;
+
+			if (data.type === 'process')
+				currentdata[data.type + data.value.type] = data.value;
+			else
+				currentdata[data.type] = data.value;
 		};
 	} else
 		ws_monitoring && ws_monitoring.close();

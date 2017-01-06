@@ -7,6 +7,9 @@
 .process .progress > div { height: 100%; width: 0; }
 .process .chart { height: 37%; }
 .process .chart rect { fill: #D0D0D0; }
+.process .chart rect:hover { fill: #A0A0A0; }
+.process .chart path { fill: none; stroke: black; stroke-width: 2px; }
+.process .chart text { font-size: 50%; fill: #505050; }
 .process .uptime { height: 5%; text-align: center; font-size: 60%; padding: 2% 0 0; margin-top: 3%; }
 .process .uptime .fa { margin-right: 5px; vertical-align: middle; }
 .process .uptime span { vertical-align: middle; }

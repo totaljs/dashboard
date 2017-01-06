@@ -10,4 +10,11 @@
 .cpu .info .fa-long-arrow-up { color: #D63B32; }
 .cpu .info .fa-long-arrow-down { color: #68B25B; }
 
-.g3x2 .cpu .info { padding-top: 5%; }
+.g2x3 .cpu .info { padding-top: 5%; }
+.noxs.rows1 .cpu .info { display: none; }
+.noxs.rows1 .header { display: none; }
+.noxs.rows1 .cpu .chart { height: 100%; }
+
+.noxs.rows1.cols1 .cpu .info { display: block !important; height: 100%; padding: 35% 0 0; font-size: 370%; }
+.noxs.rows1.cols1 .cpu .chart { display: none; }
+.noxs.rows1.cols1 .cpu .header { display: none; }
