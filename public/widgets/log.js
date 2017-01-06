@@ -8,6 +8,10 @@ WIDGET('Log', function() {
 		self.html('<div class="header"><i class="fa fa-search"></i><span></span></div><ul class="messages"></ul>');
 		Emessages = self.find('.messages');
 		Etitle = self.find('.header').find('span');
+		self.element.on('mouseenter', 'li', function() {
+			var el = $(this);
+			el.attr('title', el.text());
+		});
 	};
 
 	self.render = function(value, size, counter) {
@@ -18,6 +22,7 @@ WIDGET('Log', function() {
 		value.value.forEach(function(message) {
 			builder.push('<li>{0}</li>'.format(Tangular.helpers.encode(message)));
 		});
+		builder.reverse();
 		Emessages.html(builder.join(''));
 	};
 
