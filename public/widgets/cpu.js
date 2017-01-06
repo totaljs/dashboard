@@ -3,14 +3,15 @@ WIDGET('CPU', function() {
 	var self = this;
 	var corescount = 0;
 	var cores;
-	var Ecpu;
+	var Ecpu, Eavg;
 
 	self.make = function(size) {
 		self.center(false);
 		self.toggle('cpu');
-		self.html('<div class="header"><i class="fa fa-microchip"></i>CPU utilization</div><div class="info"><span>...</span><div>CPU utilization (all <b>...</b> cores)</div></div><div class="chart"></div>');
+		self.html('<div class="header"><i class="fa fa-microchip"></i>CPU utilization</div><div class="avg"></div><div class="info"><span>...</span><div>CPU utilization (all <b>...</b> cores)</div></div><div class="chart"></div>');
 		self.recreate();
 		Ecpu = self.find('.info').find('span');
+		Eavg = self.find('.avg');
 	};
 
 	self.recreate = function() {
@@ -33,6 +34,8 @@ WIDGET('CPU', function() {
 
 		var css = SINGLETON('cpu-css');
 		css['background-color'] = 'white';
+
+		Eavg.html(value.avg);
 
 		var grow = 0;
 		var a = value.history[0];

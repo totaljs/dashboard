@@ -9,6 +9,7 @@
 .cpu .info .fa { margin-right: 2%; font-size: 80%; vertical-align: top; }
 .cpu .info .fa-long-arrow-up { color: #D63B32; }
 .cpu .info .fa-long-arrow-down { color: #68B25B; }
+.cpu .avg { position: absolute; background-color: #E0E0E0; border-radius: 4px; font-size: 50%; color: gray; padding: 1% 2%; right: 5%; top: 15%; }
 
 .g2x3 .cpu .info { padding-top: 5%; }
 .noxs.rows1 .cpu .info { display: none; }
@@ -17,4 +18,5 @@
 
 .noxs.rows1.cols1 .cpu .info { display: block !important; height: 100%; padding: 35% 0 0; font-size: 370%; }
 .noxs.rows1.cols1 .cpu .chart { display: none; }
+.noxs.rows1.cols1 .cpu .avg { display: none; }
 .noxs.rows1.cols1 .cpu .header { display: none; }

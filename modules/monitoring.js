@@ -17,6 +17,9 @@ var INTERVAL;
 var WEBSOCKET;
 var INDEXER = -1;
 
+// Default values
+RESPONSE.cpu = { all: 0, cores: [], avg: '', history: HISTORY };
+
 exports.install = function() {
 
 	// Communication
@@ -29,10 +32,6 @@ exports.install = function() {
 	PROCESS_CPU = Spawn('mpstat', ['-P', 'ALL', 10]);
 
 	PROCESS_CPU.stdout.on('data', U.streamer('\n\n', function(chunk) {
-
-		if (!RESPONSE.cpu)
-			RESPONSE.cpu = { all: 0, cores: [] };
-
 		chunk.toString('utf8').parseTerminal(function(values, index, count) {
 
 			var id = values[2];
@@ -63,11 +62,13 @@ exports.install = function() {
 
 	INTERVAL = setInterval(function() {
 		INDEXER++;
-		getMemory(function() {
-			getNetwork(function() {
-				getProcesses();
-				INDEXER % 3 === 0 && getDisk();
-				INDEXER % 4 === 0 && getLogs();
+		getCpuAvg(function() {
+			getMemory(function() {
+				getNetwork(function() {
+					getProcesses();
+					INDEXER % 3 === 0 && getDisk();
+					INDEXER % 4 === 0 && getLogs();
+				});
 			});
 		});
 	}, F.config['monitoring.interval'] || 10000);
@@ -78,8 +79,10 @@ exports.install = function() {
 		STATS = backup;
 
 	db.find().sort('updated', true).take(24).callback(function(err, response) {
-		HISTORY = response.length ? response : [];
-		HISTORY.reverse();
+		response.reverse();
+		response.forEach(function(item) {
+			HISTORY.push(item);
+		});
 	});
 
 	F.on('service', save);
@@ -311,6 +314,16 @@ function getDisk(next) {
 			STATS.disk = Math.max(STATS.disk || 0, RESPONSE.disk.used);
 			next && next();
 		}, 1);
+	});
+}
+
+function getCpuAvg(next) {
+	Exec('cat /proc/loadavg', function(err, response) {
+		RESPONSE.cpu.avg = response.trim().split(' ')[3];
+		DATA.type = 'cpu';
+		DATA.value = RESPONSE.cpu;
+		WEBSOCKET && WEBSOCKET.send(DATA);
+		next && next();
 	});
 }
 
