@@ -1,4 +1,4 @@
-.network .open-container { display: table; height: 68%; width: 100%; position: absolute; left: 0; right: 0; bottom: 0; top: 12%; }
+.network .open-container { display: table; height: 68%; width: 100%; position: absolute; left: 0; right: 0; bottom: 0; top: 11%; }
 .network .open { font-size: 250%; text-align: center; vertical-align: middle; display: table-cell; }
 .network .open .fa { margin-right: 3%; font-size: 70%; vertical-align: middle; animation: 1s network-open-blink infinite; }
 .network .open span { vertical-align: middle; font-weight: bold; color: black; }
