@@ -357,7 +357,7 @@ function getProcessesConsuming(next) {
 
 function getLogs(next) {
 	F.config['monitoring.logs'].wait(function(item, next) {
-		Exec('tail -n 30 ' + item, function(err, response) {
+		Exec('tail -n ' + F.config['monitoring.logslines'] + ' ' + item, function(err, response) {
 			var key = 'logs_' + item;
 
 			if (!RESPONSE[key])

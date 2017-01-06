@@ -8,6 +8,7 @@ groups (Array)            : ['Monitoring']
 // Monitoring settings
 monitoring.network.ports    (Array)   : [80]
 monitoring.interval         (Number)  : 10000
+monitoring.logslines        (Number)  : 20
 
 // ====================================================
 // CODELISTS
