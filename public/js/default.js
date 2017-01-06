@@ -31,9 +31,10 @@ function isError(arguments) {
 
 $(window).on('hashchange', function() {
 	var hash = location.hash.substring(1);
-	if (hash)
+	if (hash) {
+		common.default = true;
 		EMIT('load', hash);
-	else
+	} else
 		EMIT('new');
 });
 

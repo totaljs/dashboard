@@ -57,10 +57,8 @@
 	}
 
 	ON('load', function(id) {
-
 		if (dashboard.current && dashboard.current.id === id)
 			return;
-
 		var item = dashboard.items.findItem('id', id);
 		item && AJAX('GET /api/settings/{0}/'.format(id), function(response) {
 
