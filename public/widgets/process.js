@@ -98,7 +98,7 @@ WIDGET('Process', function() {
 				var y = self.size.y + size.height - (size.device === 'xs' ? -20 : (40).inc('-' + size.percentageH));
 				self.tooltip(x, y, 'RSS: <b>{0}</b><br />CPU: <b>{1}%</b><br />Created: <b>{2}</b>'.format(item[key_memory].filesize(), item[key_cpu], item.updated.parseDate().format('yyyy-MM-dd HH:mm')), 180);
 			});
-			(size.device === 'xs' || size.device === 'lg') && this.append('text').attr('transform', 'translate(8,0)').attr('text-anchor', 'middle').attr('x', function(d, i) { return x(i); }).attr('y', height - 3).text(function(d) { return d.hour; });
+			(size.device === 'xs' || size.device === 'lg') && this.append('text').attr('transform', 'translate(9,0)').attr('text-anchor', 'middle').attr('x', function(d, i) { return x(i); }).attr('y', height - 3).text(function(d) { return d.hour; });
 		});
 
 		y = d3.scaleLinear().rangeRound([height.inc('-15%'), 0]);
