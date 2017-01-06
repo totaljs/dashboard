@@ -54,9 +54,10 @@
 			SETTER('loading', 'show');
 			AJAX('POST /api/login/', user, function(response) {
 				SETTER('loading', 'hide', 1000);
-				if (response.success)
+				if (response.success) {
+					CACHE('default', '', '5 day');
 					location.reload(true);
-				else
+				} else
 					SET('user.response', response);
 			});
 		}
