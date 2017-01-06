@@ -71,7 +71,7 @@ WIDGET('Process', function() {
 
 		var x = d3.scaleBand().rangeRound([0, width]).padding(0.2);
 		var y = d3.scaleLinear().rangeRound([height, 0]);
-		var line = d3.line().x(function(d, index) { return x(index) + 10; }).y(function(d) { return y(d[key_cpu]); });
+		var line = d3.line().x(function(d, index) { return x(index) + 10; }).y(function(d) { var tmp = d[key_cpu]; return y(tmp > 100 ? 100 : tmp); });
 
 		x.domain(d3.range(15));
 		y.domain([0, max_memory]);
