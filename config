@@ -20,4 +20,4 @@ monitoring.processes        (Array)   : ['nginx', 'postgres', 'mongod', 'total']
 monitoring.history          (Array)   : ['nginx', 'postgres', 'mongod', 'cpu', 'memory', 'disk', 'network', 'total']
 
 // Paths for logs
-monitoring.logs             (Array)   : ['/var/log/nginx/error.log']
+monitoring.logs             (Array)   : ['/var/log/nginx/error.log', '/var/log/auth.log']
