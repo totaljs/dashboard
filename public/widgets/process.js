@@ -36,7 +36,7 @@ WIDGET('Process', function() {
 		Eprogress.css('background-color', p < 20 ? '#A0D468' : p < 40 ? '#F6BB42' : p < 60 ? '#FC6E51' : 'DA4453');
 
 		var builder = [];
-		var max_memory = 1000;
+		var max_memory = 1048576000;
 		var max_cpu = 100;
 		var history_memory = [];
 		var history_cpu = [];
