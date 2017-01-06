@@ -9,13 +9,6 @@ This application has to be modified by your requirements. Current version __v3.0
 - Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
 - [__HelpDesk with professional support__](https://helpdesk.totaljs.com)
 
-__Default mode__:
-
-- it uses NoSQL embedded database `/models/*.js`
-- it uses fake user profile `/definitions/auth.js`
-- the application is [localized via Total.js localization](https://docs.totaljs.com/latest/en.html#pages~Localization)
-- __it doesn't support__ lower resolution than __width<767px__ (mobile phones aren't supported now)
-
 ## Installation
 
 __License__: [MIT](license.txt). 
@@ -38,9 +31,6 @@ Default user:
 
 - username: `admin`
 - password: `admin`
-
-__How to add a new user__?
-Just add a new user into the `databases/users.nosql` database or update existing users.
 
 ---
 
@@ -66,8 +56,6 @@ WIDGET('WidgetName', function() {  // DECLARATION
     // self.append(html)              --> appends HTML into the current element
     // self.empty()                   --> clears content
     // self.rename(value)             --> can rename `value` according to the dictionary, default returns `value`
-    // self.read(path, obj, [def])    --> can read a value according to the `path` from the `obj`
-    // self.redraw()                  --> redraw with the last datasource
     // self.refresh()                 --> refresh datasource and executes `render` when the data are OK.
     // self.center(boolean)           --> toggles centering
     // self.nodata([visible]);        --> creates a layer with `no data` information
@@ -113,33 +101,18 @@ WIDGET('WidgetName', function() {  // DECLARATION
         // changes       : array of all changes (keys/properties) when is the widget reconfigured
     };
 
-    self.prepare = function(data) {
-        // optional
-        // this method can prepare data from datasource, this is a default implementation:
-        return; data;
-    };
-
-    self.hack = function(datasource) {
-        // optional
-        // this method can change a datasource object before is used
-        // datasource = { url: '', method: '', headers: {}, cookies: {}, interval: 60 };
-    };
-
     // ==== CUSTOM EVENTS ====
     
-    self.publish('event-name', 'argument1', 1000, 'argumentN');
+    self.emit('event-name', 'argument1', 1000, 'argumentN');
 
-    self.subscribe('event-name', function(arg1, argN) {
+    self.on('event-name', function(arg1, argN) {
 
     });
 
-}, function(config, inject) { // INITIALIZATION
+}, function(config) { // INITIALIZATION
 
     // config(key, label, default_value, [type], [max], [min], [step]);
-    // inject(url);
-
     // `config` creates custom configuration for the widget
-    // `inject` can inject 3rd-party JavaScript, CSS or HTML
 
     // ==== WIDGET META INFORMATION ====
     this.title = 'Widget name in widget list'; // optional
@@ -177,25 +150,21 @@ __Advanced Array__:
 config('Language', 1, [{ text: 'sk', value: 1}, { text: 'en', value: 2}, { text: 'de', value: 3}]);
 ```
 
+__Dynamic codelist__:
+
+```javascript
+// A REST services has to respond with Simple or Advanced Array.
+config('List', 'DefaultValue', '/relative/url/address/');
+config('List', 'DefaultValue', 'https://...absolute/url/address/');
+```
+
+
 __Color__:
 
 Dashboard uses this color scheme: <http://codepen.io/devi8/pen/lvIeh> and the declaration below will show all colors in the widget settings.
 
 ```javascript
 config('Background', '#FC6E51', 'Color');
-```
-
-__Path__:
-
-This option is too specific and it needs filled a datasource. The user can select some path from the datasource and you can read a value according the path in widget.
-
-```javascript
-config('Language', 1, [{ text: 'sk', value: 1}, { text: 'en', value: 2}, { text: 'de', value: 3}]);
-```
-
-```javascript
-// The code below can be used in a widget scope.
-var value = widget.read(widget.options.path, DATASOURCE, 'optional default value');
 ```
 
 ### Additional helpers
@@ -225,9 +194,9 @@ user;              // returns an instance of the current user
 
 ### Interesting
 
-- each `widget` container element contains a class of current display size `xs`, `sm`, `md` or `lg` (you can adjust you CSS with display size selector e.g. `.lg .my-widget-text { font-size: 300% }`.
+- each `widget` container element contains a class of the current display size `noxs`, xs`, `sm`, `md` or `lg` (you can adjust you CSS with display size selector e.g. `.lg .my-widget-text { font-size: 300% }`.
 - each `widget` container element contains a style of percentual size of font `100% = 100px`, you can adjust `font-size` according to the widget width (`6 cols === 100%`, `1 cols === 50%`).
-- each `widets` container element contains a class of current count of columns and rows, e.g. `cols6 rows3 g6x3` or `cols1 rows1 g1x1`.
+- each `widets` container element contains a class of current count of rows and columns, e.g. `cols6 rows3 g3x6` or `cols1 rows1 g1x1`.
 
 - `widget.size.percentageW` explanation: `percentageW = 100` when `100%: cols === 6`, `0%: cols === 0`.
 - `widget.size.percentageH` explanation: `percentageH = 100` when `100%: rows === 6`, `0%: rows === 0`
