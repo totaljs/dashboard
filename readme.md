@@ -19,11 +19,15 @@ __License__: [MIT](license.txt).
 
 ---
 
-## Main libraries
+## Used Linux commands for server monitoring
 
-- jQuery v3
-- D3 v4
-- jComponent v8
+- `mpstat`
+- `df`
+- `free`
+- `ps`
+- `tail`
+- `ifconfig`
+- `netstat`
 
 ## Users
 
