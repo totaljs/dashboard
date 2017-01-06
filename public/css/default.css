@@ -152,8 +152,6 @@ canvas { display: block; }
 .browse-item-remove { float: right; width: 30%; text-align: right; color: #D63B32; }
 .browse-category { font-size: 11px; padding: 5px 25px; margin: 10px 0 2px; }
 
-<<<<<<< Updated upstream
-=======
 .userscontainer {}
 .users-item { padding: 4px 25px; border-bottom: 1px solid #F0F0F0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .users-item-inputs { float: left; width: 80%; }
@@ -165,7 +163,6 @@ canvas { display: block; }
 .users-item .users-item-sa label { cursor: pointer; }
 .users-item-inputs input[type="text"] { width: 100%; border: 0; outline: 0; background: transparent; }
 
->>>>>>> Stashed changes
 .dashboard-edit { position: fixed; right: 0; top: 0; width: 32px; height: 32px; text-align: center; background-color: black; color: white; padding: 5px 0 0 0; z-index: 5; border-radius: 0 0 0 4px; }
 .dashboard-edit:hover { background-color: #303030; }
 
@@ -215,6 +212,7 @@ pre { margin-top: 5px; }
 .theme-dark .grid { background-color: black; }
 .theme-dark .grid-hover { background-color: #404040; }
 .theme-dark .mainmenu { color: gray; }
+.theme-dark .widget-loading { background-image: url(/img/preloader.gif), repeating-linear-gradient(45deg, #202020, #202020 10px, #404040 10px, #404040 20px); }
 
 .theme-yellow { background-color: #F6BB42; }
 .theme-yellow h1 { color: white; }

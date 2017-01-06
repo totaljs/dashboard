@@ -1,15 +1,27 @@
-.network .open-container { display: table; height: 68%; width: 100%; position: absolute; left: 0; right: 0; bottom: 0; top: 11%; }
-.network .open { font-size: 250%; text-align: center; vertical-align: middle; display: table-cell; }
-.network .open .fa { margin-right: 3%; font-size: 70%; vertical-align: middle; animation: 1s network-open-blink infinite; }
-.network .open span { vertical-align: middle; font-weight: bold; color: black; }
-.network .info { height: 20%; position: relative; border-top: 1px solid #E0E0E0; line-height: 80%; }
-.network .info b { font-size: 60%; display: block; padding: 5% 0 3%; }
-.network .info b .fa { margin-right: 2%; }
-.network .info > div { position: relative; display: inline-block; width: 50%; height: 100%; text-align: center; }
-.network .info .download { border-left: 1px solid #E0E0E0; }
-.network .info span { font-weight: bold; color: black; }
-.network .chart { height: 68%; padding: 5% 0; }
-.network .chart rect { fill: #D0D0D0; }
+.network {
+	.open-container { display: table; height: 68%; width: 100%; position: absolute; left: 0; right: 0; bottom: 0; top: 11%; }
+	.open { font-size: 250%; text-align: center; vertical-align: middle; display: table-cell; }
+	.open .fa { margin-right: 3%; font-size: 70%; vertical-align: middle; animation: 1s network-open-blink infinite; }
+	.open span { vertical-align: middle; font-weight: bold; color: black; }
+	.info { height: 20%; position: relative; border-top: 1px solid #E0E0E0; line-height: 80%; }
+	.info b { font-size: 60%; display: block; padding: 5% 0 3%; }
+	.info b .fa { margin-right: 2%; }
+	.info > div { position: relative; display: inline-block; width: 50%; height: 100%; text-align: center; }
+	.info .download { border-left: 1px solid #E0E0E0; }
+	.info span { font-weight: bold; color: black; }
+	.chart { height: 68%; padding: 5% 0; }
+	.chart rect { fill: #D0D0D0; }
+}
+
+.theme-dark {
+	.network { background-color: #101010; }
+	.network .info { background-color: #202020; border-color: transparent; }
+	.network .info > div { border-color: #303030; }
+	.network .info span { color: white; }
+	.network .info b { color: gray; }
+	.network .open span { color: white; }
+	.network .chart rect { fill: #303030; }
+}
 
 @keyframes network-open-blink {
 	0% { opacity: 1; }
