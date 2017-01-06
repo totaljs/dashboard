@@ -45,7 +45,7 @@ WIDGET('Process', function() {
 		var key_cpu = value.type + '_cpu';
 
 		value.history.reverse();
-		var tmp = value.history.take(12);
+		var tmp = value.history.take(15);
 		tmp.reverse();
 
 		tmp.forEach(function(item) {
@@ -60,10 +60,10 @@ WIDGET('Process', function() {
 		obj[key_memory] = 0;
 		obj[key_cpu] = 0;
 
-		for (var i = history_memory.length; i < 12; i++)
+		for (var i = history_memory.length; i < 15; i++)
 			history_memory.push(obj);
 
-		for (var i = history_cpu.length; i < 12; i++)
+		for (var i = history_cpu.length; i < 15; i++)
 			history_cpu.push(obj);
 
 		var width = Echart.width();
@@ -71,9 +71,9 @@ WIDGET('Process', function() {
 
 		var x = d3.scaleBand().rangeRound([0, width]).padding(0.2);
 		var y = d3.scaleLinear().rangeRound([height, 0]);
-		var line = d3.line().x(function(d, index) { return x(index); }).y(function(d) { return y(d[key_cpu]); });
+		var line = d3.line().x(function(d, index) { return x(index) + 10; }).y(function(d) { return y(d[key_cpu]); });
 
-		x.domain(d3.range(16));
+		x.domain(d3.range(15));
 		y.domain([0, max_memory]);
 
 		g.selectAll('rect,text').remove();
