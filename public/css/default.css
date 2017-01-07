@@ -2,7 +2,7 @@
 
 $font   : 'Arial';
 
-html,body { margin: 0; height: 100%; position: relative; }
+html,body { margin: 0; height: 100%; position: relative; overflow-x: hidden; }
 body { background-color: #F0F0F0; padding: 0; color: gray; font-smoothing: antialiased; overflow-y: scroll; overflow-x: hidden; overflow-scrolling: touch; font-size: 14px; transition: background-color 0.5s; }
 
 .developer { background-color: #D0D0D0; font-size: 11px; text-align: center; padding: 5px 0; display: block; color: gray; }
