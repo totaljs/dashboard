@@ -15,10 +15,13 @@
 
 .rows5 .memory .info > div { padding-top: 2%; }
 
-.theme-dark .memory { background-color: #101010; }
-.theme-dark .memory .info { background-color: #202020; }
-.theme-dark .memory .info > div { border-color: #303030; }
-.theme-dark .memory .info b { color: white; }
+.theme-dark  {
+	.memory { background-color: #101010; }
+	.memory .info { background-color: #202020; }
+	.memory .info > div { border-color: #303030; }
+	.memory .info b { color: white; }
+	.chart-history rect { fill: #303030; }
+}
 
 .noxs.g1x1 .memory .info { display: none; }
 .noxs.g1x1 .memory .chart { height: 100%; }
