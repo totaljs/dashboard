@@ -65,9 +65,11 @@ exports.install = function() {
 		getCpuAvg(function() {
 			getMemory(function() {
 				getNetwork(function() {
-					getProcesses();
 					INDEXER % 3 === 0 && getDisk();
 					INDEXER % 4 === 0 && getLogs();
+					getProcesses(function() {
+						getTopProcesses();
+					});
 				});
 			});
 		});
@@ -199,6 +201,12 @@ function communication() {
 				setTimeout(next, 100);
 			});
 		}, 1000);
+
+		setTimeout(function() {
+			DATA.type = 'top';
+			DATA.value = RESPONSE.top;
+			DATA.value && client.send(DATA);
+		}, 1200);
 	});
 }
 
@@ -346,11 +354,13 @@ function getMemory(next) {
 	});
 }
 
-function getProcessesConsuming(next) {
+function getTopProcesses(next) {
 	Exec('ps aux | sort -nrk 3,3 | head -n 30', function(err, response) {
-		response.parseTerminal(function(line) {
-			console.log('-->', line);
-		}, 1);
+		RESPONSE.top = [];
+		response.parseTerminal(line => RESPONSE.top.push({ user: line[0], pid: line[1].parseInt(), cpu: line[2].parseFloat().floor(1), memory: line[5].parseFloat() * 1024, name: line.splice(10).join(' ') }));
+		DATA.type = 'top';
+		DATA.value = RESPONSE.top;
+		DATA.value && WEBSOCKET && WEBSOCKET.send(DATA);
 		next && next();
 	});
 }
@@ -366,7 +376,6 @@ function getLogs(next) {
 			RESPONSE[key].path = item;
 			RESPONSE[key].value = response.split('\n');
 			RESPONSE[key].updated = F.datetime;
-
 			DATA.type = 'logs';
 			DATA.value = RESPONSE[key];
 			WEBSOCKET && WEBSOCKET.send(DATA);
