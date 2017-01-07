@@ -303,9 +303,6 @@ WIDGET_COMPONENT.prototype.configure = function() {
 	obj.author = w.author;
 	obj.name = w.name;
 
-	if (window.dashboard && window.dashboard.paths)
-		window.dashboard.paths = null;
-
 	var reg = /^(\/\w+|https\:\/|http\:\/)/i;
 
 	Object.keys(options).waitFor(function(key, next) {
