@@ -3,15 +3,18 @@ WIDGET('CPU', function() {
 	var self = this;
 	var corescount = 0;
 	var cores;
-	var Ecpu, Eavg;
+	var Echart, Ecpu, Eavg, svg, g;
 
 	self.make = function(size) {
 		self.center(false);
 		self.toggle('cpu');
-		self.html('<div class="header"><i class="fa fa-microchip"></i>CPU utilization</div><div class="avg"></div><div class="info"><span>...</span><div>CPU utilization (all <b>...</b> cores)</div></div><div class="chart"></div>');
+		self.html('<div class="header"><i class="fa fa-microchip"></i>CPU utilization</div><div class="avg"></div><div class="info"><span>...</span><div>CPU utilization (all <b>...</b> cores)</div></div><div class="cores"></div><div class="chart"><svg width="100%" height="100%"></svg></div>');
 		self.recreate();
 		Ecpu = self.find('.info').find('span');
 		Eavg = self.find('.avg');
+		Echart = self.find('.chart');
+		svg = d3.select(Echart.find('svg').get(0));
+		g = svg.append('g');
 	};
 
 	self.recreate = function() {
@@ -19,7 +22,7 @@ WIDGET('CPU', function() {
 		var width = (100 / corescount).format(3, '', '.');
 		for (var i = 0; i < corescount; i++)
 			builder.push('<div class="corecontainer" style="width:{0}%"><div class="core"><div></div></div></div>'.format(width));
-		self.find('.chart').html(builder.join(''));
+		self.find('.cores').html(builder.join(''));
 		cores = self.find('.core');
 	};
 
@@ -65,6 +68,33 @@ WIDGET('CPU', function() {
 				css.height = val + '%';
 			div.css(css).html((size.rows === 1 || size.fontsize > 60) && val > 10 && bar > 10 ? (val.format(1, '', '.') + '%') : '');
 		});
+
+		if (NOTMODIFIED(self.id, value.history))
+			return;
+
+		var max = 100;
+		value.history.reverse();
+		var tmp = value.history.take(15);
+		var history = [];
+		tmp.reverse();
+		tmp.forEach(function(item) {
+			item.cpu !== undefined && history.push(item);
+		});
+
+		var obj = { cpu: 0 };
+
+		for (var i = history.length; i < 15; i++)
+			history.push(obj);
+
+		var width = Echart.width();
+		var height = Echart.height();
+		var x = d3.scaleBand().rangeRound([0, width]);
+		var y = d3.scaleLinear().rangeRound([height.inc('-15%'), 0]);
+		var line = d3.line().x(function(d, index) { return x(index) + 10; }).y(function(d) { return y(d.cpu > 100 ? 100 : d.cpu); });
+		x.domain(d3.range(15));
+		y.domain([0, max]);
+		g.selectAll('path').remove('path');
+		g.append('path').datum(history).attr('d', line);
 	};
 
 	self.resize = function(size) {

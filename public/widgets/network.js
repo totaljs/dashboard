@@ -21,18 +21,24 @@ WIDGET('Network', function() {
 		Edownload.html(value.download.filesize());
 		Eupload.html(value.upload.filesize());
 
-		var builder = [];
+		if (NOTMODIFIED(self.id, value.history))
+			return;
+
 		var max = 0;
 		var history = [];
 
-		value.history.forEach(function(item) {
+		value.history.reverse();
+		var tmp = value.history.take(15);
+		tmp.reverse();
+
+		tmp.forEach(function(item) {
 			if (item.network) {
 				max = Math.max(item.network, max);
 				history.push(item);
 			}
 		});
 
-		for (var i = history.length; i < 24; i++)
+		for (var i = history.length; i < 15; i++)
 			history.push({ network: 0 });
 
 		if (max < 3000)
@@ -44,7 +50,7 @@ WIDGET('Network', function() {
 		var x = d3.scaleBand().rangeRound([0, width]).padding(0.2);
 		var y = d3.scaleLinear().rangeRound([height, 0]);
 
-		x.domain(d3.range(24));
+		x.domain(d3.range(15));
 		y.domain([0, max]);
 
 		g.selectAll('rect').remove();

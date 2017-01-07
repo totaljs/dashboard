@@ -23,7 +23,9 @@ WIDGET('Disk', function() {
 		Eprogress.animate({ width: p + '%' }, 300);
 		Eprogress.html(p > 20 ? p + '%' : '');
 
-		var builder = [];
+		if (NOTMODIFIED(self.id, value.history))
+			return;
+
 		var max = value.total;
 		var history = [];
 

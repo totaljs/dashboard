@@ -365,7 +365,7 @@ WIDGET_COMPONENT.prototype.data = function(response, type) {
 	} else
 		obj = null;
 
-	self.$data = obj;
+	self.$data = CLONE(obj);
 
 	if (obj && self.render) {
 		self.render(obj, self.size, self.$render, type);
@@ -390,8 +390,9 @@ WIDGET_COMPONENT.prototype.toggle = function(cls, enable) {
 WIDGET_COMPONENT.prototype.refresh = function(type) {
 	var self = this;
 	if (self.$data && self.render) {
-		self.render(self.$data, self.size, self.$render, type);
-		EMIT(self.id, 'render', self.$data, self.size, self.$render++, type);
+		var val = CLONE(self.$data);
+		self.render(val, self.size, self.$render, type);
+		EMIT(self.id, 'render', val, self.size, self.$render++, type);
 	}
 	return self;
 };

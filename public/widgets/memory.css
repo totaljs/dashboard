@@ -5,7 +5,9 @@
 	.info > div { float: left; width: 33.333%; text-align: center; border-left: 1px solid #E0E0E0; padding: 4% 0 4%; }
 	.info > div:first-child { border-left: 0; }
 	.info b { font-size: 60%; display: block; text-transform: uppercase; font-weight: bold; color: black; padding-bottom: 3%; }
-	.chart { height: 68%; text-align: center; padding: 5% 0; }
+	.chart-history { height: 68%; text-align: center; padding: 5% 0 0; width: 100%; }
+	.chart-history rect { fill: #D0D0D0; }
+	.chart { height: 68%; text-align: center; padding: 5% 0 0; position: absolute; left: 0; width: 100%; }
 	.trend { position: absolute; width: 100%; font-size: 200%; text-align: center; top: 37%; }
 	.trend .fa-long-arrow-up { color: #D63B32; }
 	.trend .fa-long-arrow-down { color: #68B25B; }

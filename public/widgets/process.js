@@ -35,6 +35,9 @@ WIDGET('Process', function() {
 		Eprogress.animate({ width: p + '%' }, 300);
 		Eprogress.css('background-color', p < 20 ? '#A0D468' : p < 40 ? '#F6BB42' : p < 60 ? '#FC6E51' : 'DA4453');
 
+		if (NOTMODIFIED(self.id, value.history))
+			return;
+
 		var builder = [];
 		var max_memory = 1048576000;
 		var max_cpu = 100;
