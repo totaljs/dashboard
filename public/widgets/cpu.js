@@ -97,14 +97,6 @@ WIDGET('CPU', function() {
 		g.append('path').datum(history).attr('d', line);
 	};
 
-	self.resize = function(size) {
-		self.refresh();
-	};
-
-	self.state = function(type, changes) {
-		type && self.refresh();
-	};
-
 }, function(config, inject) {
 	this.example = { all: 59, cores: [32, 20, 38, 15, 18, 12, 3, 8, 19], hours: [{ created: new Date(), value: 29 }, { created: new Date(), value: 39 }] };
 	this.author = 'Peter Širka';

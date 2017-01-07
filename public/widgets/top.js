@@ -24,14 +24,6 @@ WIDGET('Top', function() {
 		body.html(builder.join(''));
 	};
 
-	self.resize = function(size) {
-		self.refresh();
-	};
-
-	self.state = function(type, changes) {
-		self.refresh();
-	};
-
 }, function(config, inject) {
 	this.example = [{ user: 'root', pid: 13473, cpu: 1.4, memory: 65187840, name: 'total: warstore' }, { user: 'root', pid: 13231, cpu: 1.1, memory: 54710272, name: 'total: total.js' }, { user: 'root', pid: 2756, cpu: 0.9, memory: 48832512, name: 'total: dashboar' }];
 	this.preview = '/widgets/top.png';
@@ -42,6 +34,4 @@ WIDGET('Top', function() {
 	this.type = ['top'];
 	this.sizes = ['2x2', '3x3', '2x3', '2x4', '3x4', '3x2', '4x2'];
 	this.group = 'Monitoring';
-	config('background', 'Background Color', 'red', 'Color');
-	config('color', 'Font Color', 'white', 'Color');
 });

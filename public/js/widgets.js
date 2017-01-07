@@ -116,13 +116,21 @@ function WIDGET_COMPONENT(id, name, element, options) {
 }
 
 WIDGET_COMPONENT.prototype.$resize = function(size, dimension) {
-	this.resize && this.resize(size, dimension);
+	if (this.resize)
+		this.resize(size, dimension);
+	else
+		this.refresh();
 	EMIT(this.id, 'resize', size, dimension);
 	return this;
 };
 
 WIDGET_COMPONENT.prototype.$state = function(type, changes) {
-	this.state && this.state(type, changes);
+
+	if (this.state)
+		this.state(type, changes);
+	else
+		this.refresh();
+
 	EMIT(this.id, 'state', type, changes);
 	return this;
 };

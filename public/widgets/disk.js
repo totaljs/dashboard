@@ -52,10 +52,6 @@ WIDGET('Disk', function() {
 		g.selectAll('.data').data(history).enter().append('rect').attr('x', function(d, i) { return x(i); }).attr('y', function(d) { return y(d.disk); }).attr('width', x.bandwidth()).attr('height', function(d) { var tmp = height - y(d.disk); return tmp < 0 ? 0 : tmp; });
 	};
 
-	self.resize = function(size) {
-		self.refresh();
-	};
-
 }, function(config, inject) {
 
 	this.example = { free: 3498393939, total: 6996787878, used: 3498393939, history: [{ disk: 3498393939 }, { disk: 3198393939 }, { disk: 2498393939 }] };

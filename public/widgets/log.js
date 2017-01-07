@@ -33,10 +33,6 @@ WIDGET('Log', function() {
 		Emessages.html(builder.join(''));
 	};
 
-	self.resize = function(size) {
-		self.refresh();
-	};
-
 }, function(config) {
 	this.example = { type: '/var/log/nginx/error.log.1', value: ['Lorem ipsum', 'Lorem ipsum'] };
 	this.preview = '/widgets/log.png';

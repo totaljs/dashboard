@@ -110,10 +110,6 @@ WIDGET('Process', function() {
 		gCpu.append('path').datum(history_cpu).attr('d', line);
 	};
 
-	self.resize = function(size) {
-		self.refresh();
-	};
-
 }, function(config) {
 	this.example = { type: 'nginx', cpu: 7.1, memory: 39641088, files: 393, uptime: '32:22', history: [{ nginx_cpu: 14.3, nginx_memory: 39641088 }, { nginx_cpu: 20, nginx_memory: 59641088 }, { nginx_cpu: 7, nginx_memory: 29641088 }] };
 	this.preview = '/widgets/process.png';

@@ -83,14 +83,6 @@ WIDGET('Memory', function() {
 
 	};
 
-	self.resize = function(size) {
-		self.refresh();
-	};
-
-	self.state = function(type, changes) {
-		type && self.refresh();
-	};
-
 }, function(config, inject) {
 	this.example = { free: 2150699008, total: 3895230464, used: 1744531456, history: [] };
 	this.author = 'Peter Širka';
