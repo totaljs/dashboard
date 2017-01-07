@@ -19,7 +19,7 @@ WIDGET('Top', function() {
 			return;
 		var builder = [];
 		value.forEach(function(item) {
-			builder.push('<div class="process"><div class="cpu">{0}%<i class="fa fa-microchip"></i></div><div class="memory">{1}</div><div class="name">{2}</div></div>'.format(item.cpu.format(1), item.memory.filesize(), item.name));
+			item && builder.push('<div class="process"><div class="cpu">{0}%<i class="fa fa-microchip"></i></div><div class="memory">{1}</div><div class="name">{2}</div></div>'.format(item.cpu.format(1), item.memory.filesize(), item.name));
 		});
 		body.html(builder.join(''));
 	};
@@ -40,7 +40,7 @@ WIDGET('Top', function() {
 	this.category = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.type = ['top'];
-	this.sizes = ['2x2', '3x3', '2x3', '2x4', '3x4'];
+	this.sizes = ['2x2', '3x3', '2x3', '2x4', '3x4', '3x2', '4x2'];
 	this.group = 'Monitoring';
 	config('background', 'Background Color', 'red', 'Color');
 	config('color', 'Font Color', 'white', 'Color');

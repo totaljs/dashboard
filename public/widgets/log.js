@@ -10,7 +10,7 @@ WIDGET('Log', function() {
 		Etitle = self.find('.header').find('span');
 		self.element.on('mouseenter', 'li', function() {
 			var el = $(this);
-			el.attr('title', el.text());
+			!el.attr('title') && el.attr('title', el.text());
 		});
 	};
 
@@ -25,9 +25,10 @@ WIDGET('Log', function() {
 			return;
 
 		var builder = [];
-		value.value.forEach(function(message) {
-			builder.push('<li>{0}</li>'.format(Tangular.helpers.encode(message)));
+		value.value.forEach(function(item) {
+			item && builder.push('<li>{0}</li>'.format(Tangular.helpers.encode(item)));
 		});
+
 		builder.reverse();
 		Emessages.html(builder.join(''));
 	};
@@ -44,6 +45,6 @@ WIDGET('Log', function() {
 	this.group = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.type = ['logs'];
-	this.sizes = ['2x2', '3x3', '4x4', '5x5', '6x6', '2x3', '2x4', '2x5', '2x6', '3x3', '3x4', '3x5', '3x6', '6x2', '6x3', '6x4', '5x2', '5x3', '5x4', '4x2', '4x3'];
+	this.sizes = ['2x2', '3x3', '4x4', '5x5', '6x6', '2x3', '2x4', '2x5', '2x6', '3x3', '3x4', '3x5', '3x6', '6x2', '6x3', '6x4', '5x2', '5x3', '5x4', '4x2', '4x3', '3x2', '4x2'];
 	config('path', 'Path', '/var/log/nginx/error.log', '/modules/monitoring/codelist/logs/');
 });
