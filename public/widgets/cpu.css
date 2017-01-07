@@ -21,6 +21,7 @@
 	.cpu .corecontainer .cores { background-color: #303030; border-color: #202020; }
 	.cpu .corecontainer .core { border-color: #404040; }
 	.cpu .info span { color: white; }
+	.cpu .chart path { stroke: white; }
 }
 
 .g2x3 .cpu .info { padding-top: 5%; }

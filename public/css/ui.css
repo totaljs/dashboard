@@ -239,6 +239,9 @@ label span { vertical-align: middle; }
 .ui-tooltip-body { padding: 12px 15px; font-size: 11px; background: black linear-gradient(#303030,black); color: white; border-radius: 4px; }
 .ui-tooltip-arrow { font-size: 30px; color: #303030; line-height: 0; text-align: center; height: 20px; }
 
+.theme-dark .ui-tooltip-body { background: black linear-gradient(#E0E0E0,white); color: black; }
+.theme-dark .ui-tooltip-arrow { color: #E0E0E0; }
+
 .ui-empty { padding: 20px 0; text-align: center; font-size: 14px; color: #A0A0A0; border: 1px solid #E0E0E0; max-width: 400px; margin: 50px auto; background-color: white; border-radius: 4px; }
 
 .ui-themeselector { text-align: right; }

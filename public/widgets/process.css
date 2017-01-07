@@ -26,10 +26,10 @@
 	.process .info b { color: white; }
 	.process .threads { border-color: #303030; color: #505050; }
 	.process .progress { background: linear-gradient(90deg, #404040, #606060); }
-	.chart rect { fill: #303030; }
-	.chart rect:hover { fill: #404040; }
-	.chart text { fill: gray; }
-	.chart path { stroke: white; }
+	.process .chart rect { fill: #303030; }
+	.process .chart rect:hover { fill: #404040; }
+	.process .chart text { fill: gray; }
+	.process .chart path { stroke: white; }
 }
 
 @keyframes process-blink {

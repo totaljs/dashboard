@@ -1,4 +1,4 @@
-.header { height: 12%; font-size: 60%; padding: 3% 3% 0; text-align: center; text-transform: uppercase; font-weight: bold; color: silver; border-bottom: 1px solid #E0E0E0; }
+.header { height: 42px; font-size: 14px; padding: 3% 3% 0; text-align: center; text-transform: uppercase; font-weight: bold; color: silver; border-bottom: 1px solid #E0E0E0; }
 .header .fa { margin-right: 2%; }
 .g2x3 .header { padding-top: 2%; }
 

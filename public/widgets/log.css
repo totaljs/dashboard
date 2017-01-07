@@ -1,6 +1,6 @@
 .log {
 	ul { list-style-type: none; margin: 0; padding: 0; overflow: hidden; }
-	li { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; padding: 1px 5px; }
+	li { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; padding: 3px 5px 0; height: 20px; }
 	li:nth-child(even) { background-color: #F0F0F0; }
 	li:first-child { border-top: 0; }
 }

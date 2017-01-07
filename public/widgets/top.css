@@ -1,7 +1,7 @@
 .top { background-color: white; }
 .top {
-	.process { height: 25px; font-size: 12px; border-bottom: 1px solid #E0E0E0; }
-	.process > div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; padding: 3px 5px 0; height: 24px; font-size: 11px; }
+	.process { height: 22px; font-size: 12px; border-bottom: 1px solid #E0E0E0; }
+	.process > div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; padding: 3px 5px 0; height: 21px; font-size: 11px; }
 	.cpu { float: left; width: 70px; text-align: right; background-color: #F8F8F8; }
 	.cpu .fa { margin-left: 3px; }
 	.memory { float: left; width: 70px; text-align: right; background-color: #F0F0F0; }
