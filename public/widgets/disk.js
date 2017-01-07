@@ -62,7 +62,7 @@ WIDGET('Disk', function() {
 	this.preview = '/widgets/disk.png';
 	this.author = 'Peter Širka';
 	this.title = 'Disk';
-	this.category = 'Monitoring';
+	this.group = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.type = ['disk'];
 	this.sizes = ['2x2', '3x3', '4x4', '5x5'];

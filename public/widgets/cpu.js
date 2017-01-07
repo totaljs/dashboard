@@ -109,7 +109,7 @@ WIDGET('CPU', function() {
 	this.example = { all: 59, cores: [32, 20, 38, 15, 18, 12, 3, 8, 19], hours: [{ created: new Date(), value: 29 }, { created: new Date(), value: 39 }] };
 	this.author = 'Peter Širka';
 	this.title = 'CPU';
-	this.category = 'Monitoring';
+	this.group = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.preview = '/widgets/cpu.png';
 	this.sizes = ['1x1', '1x2', '1x3', '1x4', '1x5', '1x6', '2x2', '3x3', '4x4', '5x5', '3x2', '2x3', '2x4', '2x5', '2x6'];

@@ -95,7 +95,7 @@ WIDGET('Memory', function() {
 	this.example = { free: 2150699008, total: 3895230464, used: 1744531456, history: [] };
 	this.author = 'Peter Širka';
 	this.title = 'Memory';
-	this.category = 'Monitoring';
+	this.group = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.preview = '/widgets/memory.png';
 	this.sizes = ['1x1', '2x2', '3x3', '4x4', '5x5'];

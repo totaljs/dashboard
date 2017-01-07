@@ -66,7 +66,7 @@ WIDGET('Network', function() {
 	this.preview = '/widgets/network.png';
 	this.author = 'Peter Širka';
 	this.title = 'Network';
-	this.category = 'Monitoring';
+	this.group = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.type = ['network'];
 	this.sizes = ['2x2', '3x3', '4x4', '5x5'];

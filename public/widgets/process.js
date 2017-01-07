@@ -119,7 +119,7 @@ WIDGET('Process', function() {
 	this.preview = '/widgets/process.png';
 	this.author = 'Peter Širka';
 	this.title = 'Process';
-	this.category = 'Monitoring';
+	this.group = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.type = ['process'];
 	this.sizes = ['2x2', '3x3', '4x4', '5x5'];

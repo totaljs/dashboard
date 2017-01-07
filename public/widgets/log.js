@@ -41,7 +41,7 @@ WIDGET('Log', function() {
 	this.preview = '/widgets/log.png';
 	this.author = 'Peter Širka';
 	this.title = 'Log';
-	this.category = 'Monitoring';
+	this.group = 'Monitoring';
 	this.url = 'https://www.totaljs.com/dashboard/';
 	this.type = ['logs'];
 	this.sizes = ['2x2', '3x3', '4x4', '5x5', '6x6', '2x3', '2x4', '2x5', '2x6', '3x3', '3x4', '3x5', '3x6', '6x2', '6x3', '6x4', '5x2', '5x3', '5x4', '4x2', '4x3'];

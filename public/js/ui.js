@@ -1865,8 +1865,8 @@ COMPONENT('dashboard', function() {
 
 			Object.keys(WIDGETS_DATABASE).forEach(function(name) {
 				var widget = WIDGETS_DATABASE[name];
-				var disabled = widget.sizes && widget.sizes.length && widget.sizes.indexOf(grid) === -1;
-				widgets.push({ id: name, name: widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled });
+				var disabled = (widget.sizes && widget.sizes.length && widget.sizes.indexOf(grid) === -1) || (dashboard.current && dashboard.current.group !== widget.group);
+				widgets.push({ id: name, name: widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled, group: width.group });
 			});
 
 			IMPORTSET('formwidgets', 'common.form', 'widgets', 'form-widgets');
@@ -1898,8 +1898,8 @@ COMPONENT('dashboard', function() {
 
 			Object.keys(WIDGETS_DATABASE).forEach(function(name) {
 				var widget = WIDGETS_DATABASE[name];
-				var disabled = widget.sizes && widget.sizes.length && widget.sizes.indexOf(grid) === -1;
-				widgets.push({ id: name, name: widget.title || widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled });
+				var disabled = (widget.sizes && widget.sizes.length && widget.sizes.indexOf(grid) === -1) || (dashboard.current && dashboard.current.group !== widget.group);
+				widgets.push({ id: name, name: widget.title || widget.name || name, preview: widget.preview, category: widget.category || 'Common', author: widget.author, sizes: widget.sizes, disabled: disabled, group: widget.group });
 			});
 
 			IMPORTSET('formwidgets', 'common.form', 'widgets', 'form-widgets');

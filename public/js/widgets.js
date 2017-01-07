@@ -19,6 +19,7 @@ function WIDGET(name, make, init) {
 	obj.author = '';
 	obj.example = '';
 	obj.category = '';
+	obj.group = '';
 	obj.url = '';
 	obj.keywords = '';
 	obj.repository = WIDGETS_CURRENTREPOSITORY;
