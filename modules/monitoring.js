@@ -355,7 +355,7 @@ function getMemory(next) {
 }
 
 function getTopProcesses(next) {
-	Exec('ps aux | sort -nrk 3,3 | head -n 30', function(err, response) {
+	Exec('ps aux | sort -nrk 3,3 | head -n ' + F.config['monitoring.maxtopprocesses'], function(err, response) {
 		RESPONSE.top = [];
 		response.parseTerminal(line => RESPONSE.top.push({ user: line[0], pid: line[1].parseInt(), cpu: line[2].parseFloat().floor(1), memory: line[5].parseFloat() * 1024, name: line.splice(10).join(' ') }));
 		DATA.type = 'top';
@@ -367,7 +367,7 @@ function getTopProcesses(next) {
 
 function getLogs(next) {
 	F.config['monitoring.logs'].wait(function(item, next) {
-		Exec('tail -n ' + F.config['monitoring.logslines'] + ' ' + item, function(err, response) {
+		Exec('tail -n ' + F.config['monitoring.maxlogslines'] + ' ' + item, function(err, response) {
 			var key = 'logs_' + item;
 
 			if (!RESPONSE[key])
