@@ -335,8 +335,8 @@ function getMemory(next) {
 	Exec('free -b -t', function(err, response) {
 		var memory = response.split('\n')[1].match(/\d+/g);
 		RESPONSE.memory.total = memory[0].parseInt();
-		RESPONSE.memory.free = memory[2].parseInt() + memory[4].parseInt();
-		RESPONSE.memory.used = memory[1].parseInt();
+		RESPONSE.memory.used = memory[1].parseInt() - memory[3].parseInt();
+		RESPONSE.memory.free = RESPONSE.memory.total - RESPONSE.memory.used;
 		RESPONSE.memory.updated = F.datetime;
 		DATA.type = 'memory';
 		DATA.value = RESPONSE.memory;
