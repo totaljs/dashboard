@@ -15,9 +15,15 @@ WIDGET('Log', function() {
 	};
 
 	self.render = function(value, size, counter) {
+
 		if (value.path !== self.options.path)
 			return;
+
 		Etitle.html(value.path);
+
+		if (NOTMODIFIED(self.id, value.value))
+			return;
+
 		var builder = [];
 		value.value.forEach(function(message) {
 			builder.push('<li>{0}</li>'.format(Tangular.helpers.encode(message)));
