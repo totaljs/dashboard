@@ -6,6 +6,7 @@ cookie                    : __user
 groups (Array)            : ['Monitoring']
 
 // Monitoring settings
+monitoring.network                    : eth0
 monitoring.network.ports    (Array)   : [80]
 monitoring.interval         (Number)  : 10000
 monitoring.maxlogslines     (Number)  : 30
