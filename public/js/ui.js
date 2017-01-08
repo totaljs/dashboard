@@ -1791,7 +1791,7 @@ COMPONENT('dashboard', function() {
 		}
 
 		mode = type;
-		self.element.toggleClass('readonly', type === 0).css('height', 'auto');
+		self.element.toggleClass('readonly', type === 0);
 		return type;
 	};
 
