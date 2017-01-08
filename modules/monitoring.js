@@ -2,6 +2,8 @@ const Exec = require('child_process').exec;
 const Spawn = require('child_process').spawn;
 const REG_EMPTY = /\s{2,}/g;
 const REG_CLEAN = /\:\-/g;
+const FIELDS_CPU = ['CPU', '%idle'];
+const FIELDS_DISK = ['1B-blocks', 'Used', 'Available'];
 
 // Threads
 var PROCESS_CPU;
@@ -32,21 +34,13 @@ exports.install = function() {
 	PROCESS_CPU = Spawn('mpstat', ['-P', 'ALL', 10]);
 
 	PROCESS_CPU.stdout.on('data', U.streamer('\n\n', function(chunk) {
-		chunk.toString('utf8').parseTerminal(function(values, index, count) {
 
-			var id = values[2];
-			var core = +id;
-			if (id !== 'all' && isNaN(core))
-				return;
-
-			var sum = 0;
-			for (var i = 3, length = values.length - 1; i < length; i++)
-				sum += +values[i];
-
-			if (isNaN(core))
-				RESPONSE.cpu.all = sum.floor(2);
+		chunk.toString('utf8').parseTerminal(FIELDS_CPU, function(values, index, count) {
+			var val = 100 - values[1].parseFloat2();
+			if (values[0] === 'all')
+				RESPONSE.cpu.all = val;
 			else
-				RESPONSE.cpu.cores[core] = sum.floor(2);
+				RESPONSE.cpu.cores[+values[0]] = val;
 		});
 
 		STATS.cpu = Math.max(STATS.cpu || 0, RESPONSE.cpu.all);
@@ -58,7 +52,7 @@ exports.install = function() {
 		DATA.type = 'cpu';
 		DATA.value = RESPONSE.cpu;
 		WEBSOCKET && WEBSOCKET.send(DATA);
-	}));
+	}, 1));
 
 	INTERVAL = setInterval(function() {
 		INDEXER++;
@@ -229,7 +223,7 @@ function getNetwork(next) {
 	});
 
 	arr.push(function(next) {
-		Exec('ifconfig eth0', function(err, response) {
+		Exec('ifconfig ' + F.config['monitoring.network'], function(err, response) {
 			var match = response.match(/RX bytes:\d+|TX bytes:\d+/g);
 			if (match) {
 				RESPONSE.network.download = match[0].parseInt2();
@@ -288,6 +282,9 @@ function getProcesses(next) {
 
 				RESPONSE[item].cpu = RESPONSE[item].cpu.floor(1);
 
+				if (RESPONSE[item].cpu > 100)
+					RESPONSE[item].cpu = 100;
+
 				// Open files
 				Exec('lsof -a -p {0} | wc -l'.format(pid), function(err, response) {
 					RESPONSE[item].files = response.trim().parseInt2();
@@ -311,10 +308,10 @@ function getDisk(next) {
 		RESPONSE.disk = { history: HISTORY };
 
 	Exec('df -hTB1 /', function(err, response) {
-		response.parseTerminal(function(line) {
-			RESPONSE.disk.total = line[2].parseInt();
-			RESPONSE.disk.free = line[4].parseInt();
-			RESPONSE.disk.used = line[3].parseInt();
+		response.parseTerminal(FIELDS_DISK, function(line) {
+			RESPONSE.disk.total = line[0].parseInt();
+			RESPONSE.disk.free = line[1].parseInt();
+			RESPONSE.disk.used = line[2].parseInt();
 			RESPONSE.disk.updated = F.datetime;
 			DATA.type = 'disk';
 			DATA.value = RESPONSE.disk;
