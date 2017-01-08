@@ -2156,6 +2156,8 @@ COMPONENT('dashboard', function() {
 		grid.each(function() {
 			var el = $(this);
 			var offset = el.offset();
+			if (offset.top < 0)
+				offset.top = 0;
 			this.gridX = device === 'xs' ? 0 : offset.left;
 			this.gridY = device === 'xs' ? 0 : offset.top;
 			this.gridW = size.width;

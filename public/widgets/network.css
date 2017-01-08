@@ -9,7 +9,7 @@
 	.info > div { position: relative; display: inline-block; width: 50%; height: 100%; text-align: center; }
 	.info .download { border-left: 1px solid #E0E0E0; }
 	.info span { font-weight: bold; color: black; }
-	.chart { height: 68%; padding: 5% 0; }
+	.chart { height: 68%; padding: 7% 0 3%; }
 	.chart rect { fill: #D0D0D0; }
 }
 
