@@ -2,7 +2,7 @@ var ws_monitoring;
 var currentdata = {};
 
 ON('dashboard', function(dashboard) {
-	if (dashboard.group.toLowerCase() === 'monitoring') {
+	if (dashboard && dashboard.group.toLowerCase() === 'monitoring') {
 		if (ws_monitoring)
 			return;
 		ws_monitoring = new WebSocket((location.protocol === 'https:' ? 'wss' : 'ws') + '://' + location.hostname + (location.port ? ':' + location.port : '') + '/modules/monitoring/');

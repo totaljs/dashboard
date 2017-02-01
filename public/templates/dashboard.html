@@ -63,6 +63,7 @@
 		item && AJAX('GET /api/settings/{0}/'.format(id), function(response) {
 
 			CACHE('default', id, '10 days');
+
 			if (response && response.data)
 				WIDGETS_WIDGETSETTINGS = JSON.parse(decodeURIComponent(atob(response.data)));
 			else
@@ -76,7 +77,11 @@
 			dashboard.changed = false;
 
 			SETTER('loading', 'show');
-			item.data && WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
+			if (item.data)
+				WIDGETS_LOAD(JSON.parse(decodeURIComponent(atob(item.data))));
+			else
+				SETTER('dashboard', 'resize');
+
 			SETTER('loading', 'hide', 200);
 			dashboard_editbutton(0);
 			FIND('dashboard').mode(0);
