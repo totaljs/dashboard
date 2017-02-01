@@ -68,16 +68,16 @@ function json_exec() {
 
 function json_sa_query() {
 	var self = this;
-	if (!self.user.sa)
-		return self.invalid().push('error-user-privileges');
-	self.$query(self, self.callback());
+	if (self.user.sa)
+		return self.$query(self, self.callback());
+	self.invalid().push('error-user-privileges');
 }
 
 function json_sa_save() {
 	var self = this;
-	if (!self.user.sa)
-		return self.invalid().push('error-user-privileges');
-	self.$save(self, self.callback());
+	if (self.user.sa)
+		return self.$save(self, self.callback());
+	self.invalid().push('error-user-privileges');
 }
 
 function json_sa_remove(id) {
