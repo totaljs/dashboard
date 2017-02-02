@@ -310,15 +310,15 @@ function getDisk(next) {
 	Exec('df -hTB1 /', function(err, response) {
 		response.parseTerminal(FIELDS_DISK, function(line) {
 			RESPONSE.disk.total = line[0].parseInt();
-			RESPONSE.disk.free = line[1].parseInt();
-			RESPONSE.disk.used = line[2].parseInt();
+			RESPONSE.disk.free = line[2].parseInt();
+			RESPONSE.disk.used = line[1].parseInt();
 			RESPONSE.disk.updated = F.datetime;
 			DATA.type = 'disk';
 			DATA.value = RESPONSE.disk;
 			WEBSOCKET && WEBSOCKET.send(DATA);
 			STATS.disk = Math.max(STATS.disk || 0, RESPONSE.disk.used);
 			next && next();
-		}, 1);
+		});
 	});
 }
 
