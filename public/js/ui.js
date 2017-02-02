@@ -14,7 +14,7 @@ COMPONENT('click', function() {
 	};
 
 	self.make = function() {
-		self.element.on('click', self.click);
+		self.event('click', self.click);
 		var enter = self.attr('data-enter');
 		enter && $(enter).on('keydown', 'input', function(e) {
 			e.keyCode === 13 && setTimeout(function() {
@@ -61,7 +61,7 @@ COMPONENT('textboxlist', function() {
 		self.html((html ? '<div class="ui-textboxlist-label">{1}{0}:</div>'.format(html, icon) : '') + '<div class="ui-textboxlist-items"></div>' + self.template(empty).replace('-item"', '-item ui-textboxlist-base"'));
 		container = self.find('.ui-textboxlist-items');
 
-		self.element.on('click', '.fa-times', function() {
+		self.event('click', '.fa-times', function() {
 			var el = $(this);
 			var parent = el.closest('.ui-textboxlist-item');
 			var value = parent.find('input').val();
@@ -87,7 +87,7 @@ COMPONENT('textboxlist', function() {
 			return arr;
 		};
 
-		self.element.on('change keypress', 'input', function(e) {
+		self.event('change keypress', 'input', function(e) {
 
 			if (e.type !== 'change' && e.keyCode !== 13)
 				return;
@@ -156,7 +156,7 @@ COMPONENT('message', function() {
 	self.make = function() {
 		self.classes('ui-message hidden');
 
-		self.element.on('click', 'button', function() {
+		self.event('click', 'button', function() {
 			self.hide();
 		});
 
@@ -258,14 +258,14 @@ COMPONENT('checkbox', function() {
 	self.make = function() {
 		self.classes('ui-checkbox');
 		self.html('<div><i class="fa fa-check"></i></div><span{1}>{0}</span>'.format(self.html(), isRequired ? ' class="ui-checkbox-label-required"' : ''));
-		self.element.on('click', function() {
+		self.event('click', function() {
 			self.dirty(false);
 			self.getter(!self.get(), 2, true);
 		});
 	};
 
 	self.setter = function(value) {
-		self.element.toggleClass('ui-checkbox-checked', value ? true : false);
+		self.toggle('ui-checkbox-checked', value ? true : false);
 	};
 });
 
@@ -451,7 +451,7 @@ COMPONENT('textbox', function() {
 			icon2 = 'fa-calendar';
 		else if (self.type === 'search') {
 			icon2 = 'fa-search ui-textbox-control-icon';
-			self.element.on('click', '.ui-textbox-control-icon', function() {
+			self.event('click', '.ui-textbox-control-icon', function() {
 				self.$stateremoved = false;
 				$(this).removeClass('fa-times').addClass('fa-search');
 				self.set('');
@@ -466,7 +466,7 @@ COMPONENT('textbox', function() {
 
 		icon2 && builder.push('<div><span class="fa {0}"></span></div>'.format(icon2));
 		increment && !icon2 && builder.push('<div><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
-		increment && self.element.on('click', '.fa-caret-up,.fa-caret-down', function(e) {
+		increment && self.event('click', '.fa-caret-up,.fa-caret-down', function(e) {
 			var el = $(this);
 			var inc = -1;
 			if (el.hasClass('fa-caret-up'))
@@ -475,7 +475,7 @@ COMPONENT('textbox', function() {
 			self.inc(inc);
 		});
 
-		self.type === 'date' && self.element.on('click', '.fa-calendar', function(e) {
+		self.type === 'date' && self.event('click', '.fa-calendar', function(e) {
 			e.preventDefault();
 			window.$calendar && window.$calendar.toggle($(this).parent().parent(), self.find('input').val(), function(date) {
 				self.set(date);
@@ -813,7 +813,7 @@ COMPONENT('form', function() {
 		self.classes('-hidden');
 		self.element = el;
 
-		self.element.on('scroll', function() {
+		self.event('scroll', function() {
 			EMIT('reflow', self.name);
 		});
 
@@ -829,7 +829,7 @@ COMPONENT('form', function() {
 			}
 		});
 
-		enter === 'true' && self.element.on('keydown', 'input', function(e) {
+		enter === 'true' && self.event('keydown', 'input', function(e) {
 			e.keyCode === 13 && !self.find('button[name="submit"]').get(0).disabled && self.submit(hide);
 		});
 	};
@@ -841,7 +841,7 @@ COMPONENT('form', function() {
 		}, 50);
 
 		var isHidden = !EVALUATE(self.path, self.condition);
-		self.element.toggleClass('hidden', isHidden);
+		self.toggle('hidden', isHidden);
 		EMIT('reflow', self.name);
 
 		if (isHidden) {
@@ -857,7 +857,7 @@ COMPONENT('form', function() {
 		el.length && el.eq(0).focus();
 
 		window.$$form_level++;
-		self.element.css('z-index', window.$$form_level * 10);
+		self.css('z-index', window.$$form_level * 10);
 		self.element.scrollTop(0);
 
 		setTimeout(function() {
@@ -866,7 +866,7 @@ COMPONENT('form', function() {
 
 		// Fixes a problem with freezing of scrolling in Chrome
 		setTimeout2(self.id, function() {
-			self.element.css('z-index', (window.$$form_level * 10) + 1);
+			self.css('z-index', (window.$$form_level * 10) + 1);
 		}, 1000);
 	};
 });
@@ -898,7 +898,7 @@ COMPONENT('repeater-group', function() {
 	self.setter = function(value) {
 
 		if (!value || !value.length) {
-			self.element.empty();
+			self.empty();
 			return;
 		}
 
@@ -941,7 +941,7 @@ COMPONENT('repeater-group', function() {
 			}
 		});
 
-		self.element.empty().append(builder);
+		self.html(builder);
 	};
 });
 
@@ -1046,7 +1046,7 @@ COMPONENT('calendar', function() {
 	}
 
 	self.hide = function() {
-		self.element.toggleClass('hidden', true);
+		self.classes('hidden');
 		visible = false;
 		return self;
 	};
@@ -1067,7 +1067,7 @@ COMPONENT('calendar', function() {
 		var off = el.offset();
 		var h = el.innerHeight();
 
-		self.element.css({ left: off.left + (offset || 0), top: off.top + h + 12 }).removeClass('hidden');
+		self.css({ left: off.left + (offset || 0), top: off.top + h + 12 }).removeClass('hidden');
 		self.click = callback;
 		self.date(value);
 		visible = true;
@@ -1078,13 +1078,13 @@ COMPONENT('calendar', function() {
 
 		self.classes('ui-calendar hidden');
 
-		self.element.on('click', '.ui-calendar-today', function() {
+		self.event('click', '.ui-calendar-today', function() {
 			var dt = new Date();
 			self.hide();
 			self.click && self.click(dt);
 		});
 
-		self.element.on('click', '.ui-calendar-day', function() {
+		self.event('click', '.ui-calendar-day', function() {
 			var arr = this.getAttribute('data-date').split('-');
 			var dt = new Date(parseInt(arr[0]), parseInt(arr[1]), parseInt(arr[2]));
 			self.find('.ui-calendar-selected').removeClass('ui-calendar-selected');
@@ -1094,7 +1094,7 @@ COMPONENT('calendar', function() {
 			self.click && self.click(dt);
 		});
 
-		self.element.on('click', 'button', function(e) {
+		self.event('click', 'button', function(e) {
 
 			e.preventDefault();
 			e.stopPropagation();
@@ -1183,7 +1183,7 @@ COMPONENT('tabmenu', function() {
 	var self = this;
 	self.readonly();
 	self.make = function() {
-		self.element.on('click', 'li', function() {
+		self.event('click', 'li', function() {
 			var el = $(this);
 			!el.hasClass('selected') && self.set(self.parser(el.attr('data-value')));
 		});
@@ -1204,11 +1204,11 @@ COMPONENT('confirm', function() {
 
 	self.make = function() {
 		self.toggle('ui-confirm hidden', true);
-		self.element.on('click', 'button', function() {
+		self.event('click', 'button', function() {
 			self.hide($(this).attr('data-index').parseInt());
 		});
 
-		self.element.on('click', function(e) {
+		self.event('click', function(e) {
 			if (e.target.tagName !== 'DIV')
 				return;
 			var el = self.find('.ui-confirm-body');
@@ -1346,7 +1346,6 @@ COMPONENT('tagger', function() {
 			return;
 		}
 
-		// self.element.toggleClass('transparent', true).removeClass('hidden');
 		elements.each(function() {
 
 			var name = this.getAttribute('data-name');
@@ -1440,7 +1439,7 @@ COMPONENT('multioptions', function() {
 
 	self.make = function() {
 		self.classes('ui-multioptions');
-		self.element.on('click', '.multioptions-operation', function(e) {
+		self.event('click', '.multioptions-operation', function(e) {
 			var el = $(this);
 			var name = el.attr('data-name');
 			var type = el.attr('data-type');
@@ -1504,17 +1503,17 @@ COMPONENT('multioptions', function() {
 			return;
 		});
 
-		self.element.on('change', 'input', function() {
+		self.event('change', 'input', function() {
 			var el = $(this);
 			var type = el.attr('data-type');
 			// @TODO: make validation
 		});
 
-		self.element.on('click', '.ui-moi-date', function(e) {
+		self.event('click', '.ui-moi-date', function(e) {
 			e.stopPropagation();
 		});
 
-		self.element.on('focus', '.ui-moi-date', function(e) {
+		self.event('focus', '.ui-moi-date', function(e) {
 			var el = $(this);
 			FIND('calendar').toggle(el, el.val().parseDate(), function(date) {
 				el.val(date.format('yyyy-MM-dd'));
@@ -1661,7 +1660,7 @@ COMPONENT('dictionary', function() {
 
 		container = self.find('.ui-dictionary-items');
 
-		self.element.on('click', '.fa-times', function() {
+		self.event('click', '.fa-times', function() {
 			var el = $(this);
 			var parent = el.closest('.ui-dictionary-item');
 			var inputs = parent.find('input');
@@ -1672,7 +1671,7 @@ COMPONENT('dictionary', function() {
 			self.set(self.path, obj, 2);
 		});
 
-		self.element.on('change keypress', 'input', function(e) {
+		self.event('change keypress', 'input', function(e) {
 
 			if (e.type !== 'change' && e.keyCode !== 13)
 				return;
@@ -1817,7 +1816,7 @@ COMPONENT('dashboard', function() {
 
 		self.classes('gridcontainer');
 
-		self.element.on('mouseleave', function() {
+		self.event('mouseleave', function() {
 			if (!mode || !drag.is)
 				return;
 			drag.is = false;
@@ -1826,11 +1825,11 @@ COMPONENT('dashboard', function() {
 			});
 		});
 
-		self.element.on('click', '.grid', function(e) {
+		self.event('click', '.grid', function(e) {
 			mode && self.resize();
 		});
 
-		self.element.on('click', '.widget-remove', function(e) {
+		self.event('click', '.widget-remove', function(e) {
 			if (!mode)
 				return;
 
@@ -1856,7 +1855,7 @@ COMPONENT('dashboard', function() {
 			});
 		});
 
-		self.element.on('click', '.widget-replace', function(e) {
+		self.event('click', '.widget-replace', function(e) {
 			var el = $(this);
 			var container = el.parent().parent();
 			var size = WIDGET_GETSIZE(container);
@@ -1874,7 +1873,7 @@ COMPONENT('dashboard', function() {
 			formwidgets.current = container.attr('data-instance');
 		});
 
-		self.element.on('click', '.widget-empty,.widget-settings', function(e) {
+		self.event('click', '.widget-empty,.widget-settings', function(e) {
 
 			if (!mode)
 				return;
@@ -1907,7 +1906,7 @@ COMPONENT('dashboard', function() {
 			formwidgets.current = instance;
 		});
 
-		self.element.on('mouseup touchend touchcancel',function(e) {
+		self.event('mouseup touchend touchcancel',function(e) {
 			if (!drag.is)
 				return;
 			drag.is = false;
@@ -1916,7 +1915,7 @@ COMPONENT('dashboard', function() {
 			self.resize();
 		});
 
-		self.element.on('mousedown mousemove touchstart touchmove', function(e) {
+		self.event('mousedown mousemove touchstart touchmove', function(e) {
 
 			if (!mode || !e.target.classList.contains('grid'))
 				return;
@@ -2150,7 +2149,7 @@ COMPONENT('dashboard', function() {
 			if (!topmax)
 				topmax = $(window).height();
 
-			self.element.css({ height: topmax - 30 });
+			self.css({ height: topmax - 30 });
 			callback && callback();
 		}, 200);
 	};
@@ -2390,7 +2389,7 @@ COMPONENT('notifications', function() {
 
 		self.classes('ui-notification-container');
 
-		self.element.on('click', '.fa-times-circle', function() {
+		self.event('click', '.fa-times-circle', function() {
 			var el = $(this).closest('.ui-notification');
 			self.close(+el.attr('data-id'));
 			clearTimeout(autoclosing);
@@ -2398,11 +2397,11 @@ COMPONENT('notifications', function() {
 			self.autoclose();
 		});
 
-		self.element.on('click', 'a,button', function() {
+		self.event('click', 'a,button', function() {
 			e.stopPropagation();
 		});
 
-		self.element.on('click', '.ui-notification', function(e) {
+		self.event('click', '.ui-notification', function(e) {
 			var el = $(this);
 			var id = +el.attr('data-id');
 			var obj = self.items[id];
@@ -2457,7 +2456,7 @@ COMPONENT('exec', function() {
 	self.readonly();
 	self.blind();
 	self.make = function() {
-		self.element.on('click', self.attr('data-selector') || '.exec', function() {
+		self.event('click', self.attr('data-selector') || '.exec', function() {
 			var el = $(this);
 			var attr = el.attr('data-exec');
 			var path = el.attr('data-path');
@@ -2478,7 +2477,7 @@ COMPONENT('empty', function() {
 	};
 
 	self.setter = function(value) {
-		self.element.toggleClass('hidden', value && value.length ? true : false);
+		self.toggle('hidden', value && value.length ? true : false);
 	};
 });
 
@@ -2509,7 +2508,7 @@ COMPONENT('themeselector', function() {
 		self.html(builder.join(''));
 		list = self.find('li');
 
-		self.element.on('click', 'li', function(e) {
+		self.event('click', 'li', function(e) {
 			var li = $(this);
 			self.change(true);
 			self.set(themes[parseInt(li.attr('data-index'))]);
@@ -2665,7 +2664,7 @@ COMPONENT('contextmenu', function() {
 		container = self.find('.ui-contextmenu-items');
 		arrow = self.find('.ui-contextmenu-arrow');
 
-		self.element.on('touchstart mousedown', 'div[data-value]', function(e) {
+		self.event('touchstart mousedown', 'div[data-value]', function(e) {
 			self.callback && self.callback($(this).attr('data-value'), $(self.target));
 			self.hide();
 			e.preventDefault();
@@ -2748,7 +2747,7 @@ COMPONENT('contextmenu', function() {
 		}
 
 		var options = { left: orientation === 'center' ? (Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) + (offsetX || 0)) : orientation === 'left' ? (offset.left - 8 + (offsetX || 0)) : ((offset.left - self.element.width()) + target.innerWidth() + (offsetX || 0)), top: offset.top + target.innerHeight() + 10 };
-		self.element.css(options);
+		self.css(options);
 
 		if (is)
 			return;
