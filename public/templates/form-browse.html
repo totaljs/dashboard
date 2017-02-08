@@ -5,7 +5,7 @@
 				<div data-jc="textbox" data-jc-type="search" data-placeholder="@(Search dashboards)" data-jc-path="formbrowse.search" data-maxlength="30"></div>
 			</div>
 			<div class="col-sm-4 hidden-xs">
-				<a href="javascript:void(0)" class="button button-small exec" data-exec="dashboard_new"><i class="fa fa-plus-circle"></i>@(Create new)</a>
+				<a href="javascript:void(0)" class="button button-small exec" data-exec="formbrowse_new"><i class="fa fa-plus-circle"></i>@(Create new)</a>
 			</div>
 		</div>
 	</div>
@@ -54,5 +54,9 @@
 			});
 		});
 	});
+
+	function formbrowse_new() {
+		EMIT('new');
+	}
 
 </script>

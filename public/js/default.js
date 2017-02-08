@@ -21,7 +21,7 @@ ON('@calendar', function(component) {
 });
 
 $(document).ready(function() {
-	jR.clientside('.jrouting');
+	NAVIGATION.clientside('.jrouting');
 	FIND('loading', FN('() => this.hide(500)'));
 });
 
@@ -38,7 +38,7 @@ $(window).on('hashchange', function() {
 		EMIT('new');
 });
 
-jR.route('/', function() {
+ROUTE('/', function() {
 	SET('common.page', 'dashboard');
 	WAIT(function() {
 		return window.dashboard_edit;
@@ -56,9 +56,12 @@ jR.route('/', function() {
 
 // New dashboard
 ON('new', function() {
-	jR.redirect('/');
-	DEFAULT('formnew.*');
-	IMPORTSET('formnew', 'common.form', 'new', 'form-new');
+	NAVIGATION.url !== '/' && REDIRECT('/');
+	common.form && SET('common.form', '');
+	setTimeout(function() {
+		DEFAULT('formnew.*');
+		IMPORTSET('formnew', 'common.form', 'new', 'form-new');
+	}, 1000);
 });
 
 // Browse dashboards
