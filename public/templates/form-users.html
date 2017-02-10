@@ -1,0 +1,102 @@
+<div data-jc="form" data-title="@(Users management)" data-jc-path="common.form" data-if="value === 'users'" data-width="700px" data-jc-id="formusers" data-autocenter="false" class="hidden">
+	<div class="filter padding npt">
+		<div class="row">
+			<div class="col-sm-8">
+				<div data-jc="textbox" data-jc-type="search" data-placeholder="@(Search users)" data-jc-path="formusers.search" data-maxlength="30"></div>
+			</div>
+			<div class="col-sm-4 hidden-xs">
+				<a href="javascript:void(0)" class="button button-small exec" data-exec="users_new"><i class="fa fa-plus-circle"></i>@(Create new)</a>
+			</div>
+		</div>
+	</div>
+	<div data-jc="search" data-jc-path="formusers.search" data-selector=".search">
+		<div class="browsecontainer">
+			<div>
+				<script data-jc="repeater" data-jc-path="users.items" type="text/html">
+					<div class="users-item search" data-search="{{ name }}" data-index="{{ index }}">
+						<div class="users-item-inputs">
+							<div class="users-item-name"><input class="io-user" name="name" type="text" value="{{ name }}" placeholder="@(User name)" /></div>
+							<div class="users-item-password"><input class="io-user" name="password" type="text" value="{{ password }}" placeholder="@(Type a new password)" /></div>
+							<div class="users-item-sa"><label><input class="io-user" name="sa" type="checkbox"{{ if sa }} checked="checked"{{ fi }} /><span>@(Administrator)</span></label></div>
+						</div>
+						<a href="javascript:void(0)" data-index="{{ index }}" class="users-item-remove users-remove exec" data-exec="users_remove"><i class="fa fa-times-circle"></i></a>
+					</div>
+				</script>
+			</div>
+		</div>
+	</div>
+	<div data-jc="empty" data-jc-path="users.items">@(No data)</div>
+	<br />
+	<div class="ui-form-buttons">
+		<button name="submit">@(SUBMIT)</button>
+		<button name="cancel">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+	var users = {};
+
+	function users_refresh() {
+		AJAX('GET /api/users/', function(response) {
+			users.backup = CLONE(response);
+			users.removed = [];
+			SET('users.items', response);
+		});
+	}
+
+	function users_new() {
+		PUSH('users.items', { name: '', password: '', sa: false });
+	}
+
+	function users_remove(el) {
+		var index = el.attr('data-index').parseInt();
+		var obj = users.items[index];
+		obj.id && users.removed.push(obj);
+		users.items.splice(index, 1);
+		UPDATE('users.items');
+	}
+
+	$(document).on('change', '.io-user', function() {
+		var el = $(this);
+		var name = el.prop('name');
+		var container = el.closest('.users-item');
+		var index = container.attr('data-index').parseInt();
+		var val = name !== 'sa' ? this.value : this.checked;
+		name === 'name' && container.attr('data-search', val);
+		users.items[index][name] = val;
+		CHANGE('users.items', true);
+	});
+
+	ON('#formusers', function(component) {
+		component.submit = function(hide) {
+			SETTER('loading', 'show');
+			users.removed.waitFor(function(item, next) {
+				AJAX('DELETE /api/users/{0}/'.format(item.id), next);
+			}, function() {
+				users.items.waitFor(function(item, next) {
+
+					if (item.id) {
+						var backup = users.backup.findItem('id', item.id);
+						if (STRINGIFY(backup, true) === STRINGIFY(item, true))
+							return next();
+					}
+
+					AJAX('POST /api/users/', item, next);
+				}, function() {
+
+					var current = users.items.findItem('id', user.id);
+					if (current) {
+						user.name = current.name;
+						user.sa = current.sa;
+					}
+
+					SETTER('loading', 'hide');
+					hide();
+				});
+			});
+		};
+	});
+
+
+	users_refresh();
+</script>

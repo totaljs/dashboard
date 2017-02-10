@@ -1,12 +1,14 @@
 NEWSCHEMA('Dashboard').make(function(schema) {
 
-	schema.define('id', 'UID');
-	schema.define('name', 'String(50)', true);
-	schema.define('group', 'String(50)');
-	schema.define('theme', 'String(30)');
-	schema.define('icon', 'String(15)');
-	schema.define('theme', 'String(30)');
-	schema.define('data', 'String', true);
+	// Update
+	schema.define('id', 'UID', true, 'update');
+	schema.define('name', 'String(50)', true, 'udpate');
+	schema.define('theme', 'String(30)', 'update');
+	schema.define('icon', 'String(15)', 'update');
+	schema.define('data', 'String', true, 'update');
+
+	// Create
+	schema.define('group', 'String(50)', true, 'create');
 
 	schema.setQuery(function(error, controller, callback) {
 		NOSQL('dashboard').find().where('user', controller.user.id).callback((err, response) => callback(response));
@@ -15,16 +17,14 @@ NEWSCHEMA('Dashboard').make(function(schema) {
 	schema.setSave(function(error, model, controller, callback) {
 		var plain = model.$plain();
 
-		if (model.id) {
+		if (plain.id) {
 			plain.id = undefined;
 			NOSQL('dashboard').modify(plain).where('id', model.id).where('user', controller.user.id).callback(() => callback(SUCCESS(true)));
-			return;
+		} else {
+			plain.id = UID();
+			plain.user = controller.user.id;
+			NOSQL('dashboard').insert(plain).callback(() => callback(SUCCESS(true, plain.id)));
 		}
-
-		plain.id = UID();
-		plain.user = controller.user.id;
-		plain.datecreated = F.datetime;
-		NOSQL('dashboard').insert(plain).callback(() => callback(SUCCESS(true, plain.id)));
 	});
 
 	schema.setRemove(function(error, controller, callback) {

@@ -23,7 +23,8 @@
 
 	<div data-jc="message" data-button="@(Close)"></div>
 	<div data-jc="confirm"></div>
-	<div data-jc="loading" class="ui-loading"></div>
+	<div data-jc="contextmenu"></div>
+	<div data-jc="loading"></div>
 	<div data-jc="calendar" data-days="@(Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday)" data-months="@(January,February,March,April,May,Juny,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
 	<div data-jc="notifications" data-date-format="@(yyyy-MM-dd HH:mm)" data-timeout="8000"></div>
 	<div data-jc="tooltip"></div>
@@ -37,21 +38,60 @@
 	</div>
 
 	<div id="body" data-jc="binder">
+		<div class="container" style="position:relative">
+			<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-navicon"></i></a>
+		</div>
 		<div data-jc="page" data-jc-path="common.page" data-if="dashboard" data-template="/templates/dashboard.html"></div>
 	</div>
 
 	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/highlight.min.js"></script>
 	<script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.2.8/d3.min.js"></script>
-	<script src="//cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
-
 	@{import('default.js')}
 
-	@{foreach m in model}
-		<script>WIDGETS_CURRENTREPOSITORY='@{m}';</script>
-		<script src="@{m}"></script>
-	@{end}
+	<script>
+		WIDGETS_CURRENTREPOSITORY='';
+		function mainmenu(el) {
 
-	<script>WIDGETS_CURRENTREPOSITORY='';</script>
+			var device = WIDTH();
+			var items = [];
+
+			items.push('@(Dashboard)');
+			items.push({ name: '@(Change dashboard)', icon: 'fa-folder-o', value: 'browse' });
+
+			if (common.page === 'dashboard' && device !== 'xs' && dashboard.current) {
+				var mode = FIND('dashboard').getMode();
+				var save = mode === 1 && dashboard.changed ? true : false;
+				items.push({ name: save ? '@(Save dashboard)' : '@(Edit dashboard)', icon: save ? 'fa-floppy-o' : 'fa-pencil', value: 'edit' });
+			}
+
+			device !== 'xs' && items.push({ name: '@(New dashboard)', icon: 'fa-plus-square-o', value: 'new' });
+
+			items.push('Internal Settings');
+			user.sa && items.push({ name: '@(Users)', icon: 'fa-users', value: 'users' });
+			items.push({ name: '@(Sign out)', icon: 'fa-power-off', value: 'logoff' });
+
+			FIND('contextmenu').show(device === 'xs' ? 'center' : 'left', el, items, function(value) {
+				switch (value) {
+					case 'users':
+						IMPORTSET('formusers', 'common.form', 'users', 'form-users');
+						break;
+					case 'browse':
+						EMIT('browse');
+						break;
+					case 'edit':
+						EXEC('dashboard_edit');
+						dashboard.changed = false;
+						break;
+					case 'logoff':
+						location.href = '/logoff/';
+						break;
+					case 'new':
+						EMIT('new');
+						break;
+				}
+			}, device === 'xs' ? 5 : -3);
+		}
+	</script>
 </body>
 </html>

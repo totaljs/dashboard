@@ -1,0 +1,16 @@
+.top { background-color: white; }
+.top {
+	.process { height: 22px; font-size: 12px; border-bottom: 1px solid #E0E0E0; }
+	.process > div { text-overflow: ellipsis; overflow: hidden; white-space: nowrap; padding: 3px 5px 0; height: 21px; font-size: 11px; }
+	.cpu { float: left; width: 70px; text-align: right; background-color: #F8F8F8; }
+	.cpu .fa { margin-left: 3px; }
+	.memory { float: left; width: 70px; text-align: right; background-color: #F0F0F0; }
+	.name { margin-left: 140px; padding-left: 8px; }
+}
+
+.theme-dark  {
+	.top { background-color: #101010; }
+	.process { border-color: #252525; }
+	.top .cpu { background-color: black; }
+	.top .memory { background-color: #202020; }
+}

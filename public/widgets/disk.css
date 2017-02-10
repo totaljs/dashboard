@@ -1,0 +1,11 @@
+.disk {
+	.info { height: 20%; overflow: hidden; line-height: 94%; font-size: 80%; margin-top: 10%; }
+	.info .fa { margin-right: 5px; }
+	.info > div { float: left; width: 33.333%; text-align: center; border-left: 1px solid #E0E0E0; padding: 4% 0 3%; }
+	.info > div:first-child { border-left: 0; }
+	.info b { font-size: 60%; display: block; text-transform: uppercase; font-weight: bold; color: black; padding-bottom: 3%; }
+	.progress { height: 10%; width: 100%; background: linear-gradient(90deg, #8CC152, #A0D468); margin: 10% auto 0; }
+	.progress > div { height: 100%; background-color: #D63B32; width: 0; text-align: right; padding: 2% 2% 0 0; color: white; font-size: 65%; }
+	.chart { height: 35%; }
+	.chart rect { fill: #D0D0D0; }
+}

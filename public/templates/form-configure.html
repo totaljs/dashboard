@@ -2,21 +2,9 @@
 	<div class="padding npb">
 		<ul class="tabmenu" data-jc="tabmenu" data-jc-path="formconfigure.tab">
 			<li data-value="settings">@(Settings)</li>
-			<li data-value="datasource">@(Data Source)</li>
 			<li data-value="dictionary">@(Dictionary)</li>
 			<li data-value="example">@(Sample data)</li>
 		</ul>
-	</div>
-	<div data-jc="visible" data-jc-path="formconfigure.tab" data-if="value === 'datasource'" class="hidden">
-		<div class="padding npt">
-			<div data-jc="dropdown" data-jc-path="formconfigure.datasourceid" data-source="dashboard.datasources" data-empty="">@(Preddefined data sources)</div>
-		</div>
-		<div data-jc="visible" data-jc-path="formconfigure.datasourceid" data-if="!value">
-			<div data-jc-scope="formconfigure.datasource">
-				<div data-jc-url="/templates/rest.html"></div>
-			</div>
-		</div>
-		<br />
 	</div>
 	<div data-jc="visible" data-jc-path="formconfigure.tab" data-if="value === 'settings'" class="hidden">
 		<div data-jc="multioptions" data-jc-path="formconfigure.options" data-jc-id="widgetoptions"></div>
@@ -59,22 +47,6 @@
 			var changes = [];
 			var tmp;
 
-			if (formconfigure.datasourceid) {
-				tmp = dashboard.datasources.findItem('id', formconfigure.datasourceid);
-				if (tmp)
-					formconfigure.datasource = tmp;
-			}
-
-			if (widget.hack) {
-				tmp = widget.hack(formconfigure.datasource);
-				if (tmp != null)
-					formconfigure.datasource = tmp;
-			}
-
-			var d = JSON.stringify(formconfigure.datasource);
-			widget.datasource = JSON.parse(d);
-			widget.datasource_key = HASH(d);
-
 			if (!WIDGETS_USERSETTINGS[formconfigure.id])
 				WIDGETS_USERSETTINGS[formconfigure.id] = {};
 
@@ -89,33 +61,8 @@
 
 			widget.options = WIDGETS_USERSETTINGS[formconfigure.id];
 			widget.dictionary = formconfigure.dictionary;
-			widget.state && widget.state(1, changes);
-
+			widget.$state(1, changes);
 			dashboard.changed = true;
-			is && widget.refresh();
-		};
-	});
-
-	ON('@multioptions', function(component) {
-		component.form = function(type, input, name) {
-			dashboard.pathstarget = input;
-
-			if (!formconfigure.datasource) {
-				SETTER('message', 'warning', '@(You don\'t have specified data-source.)');
-				return;
-			}
-
-			if (dashboard.paths) {
-				SET('common.subform', 'path');
-				return;
-			}
-
-			AJAX('GET /api/proxy/', formconfigure.datasource, function(response, err) {
-				var output = [];
-				analyse(output, response);
-				SET('dashboard.paths', output);
-				SET('common.subform', 'path');
-			});
 		};
 	});
 

@@ -1,17 +1,26 @@
 name                      : Dashboard
-version                   : 2.0.0
-author                    : Totaljs.com Ltd
-
+version                   : 3.0.0
+author                    : Peter Širka
 cookie                    : __user
 
-// Custom SMTP settings
-mail.smtp                 : YOUR.SMTPSERVER.COM
-// mail.smtp.options         : {"user":"","password":"","timeout":2000}
+groups (Array)            : ['Monitoring']
 
-// Gmail SMTP settings
-// mail.smtp                : smtp.gmail.com
-// mail.smtp.options        : {"port":465,"secure":true,"user":"ENTER_YOUR_EMAIL","password":"ENTER_YOUR_PASSWORD","rejectUnauthorized":true}
+// Monitoring settings
+monitoring.network                    : eth0
+monitoring.network.ports    (Array)   : [80]
+monitoring.interval         (Number)  : 10000
+monitoring.maxlogslines     (Number)  : 30
+monitoring.maxtopprocesses  (Number)  : 30
 
-// Office365 SMTP settings
-// mail.smtp                : smtp.office365.com
-// mail.smtp.options        : {"port":587,"secure":false,"user":"ENTER_YOUR_EMAIL","password":"ENTER_YOUR_PASSWORD","tls":{"ciphers":"SSLv3"}}
+// ====================================================
+// CODELISTS
+// ====================================================
+
+// Names of processes
+monitoring.processes        (Array)   : ['nginx', 'postgres', 'mongod', 'total']
+
+// Name of processs + internal stats
+monitoring.history          (Array)   : ['nginx', 'postgres', 'mongod', 'cpu', 'memory', 'disk', 'network', 'total']
+
+// Paths for logs
+monitoring.logs             (Array)   : ['/var/log/nginx/error.log.1', '/var/log/auth.log.1']

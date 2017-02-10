@@ -1,0 +1,48 @@
+<div data-jc="form" data-title="@(Create dashboard)" data-jc-path="common.form" data-if="value === 'new'" data-width="600px" data-jc-id="formnew" data-autocenter="false" class="hidden">
+	<div class="padding">
+		<div data-jc="dropdown" data-jc-path="formnew.group" data-empty="" data-source="dashboard.groups" class="m" data-required="true">@(Group)</div>
+		<div class="m" data-jc="textbox" data-jc-path="formnew.name" data-placeholder="@(Dashboard name)" data-jc-value="''" data-required="true" data-maxlength="50">@(Name)</div>
+	</div>
+	<div class="ui-form-buttons">
+		<div data-jc="validation" data-jc-path="formnew">
+			<button name="submit">@(SUBMIT)</button>
+		</div>
+		<button name="cancel">@(Cancel)</button>
+	</div>
+</div>
+
+<script>
+
+	if (!window.formnew)
+		window.formnew = {};
+
+	ON('#formnew', function(component) {
+		component.submit = function(hide) {
+			SETTER('loading', 'show');
+			AJAX('POST /api/dashboard/', formnew, function(response) {
+
+				SETTER('loading', 'hide', 1000);
+
+				if (response instanceof Array) {
+					SET('formnew.response', response);
+					return;
+				}
+
+				hide();
+				SETTER('loading', 'show');
+				SETTER('dashboard', 'clear');
+				SETTER('loading', 'hide', 800);
+				dashboard_editbutton(1);
+				FIND('dashboard').mode(1);
+				document.title = dashboard.title;
+				WIDGETS_WIDGETSETTINGS = {};
+				formnew.id = response.value;
+				location.hash = formnew.id;
+				SET('dashboard.current', formnew);
+				CACHE('default', response.value, '10 days');
+				EMIT('dashboard', formnew);
+			});
+		};
+	});
+
+</script>

@@ -5,8 +5,6 @@ var WIDGETS_MANAGER = {};
 var WIDGETS_USERSETTINGS = {};
 var WIDGETS_WIDGETSETTINGS = {};
 var WIDGETS_CURRENTREPOSITORY = '';
-var WIDGETS_DATASOURCE = {};
-var WIDGETS_DATASOURCE_KEYS = [];
 var WIDGETS_DIMENSIONS = {};
 
 function WIDGET(name, make, init) {
@@ -21,11 +19,20 @@ function WIDGET(name, make, init) {
 	obj.author = '';
 	obj.example = '';
 	obj.category = '';
+	obj.group = '';
 	obj.url = '';
+	obj.keywords = '';
 	obj.repository = WIDGETS_CURRENTREPOSITORY;
+	obj.dictionary = {};
 
 	var done = function(name, obj) {
 		WIDGETS_DATABASE[name] = obj;
+		obj.sizes && obj.sizes.forEach(function(size) {
+			if (WIDGETS_DIMENSIONS[size])
+				WIDGETS_DIMENSIONS[size]++;
+			else
+				WIDGETS_DIMENSIONS[size] = 1;
+		});
 	};
 
 	init && init.call(obj, function(key, label, def, type, max, min, step, validator) {
@@ -65,14 +72,6 @@ function WIDGET(name, make, init) {
 					return;
 				done && done(name, obj);
 				done = null;
-
-				obj.sizes && obj.sizes.forEach(function(size) {
-					if (WIDGETS_DIMENSIONS[size])
-						WIDGETS_DIMENSIONS[size]++;
-					else
-						WIDGETS_DIMENSIONS[size] = 1;
-				});
-
 			}, 50);
 		});
 	});
@@ -94,18 +93,15 @@ function WIDGET(name, make, init) {
 }
 
 function WIDGET_COMPONENT(id, name, element, options) {
-
+	this.$data = null;
 	this.$render = 0;
-	self.$datasource = 0;
 	this.$dimension = {};
 	this.id = id;
 	this.name = name;
 	this.element = element;
 	this.options = options;
 	this.dom = element.get(0);
-	this.prepare = function(data) {
-		return data;
-	};
+	this.dictionary = {};
 
 /*
 	this.make = function(size) {};
@@ -119,22 +115,38 @@ function WIDGET_COMPONENT(id, name, element, options) {
 	*/
 }
 
+WIDGET_COMPONENT.prototype.$resize = function(size, dimension) {
+	if (this.resize)
+		this.resize(size, dimension);
+	else
+		this.refresh();
+	EMIT(this.id, 'resize', size, dimension);
+	return this;
+};
+
+WIDGET_COMPONENT.prototype.$state = function(type, changes) {
+
+	if (this.state)
+		this.state(type, changes);
+	else
+		this.refresh();
+
+	EMIT(this.id, 'state', type, changes);
+	return this;
+};
+
 WIDGET_COMPONENT.prototype.dimension = function(device, size, values) {
 
 	var self = this;
 
 	if (!device) {
 		var tmp = self.$dimension[self.size.device + self.size.cols + 'x' + self.size.rows];
-		if (tmp)
-			return tmp();
-		return EMPTYOBJECT;
+		return tmp ? tmp() : EMPTYOBJECT;
 	}
 
 	if (!values) {
 		var tmp = self.$dimension[device + size];
-		if (tmp)
-			return tmp();
-		return EMPTYOBJECT;
+		return tmp ? tmp() : EMPTYOBJECT;
 	}
 
 	self.$dimension[device + size] = new Function('return { ' + values + '}');
@@ -236,7 +248,7 @@ WIDGET_COMPONENT.prototype.empty = function() {
 	return this;
 };
 
-WIDGET_COMPONENT.prototype.subscribe = function(name, fn) {
+WIDGET_COMPONENT.prototype.on = function(name, fn) {
 	if (!WIDGETS_EVENTS[name])
 		WIDGETS_EVENTS[name] = [];
 	WIDGETS_EVENTS[name].push({ id: this.id, fn: fn, instace: this });
@@ -244,22 +256,10 @@ WIDGET_COMPONENT.prototype.subscribe = function(name, fn) {
 };
 
 WIDGET_COMPONENT.prototype.use = function(url, data, headers, cookies) {
-	if (typeof(data) === 'function') {
-		headers = callback;
-		callback = data;
-		data = undefined;
-	} else if (typeof(callback) === 'object') {
-		var tmp = headers;
-		headers = callback;
-		callback = tmp;
-	}
-
-	var index = url.indexOf(' ');
 	var self = this;
-	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
-		response && self.render && self.render(self.prepare(response), self.size, self.$datasource++);
-	});
-	return self;
+	return self.ajax(url, data, function(err, response) {
+		!err && response && self.data(response);
+	}, headers, cookies);
 };
 
 WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers, cookies) {
@@ -274,14 +274,23 @@ WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers, cookies
 		callback = tmp;
 	}
 
-	var index = url.indexOf(' ');
-	AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
-		callback && callback(err, response);
-	});
+	var m = url.substring(0, index).trim();
+	var u = url.substring(index).trim();
+	if (u.substring(index, 1) === '/') {
+		AJAX(m + ' ' + u + (headers ? ' --> ' + STRINGIFY(headers) : ''), data, function(err, response) {
+			callback && callback(err, response);
+		});
+	} else {
+		AJAX('POST /api/ajax/', { method: url.substring(0, index).trim(), url: url.substring(index).trim(), data: typeof(data) === 'object' ? STRINGIFY(data) : data, headers: headers, cookies: cookies }, function(response, err) {
+			callback && callback(err, response);
+		});
+	}
+
+	return this;
 };
 
 WIDGET_COMPONENT.prototype.rename = function(name) {
-	return this.dictionary ? (this.dictionary[name] || name) : name;
+	return this.dictionary[name] || name;
 };
 
 WIDGET_COMPONENT.prototype.configure = function() {
@@ -297,40 +306,36 @@ WIDGET_COMPONENT.prototype.configure = function() {
 	obj.id = self.id;
 	obj.options = options;
 	obj.tab = 'settings';
-	obj.datasource = typeof(self.datasource) !== 'object' ? {} : CLONE(self.datasource) || {};
-
-	if (dashboard.datasources.findItem('id', self.datasource.id))
-		obj.datasourceid = self.datasource.id;
-
-	if (!obj.datasource.headers)
-		obj.datasource.headers = {};
-	if (!obj.datasource.cookies)
-		obj.datasource.cookies = {};
-	if (!obj.datasource.method)
-		obj.datasource.method = 'GET';
-	if (!obj.datasource.interval)
-		obj.datasource.interval = 60;
-
-	obj.interval = obj.datasource.interval;
-	obj.dictionary = self.dictionary || {};
+	obj.dictionary = self.dictionary;
 	obj.example = w.example;
 	obj.preview = w.preview;
 	obj.author = w.author;
 	obj.name = w.name;
 
-	if (window.dashboard && window.dashboard.paths)
-		window.dashboard.paths = null;
+	var reg = /^(\/\w+|https\:\/|http\:\/)/i;
 
-	IMPORTSET('formconfigure', 'common.form', 'configure');
-	SET('formconfigure', obj);
+	Object.keys(options).waitFor(function(key, next) {
+		var item = options[key];
+		if (!reg.test(item.type))
+			return next();
+		AJAX('GET ' + item.type, function(response) {
+			if (response instanceof Array) {
+				item.type = 'array';
+				item.values = [];
+				response.forEach(function(val) {
+					item.values.push({ text: val.text || val, value: val.text != null ? val : val });
+				});
+			}
+			next();
+		});
+	}, function() {
+		IMPORTSET('formconfigure', 'common.form', 'configure', 'form-configure');
+		SET('formconfigure', obj);
+	});
 	return self;
 };
 
-WIDGET_COMPONENT.prototype.read = function(path, value, def) {
-	return readdatasource(path, value, def);
-};
-
-WIDGET_COMPONENT.prototype.publish = function(name) {
+WIDGET_COMPONENT.prototype.emit = function(name) {
 
 	var items = WIDGETS_EVENTS[name];
 	if (items === undefined)
@@ -351,15 +356,10 @@ WIDGET_COMPONENT.prototype.publish = function(name) {
 	return this;
 };
 
-WIDGET_COMPONENT.prototype.redraw = function() {
+WIDGET_COMPONENT.prototype.data = function(response, type) {
+
 	var self = this;
-	var hash = HASH(STRINGIFY(self.datasource));
-	var response = WIDGETS_DATASOURCE[hash];
-
-	if (!response || !response.response)
-		return self;
-
-	response = response.response;
+	var obj;
 
 	if (response instanceof Array)
 		obj = response.slice(0);
@@ -371,13 +371,20 @@ WIDGET_COMPONENT.prototype.redraw = function() {
 	} else
 		obj = null;
 
-	obj && self.render && self.render(self.prepare(obj), self.size, self.$render++);
+	self.$data = CLONE(obj);
+
+	if (obj && self.render) {
+		self.render(obj, self.size, self.$render, type);
+		EMIT(self.id, 'render', obj, self.size, self.$render++, type);
+		!self.$loaded && self.element.closest('.widget').find('.widget-loading').removeClass('widget-loading-show');
+		self.$loaded = true;
+	}
+
 	return self;
 };
 
 WIDGET_COMPONENT.prototype.getDimension = function() {
-	var self = this;
-	return self.size.device + self.size.rows + 'x' + self.size.cols;
+	return this.size.device + this.size.rows + 'x' + this.size.cols;
 };
 
 WIDGET_COMPONENT.prototype.toggle = function(cls, enable) {
@@ -386,33 +393,13 @@ WIDGET_COMPONENT.prototype.toggle = function(cls, enable) {
 	return self;
 };
 
-WIDGET_COMPONENT.prototype.refresh = function() {
+WIDGET_COMPONENT.prototype.refresh = function(type) {
 	var self = this;
-
-	if (!self.datasource)
-		return self;
-
-	AJAX('POST /api/ajax/', self.datasource, function(response, err) {
-
-		if (err)
-			return;
-
-		try {
-			response = PARSE(response);
-		} catch (e) {
-			return;
-		}
-
-		var key = HASH(STRINGIFY(self.datasource));
-		var datasource = WIDGETS_DATASOURCE[key];
-
-		if (!datasource)
-			datasource = WIDGETS_DATASOURCE[key] = {};
-
-		datasource.response = response;
-		self.redraw();
-	});
-
+	if (self.$data && self.render) {
+		var val = CLONE(self.$data);
+		self.render(val, self.size, self.$render, type);
+		EMIT(self.id, 'render', val, self.size, self.$render++, type);
+	}
 	return self;
 };
 
@@ -442,7 +429,6 @@ function WIDGETS_SAVE() {
 function WIDGETS_LOAD(obj) {
 
 	SETTER('dashboard', 'clear');
-
 	WIDGETS_USERSETTINGS = obj.options || {};
 
 	obj.widgets.forEach(function(item) {
@@ -454,12 +440,9 @@ function WIDGETS_LOAD(obj) {
 	});
 
 	FIND('dashboard').resize(function() {
-
 		obj.widgets.forEach(function(item) {
-			WIDGET_MAKE(item.id, item.name, $('[data-instance="{0}"]'.format(item.id)), item.dictionary, item.datasource);
+			WIDGET_MAKE(item.id, item.name, $('[data-instance="{0}"]'.format(item.id)), item.dictionary, item.type);
 		});
-
-		WIDGETS_REFRESH_DATASOURCE(true);
 	});
 }
 
@@ -478,9 +461,8 @@ function WIDGET_CONFIG(name, options) {
 	return obj;
 }
 
-function WIDGET_MAKE(id, name, element, dictionary, datasource) {
+function WIDGET_MAKE(id, name, element, dictionary, type) {
 	var w = WIDGETS_DATABASE[name];
-
 	if (!w) {
 		window.console && console.warn('Widget "{0}" not found.'.format(name));
 		return;
@@ -488,85 +470,26 @@ function WIDGET_MAKE(id, name, element, dictionary, datasource) {
 
 	element.attr('data-widget', name);
 	element.find('.widget-container').append('<div class="widget-body" />');
-	element.removeClass('widget-empty');
+	element.removeClass('widget-empty').addClass('widget-instance');
 
 	var component = new WIDGET_COMPONENT(id, name, element.find('.widget-body'), WIDGET_CONFIG(name, WIDGETS_USERSETTINGS[id]));
 	var tmp;
 
 	component.$name = name;
-	component.dictionary = dictionary;
-	component.datasource = datasource || { interval: 60, url: '', method: 'GET' };
+	component.$type = w.type instanceof Array ? w.type : w.type ? [w.type] : EMPTYARRAY;
 
-	if (component.datasource.id) {
-		tmp = dashboard.datasources.findItem('id', component.datasource.id);
-		if (tmp)
-			component.datasource = CLONE(tmp);
-	}
-
-	if (component.hack) {
-		tmp = component.hack(component.datasource);
-		if (tmp != null)
-			component.datasource = tmp;
-	}
-
-	component.datasource_key = HASH(STRINGIFY(component.datasource));
+	dictionary && Object.keys(dictionary).forEach(function(key) {
+		component.dictionary[key] = dictionary[key];
+	});
 
 	WIDGETS_DASHBOARD.push(component);
 	UPDATE('WIDGETS_DASHBOARD');
 	w.make.call(component);
 	component.size = WIDGET_GETSIZE(element);
 	component.make && component.make(component.size);
-	component.state && component.state(0);
-	component.element.css({ width: component.size.width, height: component.size.height });
+	component.$state(0);
+	component.element.css({ width: component.size.width, height: component.size.height, 'font-size': component.size.fontsize + '%' });
 	element.removeClass('xs sm md lg').addClass(component.size.device);
-	WIDGETS_DATASOURCE[datasource] && WIDGETS_DATASOURCE[datasource].response && component.redraw();
-}
-
-function WIDGETS_REFRESH_DATASOURCE2() {
-	WIDGETS_DASHBOARD.forEach(function(component) {
-		if (!component.datasource || !component.datasource.id)
-			return;
-		var tmp = dashboard.datasources.findItem('id', component.datasource.id);
-		if (!tmp)
-			return;
-		component.datasource = CLONE(tmp);
-		component.datasource_key = HASH(STRINGIFY(component.datasource));
-	});
-	WIDGETS_REFRESH_DATASOURCE();
-}
-
-function WIDGETS_REFRESH_DATASOURCE(init) {
-
-	var cache = {};
-
-	WIDGETS_DATASOURCE_KEYS.forEach(function(key) {
-		var data = WIDGETS_DATASOURCE[key];
-		if (data.response)
-			cache[key] = data.response;
-	});
-
-	WIDGETS_DATASOURCE = {};
-	WIDGETS_DASHBOARD.forEach(function(widget) {
-
-		if (!widget.datasource || typeof(widget.datasource) === 'string' || !widget.datasource_key)
-			return;
-
-		var obj = WIDGETS_DATASOURCE[widget.datasource_key];
-		if (!obj)
-			obj = WIDGETS_DATASOURCE[widget.datasource_key] = { datasource: widget.datasource, response: cache[widget.datasource] || null, counter: 0, interval: 60000 * 10, widgets: [] };
-
-		obj.widgets.push(widget);
-		obj.interval = Math.min(widget.datasource.interval, obj.datasource.interval);
-		if (cache[widget.datasource_key])
-			return;
-		obj.counter = obj.datasource.interval;
-		obj.widgets.forEach(function(widget) {
-			!widget.$render && widget.redraw();
-		});
-	});
-
-	WIDGETS_DATASOURCE_KEYS = Object.keys(WIDGETS_DATASOURCE);
-	WIDGETS_SERVICE();
 }
 
 function WIDGET_REMOVE(id, destroy) {
@@ -577,12 +500,10 @@ function WIDGET_REMOVE(id, destroy) {
 	destroy = destroy === undefined ? true : destroy;
 
 	var w = WIDGETS_DASHBOARD[index];
-
 	WIDGETS_DASHBOARD.splice(index, 1);
 	UPDATE('WIDGETS_DASHBOARD');
 
-	if (destroy)
-		w.element.parent().parent().hide().off().remove();
+	destroy && w.element.parent().parent().hide().off().remove();
 
 	w.element.parent().parent().removeClass('widget-nocenter');
 	w.element.off();
@@ -592,7 +513,9 @@ function WIDGET_REMOVE(id, destroy) {
 	w.dom = null;
 	w.make = null;
 	w.render = null;
-	w.publish = null;
+	w.on = null;
+	w.emit = null;
+	w.data = null;
 	w.element = null;
 	w = null;
 
@@ -611,96 +534,38 @@ function WIDGET_REMOVE(id, destroy) {
 	return true;
 }
 
-function analyse(output, obj, path, isarr) {
+function EMIT(id, name) {
+	var e = WIDGETS_EVENTS[id];
+	if (!e || !e.length)
+		return false;
 
-	if (obj instanceof Array) {
-		analyse(output, obj[0], (path ? path + '.' : '') + '[]', path ? true : false);
-		return;
-	}
+	var argv = [];
+	for (var i = 1; i < arguments.length; i++)
+		argv.push(arguments[i]);
 
-	Object.keys(obj).forEach(function(key, index) {
-		var val = obj[key];
-		var skip = false;
-
-		if (val instanceof Array) {
-			type = typeof(val[0]);
-			if (type === 'object')
-				return analyse(output, val, (path ? path + '.' : '') + key, true);
-			isarr = true;
-			skip = true;
-		} else
-			isarr = false;
-
-		if (val == null)
-			return;
-
-		if (!skip) {
-			var type = typeof(val);
-			if (type === 'object')
-				return analyse(output, val, (path ? path : '') + '["' + key + '"]');
-		}
-
-		output.push({ name: key, path: (path ? path : '') + '["' + key +'"]' + (isarr ? '.[]' : ''), type: type });
-	});
-
-	return output;
+	for (var i = 2, length = arguments.length; i < length; i++)
+		e[i].id === id && e[i].fn.apply(e.instance, argv);
 }
 
-function readdatasource(field, response, def) {
-	var fn = field.replace(/\.\[\].*?$/, function(text) {
-		return '.readdatasource(\"{0}\")'.format(text.substring(3).replace(/\"/g, '\''));
-	});
+function DATA(type, value) {
 
-	try {
-		return new Function('a', 'return a' + fn)(response);
-	} catch(e) {
-		return def;
-	}
-}
-
-Array.prototype.readdatasource = function(path) {
-
-	var fn = new Function('a', path ? 'return a' + path : ' return a');
-	var values = [];
-
-	for (var i = 0, length = this.length; i < length; i++) {
-		var val = fn(this[i]);
-		val != null && values.push(val);
+	if (value === undefined) {
+		value = type;
+		type = EMPTYARRAY;
 	}
 
-	return values;
-};
+	if (typeof(type) === 'string')
+		type = [type];
 
-function WIDGETS_SERVICE() {
-
-	if (!WIDGETS_DATASOURCE_KEYS.length)
-		return;
-
-	WIDGETS_DATASOURCE_KEYS.forEach(function(key) {
-		var item = WIDGETS_DATASOURCE[key];
-
-		item.counter += 3;
-
-		if (item.counter < item.datasource.interval)
+	var length = type.length;
+	WIDGETS_DASHBOARD.forEach(function(w) {
+		if (!w.data)
 			return;
-
-		item.counter = 0;
-		AJAX('POST /api/ajax/', item.datasource, function(response, err) {
-
-			if (err)
-				return;
-
-			try {
-				item.response = PARSE(response);
-			} catch (e) {
+		for (var i = 0; i < length; i++) {
+			if (!w.$type.length || w.$type.indexOf(type[i]) !== -1) {
+				w.data(value, type[i]);
 				return;
 			}
-
-			item.widgets.forEach(function(widget) {
-				widget.redraw();
-			});
-		});
+		}
 	});
 }
-
-setInterval(WIDGETS_SERVICE, 3000);

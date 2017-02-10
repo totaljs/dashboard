@@ -1,0 +1,31 @@
+<br />
+<div class="container">
+	<header>
+		<div class="row hidden-xs">
+			<div class="col-sm-4 col-sm-offset-1">
+				<h1>@(Users)</h1>
+			</div>
+		</div>
+		<hr class="nmt" />
+	</header>
+
+	<div data-jc="repeater" data-jc-path="users.items">
+		<script type="text/html">
+			<div class="row">
+				<div class="col-md-4">{{ name }}</div>
+			</div>
+		</script>
+	</div>
+
+</div>
+
+<script>
+
+	var users = {};
+
+	function users_refresh() {
+		AJAX('GET /api/users/', 'users.items');
+	}
+
+	users_refresh();
+</script>

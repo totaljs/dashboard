@@ -1,10 +1,17 @@
 exports.install = function() {
-	F.route('/*', dashboard, ['authorize']);
+	// Dashboard
+	F.route('/', 'index', ['authorize']);
+	F.route('/users/', 'index', ['authorize']);
+
+	// Others
 	F.route('/*',  'login', ['unauthorize']);
+	F.route('/logoff/', logoff);
+
+	// Templates
 	F.localize('/templates/*.html', ['compress']);
 };
 
-function dashboard() {
-	var self = this;
-	GETSCHEMA('Repository').get(self, self.callback('index'));
+function logoff() {
+	this.cookie(F.config.cookie, '', '-1 day');
+	this.redirect('/');
 }

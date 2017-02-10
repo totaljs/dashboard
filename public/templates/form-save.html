@@ -1,14 +1,6 @@
-<div data-jc="form" data-title="@(Saving)" data-jc-path="common.form" data-if="value === 'save'" data-width="600px" data-jc-id="formsave" data-autocenter="false">
+<div data-jc="form" data-title="@(Are you sure you want to save changes?)" data-jc-path="common.form" data-if="value === 'save'" data-width="600px" data-jc-id="formsave" data-autocenter="false" class="hidden" data-enter="true">
 	<div class="padding">
 		<div class="m" data-jc="textbox" data-jc-path="formsave.name" data-placeholder="@(Dashboard name)" data-jc-value="''" data-required="true" data-maxlength="50">@(Name)</div>
-		<div class="row">
-			<div class="col-md-6 m">
-				<div data-jc="textbox" data-jc-path="formsave.group" data-placeholder="@(e.g. Ecommerce)" data-jc-value="''" data-maxlength="30">@(Group)</div>
-			</div>
-			<div class="col-md-6 m">
-				<div data-jc="dropdown" data-jc-path="formsave.group" data-empty="" data-source="dashboard.categories">@(Existing group)</div>
-			</div>
-		</div>
 	</div>
 	<div class="ui-form-buttons">
 		<div data-jc="validation" data-jc-path="formsave">
@@ -28,7 +20,7 @@
 			SETTER('loading', 'show');
 			formsave.theme = dashboard.theme;
 			formsave.data = btoa(encodeURIComponent(JSON.stringify(WIDGETS_SAVE())));
-			AJAX('POST /api/dashboard/', formsave, function(response) {
+			AJAX('PUT /api/dashboard/', formsave, function(response) {
 
 				SETTER('loading', 'hide', 1000);
 
@@ -40,7 +32,8 @@
 				hide();
 				FIND('dashboard').mode();
 				EXEC('dashboard_refresh')('dashboard_editbutton', 0);
-				response.value && jR.redirect('/{0}/'.format(response.value));
+				SET('dashboard.current.name', formsave.name);
+				document.title = formsave.name;
 			});
 		};
 	});
