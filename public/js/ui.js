@@ -2432,7 +2432,7 @@ COMPONENT('notifications', function() {
 
 		var obj = { id: Math.floor(Math.random() * 100000), icon: icon || 'fa-info-circle', message: message, date: date || new Date(), callback: callback };
 		self.items[obj.id] = obj;
-		self.append(self.template(obj));
+		self.element.append(self.template(obj));
 		self.autoclose();
 	};
 
@@ -2494,8 +2494,7 @@ COMPONENT('themeselector', function() {
 		return colors.indexOf(value) === -1
 	};
 
-	if (!required)
-		self.noValid();
+	!required && self.noValid();
 
 	self.make = function() {
 		var builder = [];
@@ -2588,17 +2587,17 @@ COMPONENT('binder', function() {
 	self.scan = function() {
 		keys = {};
 		keys_unique = {};
-		self.find('[data-binder]').each(function() {
+		self.find('[data-b]').each(function() {
 
 			var el = $(this);
-			var path = el.attr('data-binder');
+			var path = el.attr('data-b');
 			var arr = path.split('.');
 			var p = '';
 
-			var classes = el.attr('data-binder-class');
-			var html = el.attr('data-binder-html');
-			var visible = el.attr('data-binder-visible');
-			var obj = el.data('data-binder');
+			var classes = el.attr('data-b-class');
+			var html = el.attr('data-b-html');
+			var visible = el.attr('data-b-visible');
+			var obj = el.data('data-b');
 
 			keys_unique[path] = true;
 
@@ -2622,7 +2621,7 @@ COMPONENT('binder', function() {
 					tmp.length && tmp.remove();
 				}
 
-				el.data('data-binder', obj);
+				el.data('data-b', obj);
 			}
 
 			for (var i = 0, length = arr.length; i < length; i++) {
