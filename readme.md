@@ -7,7 +7,7 @@
 This application has to be modified by your requirements. Current version __v3.0.0__.
 
 - Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
-- [__Live chat with authors__](https://messenger.totaljs.com)
+- [__Live chat with professional support__](https://messenger.totaljs.com)
 - [__HelpDesk with professional support__](https://helpdesk.totaljs.com)
 
 ## Installation
