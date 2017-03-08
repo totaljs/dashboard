@@ -1,7 +1,6 @@
 var WIDGETS_DATABASE = {};
 var WIDGETS_DASHBOARD = [];
 var WIDGETS_EVENTS = {};
-var WIDGETS_MANAGER = {};
 var WIDGETS_USERSETTINGS = {};
 var WIDGETS_WIDGETSETTINGS = {};
 var WIDGETS_CURRENTREPOSITORY = '';
@@ -274,6 +273,7 @@ WIDGET_COMPONENT.prototype.ajax = function(url, data, callback, headers, cookies
 		callback = tmp;
 	}
 
+	var index = url.indexOf(' ');
 	var m = url.substring(0, index).trim();
 	var u = url.substring(index).trim();
 	if (u.substring(index, 1) === '/') {
@@ -461,7 +461,7 @@ function WIDGET_CONFIG(name, options) {
 	return obj;
 }
 
-function WIDGET_MAKE(id, name, element, dictionary, type) {
+function WIDGET_MAKE(id, name, element, dictionary) {
 	var w = WIDGETS_DATABASE[name];
 	if (!w) {
 		window.console && console.warn('Widget "{0}" not found.'.format(name));
@@ -473,7 +473,6 @@ function WIDGET_MAKE(id, name, element, dictionary, type) {
 	element.removeClass('widget-empty').addClass('widget-instance');
 
 	var component = new WIDGET_COMPONENT(id, name, element.find('.widget-body'), WIDGET_CONFIG(name, WIDGETS_USERSETTINGS[id]));
-	var tmp;
 
 	component.$name = name;
 	component.$type = w.type instanceof Array ? w.type : w.type ? [w.type] : EMPTYARRAY;
@@ -534,7 +533,7 @@ function WIDGET_REMOVE(id, destroy) {
 	return true;
 }
 
-function EMIT(id, name) {
+function EMIT(id) {
 	var e = WIDGETS_EVENTS[id];
 	if (!e || !e.length)
 		return false;
