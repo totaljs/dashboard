@@ -52,7 +52,7 @@ function WIDGET(name, make, init) {
 			values = [];
 
 			type.forEach(function(val) {
-				values.push({ text: val.text || val, value: val.text != null ? val : val });
+				values.push({ text: val.text === undefined ? val : val.text, value: val.value === undefined ? val : val.value });
 			});
 
 			type = 'array';
@@ -62,32 +62,16 @@ function WIDGET(name, make, init) {
 			validator = null;
 
 		obj.options[key] = { name: key, label: label, type: type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
-	}, function(url) {
-		obj.async++;
-		IMPORT('ONCE ' + url, function() {
-			obj.async--;
-			setTimeout(function() {
-				if (obj.async)
-					return;
-				done && done(name, obj);
-				done = null;
-			}, 50);
-		});
 	});
 
 	if (typeof(obj.example) === 'object')
 		obj.example = STRINGIFY(obj.example);
 
 	setTimeout(function() {
-
-		if (obj.async)
-			return;
-
 		if (done) {
 			done(name, obj);
 			done = null;
 		}
-
 	}, 50);
 }
 
@@ -101,6 +85,7 @@ function WIDGET_COMPONENT(id, name, element, options) {
 	this.options = options;
 	this.dom = element.get(0);
 	this.dictionary = {};
+	this.loaded = false;
 
 /*
 	this.make = function(size) {};
@@ -323,7 +308,9 @@ WIDGET_COMPONENT.prototype.configure = function() {
 				item.type = 'array';
 				item.values = [];
 				response.forEach(function(val) {
-					item.values.push({ text: val.text || val, value: val.text != null ? val : val });
+					var text = val.text === undefined ? val : val.text;
+					var value = val.value === undefined ? val : val.value;
+					item.values.push({ text: text, value: value });
 				});
 			}
 			next();
@@ -359,25 +346,16 @@ WIDGET_COMPONENT.prototype.emit = function(name) {
 WIDGET_COMPONENT.prototype.data = function(response, type) {
 
 	var self = this;
-	var obj;
-
-	if (response instanceof Array)
-		obj = response.slice(0);
-	else if (response) {
-		if (typeof(response) === 'object')
-			obj = CLONE(response);
-		else
-			obj = response;
-	} else
-		obj = null;
-
-	self.$data = CLONE(obj);
+	var obj = CLONE(response);
 
 	if (obj && self.render) {
-		self.render(obj, self.size, self.$render, type);
-		EMIT(self.id, 'render', obj, self.size, self.$render++, type);
-		!self.$loaded && self.element.closest('.widget').find('.widget-loading').removeClass('widget-loading-show');
-		self.$loaded = true;
+		var d = CLONE(obj);
+		if (self.render(obj, self.size, self.$render, type) !== false) {
+			self.$data = d;
+			EMIT(self.id, 'render', obj, self.size, self.$render++, type);
+			!self.loaded && self.element.closest('.widget').find('.widget-loading').removeClass('widget-loading-show');
+			self.loaded = true;
+		}
 	}
 
 	return self;
@@ -476,6 +454,7 @@ function WIDGET_MAKE(id, name, element, dictionary) {
 
 	component.$name = name;
 	component.$type = w.type instanceof Array ? w.type : w.type ? [w.type] : EMPTYARRAY;
+	component.$group = w.group;
 
 	dictionary && Object.keys(dictionary).forEach(function(key) {
 		component.dictionary[key] = dictionary[key];
@@ -561,10 +540,8 @@ function DATA(type, value) {
 		if (!w.data)
 			return;
 		for (var i = 0; i < length; i++) {
-			if (!w.$type.length || w.$type.indexOf(type[i]) !== -1) {
+			if (!w.$type.length || w.$type.indexOf(type[i]) !== -1)
 				w.data(value, type[i]);
-				return;
-			}
 		}
 	});
 }
