@@ -7,7 +7,6 @@ window.user = { id: '1234567890', name: 'Peter Širka', photo: 'https://dashboar
 
 var CLASS_SIZE = 'noxs xs sm md lg cols1 cols2 cols3 cols4 cols5 cols6 rows1 rows2 rows3 rows4 rows5 rows6 g1x1 g1x2 g1x3 g1x4 g1x5 g1x6 g2x1 g2x2 g2x3 g2x4 g2x5 g2x6 g3x1 g3x2 g3x3 g3x4 g3x5 g3x6 g4x1 g4x2 g4x3 g4x4 g4x5 g4x6 g5x1 g5x2 g5x3 g5x4 g5x5 g5x6 g6x1 g6x2 g6x3 g6x4 g6x5 g6x6';
 var size = { device: 'lg', width: 165, height: 150 };
-var options = {};
 var current = null;
 var globalconfig = {};
 var globalevents = {};
@@ -44,7 +43,7 @@ function DATA(type, value) {
 		}
 	}
 
-	currentdata && widgetready && current.render && current.render(currentdata, current.size, current.$render++, seltype);
+	currentdata && widgetready && current.render && current.render(CLONE(currentdata), current.size, current.$render++, seltype);
 }
 
 function WIDGET(name, declaration, init) {
@@ -175,7 +174,7 @@ function $WIDGET(name, declaration, init) {
 
 	obj.refresh = function(type) {
 		obj.render && setTimeout(function() {
-			obj.render(currentdata, obj.size, obj.$render++, type);
+			obj.render(CLONE(currentdata), obj.size, obj.$render++, type);
 		}, 100);
 		return obj;
 	};
@@ -397,8 +396,9 @@ function getDimension(device) {
 	var fh = ((rows * 10) + 40) / d.fontsizeratio;
 	var fw = ((cols * 10) + 40) / d.fontsizeratio;
 	var fa = rows > cols ? fw : fh;
+	var off = $('#widget').offset();
 
-	return { device: device, x: 0, y: 0, width: device === 'xs' ? size.width : cols * size.width + (cols - 1) * 30, height: device === 'xs' ? size.height : rows * size.height + (rows - 1) * 30, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, ratioW: d.ratioW, ratioH: d.ratioH, fontsizeratio: d.fontsizeratio, fontsize: fa, fontsizeH: fh, fontsizeW: fw, percentageW: ((cols / 6) * 100) >> 0, percentageH: ((rows / 6) * 100) >> 0 };
+	return { device: device, x: off.left, y: off.top, width: device === 'xs' ? size.width : cols * size.width + (cols - 1) * 30, height: device === 'xs' ? size.height : rows * size.height + (rows - 1) * 30, w: size.width, h: size.height, rows: rows, cols: cols, ratio: 1.1, ratioW: d.ratioW, ratioH: d.ratioH, fontsizeratio: d.fontsizeratio, fontsize: fa, fontsizeH: fh, fontsizeW: fw, percentageW: ((cols / 6) * 100) >> 0, percentageH: ((rows / 6) * 100) >> 0 };
 }
 
 function getDevice() {
@@ -451,7 +451,7 @@ function loadsettings() {
 			size.device = data.device;
 			$('#grid').val(data.grid);
 			$('#device').val(data.device);
-		} catch (e) {};
+		} catch (e) {}
 	}
 }
 
@@ -534,4 +534,25 @@ function filesizehelper(number, count) {
 			return 0;
 	}
 	return number;
+}
+
+function shade(color, percent) {
+
+	var R = parseInt(color.substring(1,3),16);
+	var G = parseInt(color.substring(3,5),16);
+	var B = parseInt(color.substring(5,7),16);
+
+	R = parseInt(R * (100 + percent) / 100);
+	G = parseInt(G * (100 + percent) / 100);
+	B = parseInt(B * (100 + percent) / 100);
+
+	R = (R<255)?R:255;
+	G = (G<255)?G:255;
+	B = (B<255)?B:255;
+
+	var RR = ((R.toString(16).length==1)?'0'+R.toString(16):R.toString(16));
+	var GG = ((G.toString(16).length==1)?'0'+G.toString(16):G.toString(16));
+	var BB = ((B.toString(16).length==1)?'0'+B.toString(16):B.toString(16));
+
+	return '#'+RR+GG+BB;
 }

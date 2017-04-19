@@ -121,7 +121,7 @@ COMPONENT('textboxlist', function() {
 		});
 	};
 
-	self.setter = function(value, path, type) {
+	self.setter = function(value) {
 
 		if (skip) {
 			skip = false;
@@ -359,7 +359,7 @@ COMPONENT('dropdown', function() {
 		if (!ds)
 			return;
 
-		var prerender = function(path) {
+		var prerender = function() {
 			var value = self.get(self.attr('data-source'));
 			!NOTMODIFIED(self.id, value) && self.render(value || EMPTYARRAY);
 		};
@@ -367,7 +367,7 @@ COMPONENT('dropdown', function() {
 		self.watch(ds, prerender, true);
 	};
 
-	self.state = function(type, who) {
+	self.state = function(type) {
 		if (!type)
 			return;
 		var invalid = self.isInvalid();
@@ -466,7 +466,7 @@ COMPONENT('textbox', function() {
 
 		icon2 && builder.push('<div><span class="fa {0}"></span></div>'.format(icon2));
 		increment && !icon2 && builder.push('<div><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
-		increment && self.event('click', '.fa-caret-up,.fa-caret-down', function(e) {
+		increment && self.event('click', '.fa-caret-up,.fa-caret-down', function() {
 			var el = $(this);
 			var inc = -1;
 			if (el.hasClass('fa-caret-up'))
@@ -503,7 +503,7 @@ COMPONENT('textbox', function() {
 		container = self.find('.ui-textbox');
 	};
 
-	self.state = function(type, who) {
+	self.state = function(type) {
 		if (!type)
 			return;
 		var invalid = self.isInvalid();
@@ -571,7 +571,6 @@ COMPONENT('textarea', function() {
 			return;
 		}
 
-		var height = self.attr('data-height');
 		var icon = self.attr('data-icon');
 		var html = builder.join('');
 
@@ -727,7 +726,7 @@ COMPONENT('page', function() {
 		var loading = FIND('loading');
 		loading.show();
 		isProcessing = true;
-		INJECT(el.attr('data-template'), el, function() {
+		IMPORT(el.attr('data-template'), el, function() {
 			isProcessing = false;
 
 			var init = el.attr('data-init');
@@ -777,8 +776,8 @@ COMPONENT('form', function() {
 	}
 
 	self.readonly();
-	self.submit = function(hide) { self.hide(); };
-	self.cancel = function(hide) { self.hide(); };
+	self.submit = function() { self.hide(); };
+	self.cancel = function() { self.hide(); };
 	self.onHide = function(){};
 
 	var hide = self.hide = function() {
@@ -801,7 +800,6 @@ COMPONENT('form', function() {
 
 	self.make = function() {
 		var width = self.attr('data-width') || '800px';
-		var submit = self.attr('data-submit');
 		var enter = self.attr('data-enter');
 		autocenter = self.attr('data-autocenter') === 'true';
 		self.condition = self.attr('data-if');
@@ -811,13 +809,13 @@ COMPONENT('form', function() {
 		var el = $('#' + self._id);
 		el.find('.ui-form').get(0).appendChild(self.element.get(0));
 		self.classes('-hidden');
-		self.element = el;
+		self.replace(el);
 
 		self.event('scroll', function() {
 			EMIT('reflow', self.name);
 		});
 
-		self.find('button').on('click', function(e) {
+		self.find('button').on('click', function() {
 			window.$$form_level--;
 			switch (this.name) {
 				case 'submit':
@@ -834,7 +832,7 @@ COMPONENT('form', function() {
 		});
 	};
 
-	self.setter = function(value) {
+	self.setter = function() {
 
 		setTimeout2('noscroll', function() {
 			$('html').toggleClass('noscroll', $('.ui-form-container').not('.hidden').length ? true : false);
@@ -951,7 +949,6 @@ COMPONENT('calendar', function() {
 	var skip = false;
 	var skipDay = false;
 	var visible = false;
-	var callback;
 
 	self.days = self.attr('data-days').split(',');
 	self.months = self.attr('data-months').split(',');
@@ -967,7 +964,7 @@ COMPONENT('calendar', function() {
 	}
 
 	self.readonly();
-	self.click = function(date) {};
+	self.click = function() {};
 
 	function getMonthDays(dt) {
 
@@ -1143,8 +1140,6 @@ COMPONENT('calendar', function() {
 		if (!value)
 			value = new Date();
 
-		old = value;
-
 		var output = calculate(value.getFullYear(), value.getMonth(), value);
 		var builder = [];
 
@@ -1197,7 +1192,6 @@ COMPONENT('tabmenu', function() {
 COMPONENT('confirm', function() {
 	var self = this;
 	var is = false;
-	var visible = false;
 
 	self.readonly();
 	self.singleton();
@@ -1235,14 +1229,12 @@ COMPONENT('confirm', function() {
 		self.callback && self.callback(index);
 		self.classes('-ui-confirm-visible');
 		setTimeout2(self.id, function() {
-			visible = false;
 			self.classes('hidden');
 		}, 1000);
 	};
 
 	self.content = function(cls, text) {
 		!is && self.html('<div><div class="ui-confirm-body"></div></div>');
-		visible = true;
 		self.find('.ui-confirm-body').empty().append(text);
 		self.classes('-hidden');
 		setTimeout2(self.id, function() {
@@ -1425,17 +1417,16 @@ COMPONENT('multioptions', function() {
 	var self = this;
 	var colors = COLORS;
 	var Tinput = Tangular.compile('<input class="ui-moi-save ui-moi-value-inputtext" data-name="{{ name }}" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }}{{ if max }} maxlength="{{ max }}"{{ fi }} data-type="text" />');
-	var Tcolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(colors.map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n) }).join('')));
+	var Tcolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(colors.map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n); }).join('')));
 	var Tselect = Tangular.compile('<div class="ui-moi-value-select"><i class="fa fa-chevron-down"></i><select data-name="{{ name }}" class="ui-moi-save ui-multioptions-select">{{ foreach m in values }}<option value="{{ $index }}"{{ if value === m.value }} selected="selected"{{ fi }}>{{ m.text }}</option>{{ end }}</select></div>');
 	var Tnumber = Tangular.compile('<div class="ui-moi-value-inputnumber-buttons"><span class="multioptions-operation" data-type="number" data-step="{{ step }}" data-name="plus" data-max="{{ max }}" data-min="{{ min }}"><i class="fa fa-plus"></i></span><span class="multioptions-operation" data-type="number" data-name="minus" data-step="{{ step }}" data-max="{{ max }}" data-min="{{ min }}"><i class="fa fa-minus"></i></span></div><div class="ui-moi-value-inputnumber"><input data-name="{{ name }}" class="ui-moi-save ui-moi-value-numbertext" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }} data-max="{{ max }}" data-min="{{ max }}" data-type="number" /></div>');
-	var Tpath = Tangular.compile('<div class="ui-moi-value-inputpath-buttons"><span class="multioptions-operation" data-type="path" data-name="find"><i class="fa fa-search"></i></span></div><div class="ui-moi-value-inputpath"><input class="ui-moi-save" data-name="{{ name }}" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }}{{ if max }} maxlength="{{ max }}"{{ fi }} data-type="text" /></div>');
 	var Tboolean = Tangular.compile('<div data-name="{{ name }}" data-type="boolean" class="ui-moi-save multioptions-operation ui-moi-value-boolean{{ if value }} checked{{ fi }}"><i class="fa fa-check"></i></div>');
 	var Tdate = Tangular.compile('<div class="ui-moi-value-inputdate-buttons"><span class="multioptions-operation" data-type="date" data-name="date"><i class="fa fa-calendar"></i></span></div><div class="ui-moi-value-inputdate"><input class="ui-moi-save ui-moi-date" data-name="{{ name }}" type="text" value="{{ value | format(\'yyyy-MM-dd\') }}" placeholder="dd.mm.yyyy" maxlength="10" data-type="date" /></div>');
 	var skip = false;
 
 	self.readonly();
 
-	self.form = function(type, input, name) {};
+	self.form = function() {};
 
 	self.make = function() {
 		self.classes('ui-multioptions');
@@ -1504,8 +1495,8 @@ COMPONENT('multioptions', function() {
 		});
 
 		self.event('change', 'input', function() {
-			var el = $(this);
-			var type = el.attr('data-type');
+			// var el = $(this);
+			// var type = el.attr('data-type');
 			// @TODO: make validation
 		});
 
@@ -1513,7 +1504,7 @@ COMPONENT('multioptions', function() {
 			e.stopPropagation();
 		});
 
-		self.event('focus', '.ui-moi-date', function(e) {
+		self.event('focus', '.ui-moi-date', function() {
 			var el = $(this);
 			FIND('calendar').toggle(el, el.val().parseDate(), function(date) {
 				el.val(date.format('yyyy-MM-dd'));
@@ -1564,11 +1555,8 @@ COMPONENT('multioptions', function() {
 				var index = el.val().parseInt();
 				var val = opt.values[index];
 				opt.value = val ? val.value : null;
-				return;
-			}
-
-			if (el.attr('data-name') === 'path') {
-				opt.value = el.val();
+				if (opt.value && opt.value.value)
+					opt.value = opt.value.value;
 				return;
 			}
 		});
@@ -1613,9 +1601,6 @@ COMPONENT('multioptions', function() {
 					break;
 				case 'array':
 					value = Tselect(option);
-					break;
-				case 'path':
-					value = Tpath(option);
 					break;
 				case 'date':
 					value = Tdate(option);
@@ -1684,7 +1669,6 @@ COMPONENT('dictionary', function() {
 			if (!key || !value)
 				return;
 
-			var arr = [];
 			var base = el.closest('.ui-dictionary-base').length > 0;
 			if (base && e.type === 'change')
 				return;
@@ -1715,7 +1699,7 @@ COMPONENT('dictionary', function() {
 		});
 	};
 
-	self.setter = function(value, path, type) {
+	self.setter = function(value) {
 
 		if (skip) {
 			skip = false;
@@ -1825,7 +1809,7 @@ COMPONENT('dashboard', function() {
 			});
 		});
 
-		self.event('click', '.grid', function(e) {
+		self.event('click', '.grid', function() {
 			mode && self.resize();
 		});
 
@@ -1855,7 +1839,7 @@ COMPONENT('dashboard', function() {
 			});
 		});
 
-		self.event('click', '.widget-replace', function(e) {
+		self.event('click', '.widget-replace', function() {
 			var el = $(this);
 			var container = el.parent().parent();
 			var size = WIDGET_GETSIZE(container);
@@ -1873,7 +1857,7 @@ COMPONENT('dashboard', function() {
 			formwidgets.current = container.attr('data-instance');
 		});
 
-		self.event('click', '.widget-empty,.widget-settings', function(e) {
+		self.event('click', '.widget-empty,.widget-settings', function() {
 
 			if (!mode)
 				return;
@@ -1906,7 +1890,7 @@ COMPONENT('dashboard', function() {
 			formwidgets.current = instance;
 		});
 
-		self.event('mouseup touchend touchcancel',function(e) {
+		self.event('mouseup touchend touchcancel',function() {
 			if (!drag.is)
 				return;
 			drag.is = false;
@@ -2145,11 +2129,14 @@ COMPONENT('dashboard', function() {
 				})($(this), index);
 			});
 
+			var wh = $(window).height();
 
 			if (!topmax)
-				topmax = $(window).height();
+				topmax = wh;
+			else if (topmax < wh)
+				topmax = wh - 30;
 
-			self.css({ height: topmax - 30 });
+			self.css({ height: (topmax - self.element.offset().top) + 30 });
 			callback && callback();
 		}, 200);
 	};
@@ -2275,7 +2262,7 @@ COMPONENT('search', function() {
 		options_delay = (self.attr('data-delay') || '200').parseInt();
 	};
 
-	self.setter = function(value, path, type) {
+	self.setter = function(value) {
 
 		if (!options_selector || !options_attribute || value == null)
 			return;
@@ -2322,6 +2309,7 @@ COMPONENT('tooltip', function() {
 	var container;
 	var css = {};
 	var anim = {};
+	var body;
 
 	self.singleton();
 	self.readonly();
@@ -2397,11 +2385,11 @@ COMPONENT('notifications', function() {
 			self.autoclose();
 		});
 
-		self.event('click', 'a,button', function() {
+		self.event('click', 'a,button', function(e) {
 			e.stopPropagation();
 		});
 
-		self.event('click', '.ui-notification', function(e) {
+		self.event('click', '.ui-notification', function() {
 			var el = $(this);
 			var id = +el.attr('data-id');
 			var obj = self.items[id];
@@ -2491,7 +2479,7 @@ COMPONENT('themeselector', function() {
 	var required = self.attr('data-required') === 'true';
 
 	self.validate = function(value) {
-		return colors.indexOf(value) === -1
+		return colors.indexOf(value) === -1;
 	};
 
 	!required && self.noValid();
@@ -2507,7 +2495,7 @@ COMPONENT('themeselector', function() {
 		self.html(builder.join(''));
 		list = self.find('li');
 
-		self.event('click', 'li', function(e) {
+		self.event('click', 'li', function() {
 			var li = $(this);
 			self.change(true);
 			self.set(themes[parseInt(li.attr('data-index'))]);
@@ -2547,7 +2535,7 @@ COMPONENT('binder', function() {
 		});
 	};
 
-	self.autobind = function(path, value) {
+	self.autobind = function(path) {
 		var mapper = keys[path];
 		var template = {};
 		mapper && mapper.forEach(function(item) {
@@ -2645,7 +2633,6 @@ COMPONENT('binder', function() {
 
 COMPONENT('contextmenu', function() {
 	var self = this;
-	var $window = $(window);
 	var is = false;
 	var timeout;
 	var container;
@@ -2670,7 +2657,7 @@ COMPONENT('contextmenu', function() {
 			e.stopPropagation();
 		});
 
-		$(document).on('touchstart mousedown', function(e) {
+		$(document).on('touchstart mousedown', function() {
 			FIND('contextmenu').hide();
 		});
 	};

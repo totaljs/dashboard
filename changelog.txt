@@ -1,3 +1,10 @@
+======= 4.0.0
+
+- create a modular system
+- improve UI
+- improve performance
+- fixed bugs
+
 ======= 2.0.0
 
 - add data sources

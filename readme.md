@@ -4,7 +4,7 @@
 
 # Dashboard
 
-This application has to be modified by your requirements. Current version __v3.0.0__.
+This application has to be modified by your requirements. Current version __v4.0.0__.
 
 - Homepage: [www.totaljs.com/dashboard](https://www.totaljs.com/dashboard)
 - [__Live chat with professional support__](https://messenger.totaljs.com)
@@ -14,7 +14,7 @@ This application has to be modified by your requirements. Current version __v3.0
 
 __License__: [MIT](license.txt). 
 
-- install latest Total.js `npm install total.js` (minimal version: __+v2.4.0__)
+- install latest Total.js `npm install total.js` (minimal version: __+v2.5.0__)
 - download source-code
 - run `node debug.js`
 

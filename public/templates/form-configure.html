@@ -63,6 +63,7 @@
 			widget.dictionary = formconfigure.dictionary;
 			widget.$state(1, changes);
 			dashboard.changed = true;
+			EMIT('dashboard.options', widget, widget.$group, widget.$type);
 		};
 	});
 

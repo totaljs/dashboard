@@ -2,10 +2,10 @@
 // Only CSS and JavaScript
 
 // CSS
-F.merge('/css/default.css', '/css/bootstrap.min.css', '/css/ui.css', '/css/default.css', '/widgets/*.css');
+F.merge('/css/default.css', '/css/bootstrap.min.css', '/css/ui.css', '/css/default.css');
 
 // JavaScript
-F.merge('/js/default.js', '/js/jctajr.min.js', '/js/ui.js', '/js/widgets.js', '/js/default.js', '/widgets/*.js');
+F.merge('/js/default.js', '/js/jctajr.min.js', '/js/ui.js', '/js/widgets.js', '/js/default.js');
 
 // JavaScript for developers
 F.merge('/developer.js', '/js/jctajr.min.js', '/js/ui.js', '/js/developer.js');
