@@ -1,7 +1,7 @@
 {
   "name": "Dashboard",
   "description": "A customizable dashboard application, compose your dashboard from widgets for free for everyone.",
-  "version": "2.0.0",
+  "version": "4.0.0",
   "main": "release.js",
   "dependencies": {
     "total.js": "latest"
@@ -10,8 +10,9 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
-    "blog",
-    "engine"
+    "dashboard",
+    "widgets",
+    "flow"
   ],
   "author": "Peter Širka",
   "license": "MIT"
