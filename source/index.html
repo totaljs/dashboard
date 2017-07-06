@@ -61,9 +61,9 @@
 	</div>
 
 	<div id="dashboardsettings"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="templates/form-database.html" data-reload="formdatabase_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'widgets'" data-url="templates/form-widgets.html" data-reload="formwidgets_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'tab'" data-url="templates/form-tab.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="@{model.url}templates/form-database.html" data-reload="formdatabase_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'widgets'" data-url="@{model.url}templates/form-widgets.html" data-reload="formwidgets_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'tab'" data-url="@{model.url}templates/form-tab.html"></div>
 
 	@{import(model.url + 'default.js')}
 	@{place('scripts')}
