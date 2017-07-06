@@ -1,0 +1,63 @@
+<div data-jc="form" data-title="@(Choose component)" data-jc-path="common.form" data-if="value === 'widgets'" data-width="930px" data-jc-init="formwidgets_init" class="hidden">
+	<div class="padding npb">
+		<div data-jc="textbox" data-jc-path="formwidgets_init.search" data-jc-type="search" data-placeholder="@(Search components ...)" data-jc-type="search" class="mt10"></div>
+		<br />
+		<div data-jc="search" data-jc-path="formwidgets_init.search" data-selector=".jsearch">
+			<div class="db-container">
+				<div data-jc="repeater-group" data-jc-path="common.database" data-group="group">
+					<script type="text/html">
+						<div class="jsearch db-widget" data-search="{{ name }}" data-id="{{ name }}">
+							<span><i class="fa {{ icon }}"></i></span>
+							<div>
+								<div class="name">{{ title }}</div>
+								<div class="author">{{ author }}</div>
+							</div>
+						</div>
+					</script>
+					<script type="text/html">
+						<div class="jsearch db-category" data-search=""><i class="fa fa-folder-o"></i>{{ group }}</div>
+						{{ body | raw }}
+					</script>
+				</div>
+			</div>
+		</div>
+		<br />
+	</div>
+	<div class="ui-form-buttons ui-center">
+		<button name="cancel" style="width:240px">@(Close)</button>
+	</div>
+</div>
+
+<script>
+	var formwidgets_init = { search: '' };
+
+	$(document).on('click', '.db-widget', function() {
+
+		SETTER('loading', 'show');
+
+		var el = $(this);
+		var id = el.attr('data-id');
+
+		var widget = common.selected.find('figure[data-name]').get(0);
+
+		if (widget && widget.$widget) {
+			var item = common.designer.findItem('id', widget.$widget.id);
+			if (item)
+				item.options = null;
+			widget.$widget.destroy();
+		}
+
+		setTimeout(function() {
+			SETTER('loading', 'hide', 1500);
+			common.selected.find('.widget-body').append('<figure data-name="{0}"></figure>'.format(id));
+			SETTER('designer', 'compile');
+			setTimeout(function() {
+				var widget = common.selected.find('figure[data-name]').get(0);
+				widget && widget.$widget && widget.$widget.settings();
+			}, 1500);
+		}, 500);
+
+		SET('common.form', '');
+	});
+
+</script>

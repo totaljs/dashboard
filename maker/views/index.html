@@ -1,0 +1,66 @@
+@{layout('')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Dashboard Component Maker</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="robots" content="all,follow" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<link type="text/css" rel="stylesheet" href="https://cdn.totaljs.com/spa.min.css" />
+	<link type="text/css" rel="stylesheet" href="/maker.css" />
+	<script src="https://cdn.totaljs.com/spa.min.js"></script>
+	<script src="/maker.js"></script>
+</head>
+<body data-jc="exec,binder" class="themedark">
+
+	<div data-jc="audio" data-jc-path="common.volume"></div>
+	<div data-jc="autocomplete"></div>
+	<div data-jc="calendar" data-days="SU,MO,TU,WE,TH,FR,SO" data-months="January,February,March,April,May,June,July,August,September,October,November,December" data-today="Set date to today" data-firstday="0"></div>
+	<div data-jc="colorpicker"></div>
+	<div data-jc="confirm"></div>
+	<div data-jc="contextmenu"></div>
+	<div data-jc="message" data-button="Close"></div>
+
+	<header>
+		<div data-jc="filter" data-jc-path="filter" class="hidden" data-jc-class="hidden">
+			<div class="filter-refresh">
+				<button class="exec" data-exec="refreshcomponent"><i class="fa fa-refresh"></i></button>
+			</div>
+			<div class="filter-refresh">
+				<button class="exec" data-exec="componentsettings"><i class="fa fa-cog"></i></button>
+			</div>
+			<div class="checkbox">
+				<label><input type="checkbox" name="themedark" checked="checked" /><span>Dark theme</span></label>
+			</div>
+			<div class="form">
+				<div class="input"><select name="component" style="width:200px">@{options(model)}</select></div>
+			</div>
+			<div class="form">
+				<div class="name">COLS</div>
+				<div class="input"><select name="cols"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div>
+			</div>
+			<div class="form">
+				<div class="name">ROWS</div>
+				<div class="input"><select name="rows"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div>
+			</div>
+			<div class="form">
+				<div class="name">DISPLAY</div>
+				<div class="input"><select name="device"><option value="lg">Large display (LG)</option><option value="md">Medium display (MD)</option><option value="sm">Small display (SM)</option><option value="xs">Extra small (XS)</option></select></div>
+			</div>
+		</div>
+	</header>
+	<div class="docs">Send data: <code>DATA({ cpu: 30, memory: 203923029 })</code>, Change options: <code>OPTIONS({ background: 'red' })</code></div>
+
+	<div class="widget hidden" id="maker">
+		<div class="widget-body">
+			<figure></figure>
+		</div>
+	</div>
+
+	<div id="dashboardsettings"></div>
+
+</body>
+</html>

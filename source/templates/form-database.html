@@ -1,0 +1,126 @@
+<div data-jc="form,dragdropfiles" data-title="@(Dashboard components)" data-jc-path="common.form" data-if="value === 'database'" data-width="920px" data-jc-init="formdatabase_init" class="hidden" data-files="formdatabase_dragdrop" data-class="+ui-form-dragdrop">
+	<div class="padding npb" style="background-color:#FFFCD3">
+		<div class="b m black"><i class="fa fa-database mr5"></i>@(Installing new components)</div>
+		<div class="row">
+			<div class="col-md-6 m">
+				<div data-jc="textbox" data-jc-path="formdatabase.url" data-maxlength="200" class="m" data-placeholder="@(E.g. https://domain.com/component.html and press enter)" data-jc-type="url" data-jc-keypress="false" data-required="true">@(URL address)</div>
+			</div>
+			<div class="col-md-6 m">
+				<div data-jc="filereader" data-jc-path="formdatabase.file" class="m" data-placeholder="@(Browse device)" data-accept="text/html" data-required="true" data-jc-id="formdatabasefile">@(Upload .html component)</div>
+			</div>
+		</div>
+		<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
+		<div data-jc="repeater" data-jc-path="common.templates">
+			<script type="text/html">
+				<a href="javascript:void(0)" class="exec tag" data-exec="formdatabase_install" data-value="{{ name }}">@(Install:) <b>{{ name }}</b> ({{ items.length }}x)</a>
+			</script>
+		</div>
+		<br />
+	</div>
+	<div class="success hidden" data-b="formdatabase.success" data-b-visible="n => n"><i class="fa fa-check-circle"></i>@(<b>The component</b> has been sent successfully.)</div>
+	<div class="padding npb">
+		<div data-jc="textbox" data-jc-path="formdatabase.search" data-jc-type="search" data-placeholder="@(Search components ...)" data-jc-type="search" class="mt10"></div>
+		<br />
+		<div data-jc="search" data-jc-path="formdatabase.search" data-selector=".jsearch">
+			<div class="db-container">
+				<div data-jc="repeater-group" data-jc-path="common.database" data-group="group">
+					<script type="text/html">
+						<div class="jsearch db-item" data-search="{{ name }}" data-id="{{ name }}">
+							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
+							<div>
+								<div class="name">{{ title }}</div>
+								<div class="datetime"><i class="fa fa-clock-o"></i>{{ dateupdated | format('yyyy-MM-dd HH:mm') }}</div>
+								<div class="author">{{ author }}</div>
+							</div>
+						</div>
+					</script>
+					<script type="text/html">
+						<div class="jsearch db-category" data-search=""><i class="fa fa-folder-o"></i>{{ group }}</div>
+						{{ body | raw }}
+					</script>
+				</div>
+			</div>
+		</div>
+		<br />
+	</div>
+	<div class="ui-form-buttons ui-center">
+		<button name="cancel" style="width:240px">@(Close)</button>
+	</div>
+</div>
+
+<script>
+
+	SETTER('websocket', 'send', { 'TYPE': 'templates' });
+
+	var formdatabase = { reload: false };
+
+	function formdatabase_init(component) {
+		component.onHide = function() {
+			setTimeout(function() {
+				EMIT('designer.refresh');
+				formdatabase.reload && SETTER('confirm', 'confirm', '@(Designer needs to be reloaded. Can I reload it?)', ['@(Yes)', '@(Cancel)'], function(index) {
+					!index && location.reload(true);
+				});
+				formdatabase.reload = false;
+			}, 1000);
+		};
+	}
+
+	function formdatabase_remove(el) {
+		var id = el.parent().attr('data-id');
+		SETTER('confirm', 'confirm', '@(Are you sure you want to remove this component?)', ['@(Yes)', '@(Cancel)'], function(index) {
+			if (index)
+				return;
+			common.operations.remove(id, true);
+			formdatabase.reload = true;
+		});
+	}
+
+	WATCH('formdatabase.url', function(path, value) {
+		if (value && value.isURL()) {
+			SETTER('websocket', 'send', { TYPE: 'install', filename: value });
+			SET('formdatabase.url', '', true);
+			SET('formdatabase.success', true);
+			SET('formdatabase.success', false, 3500);
+		}
+	});
+
+	WATCH('formdatabase.file', function(path, value) {
+		if (value && value.body) {
+
+			if (value.size / 1024 > 50) {
+				SETTER('message', 'warning', '@(The file is too big large. The maximum limit of file size is <b>50 kB</b>.)');
+				return;
+			}
+
+			if (value.body.indexOf('exports.name') === -1 || value.body.indexOf('exports.install') === -1) {
+				SETTER('message', 'warning', '@(This file is not Total.js Dashboard component.)');
+				return;
+			}
+
+			formdatabase.reload = true;
+			SETTER('websocket', 'send', { TYPE: 'install', filename: value.filename, body: value.body });
+			SET('formdatabase.file', null, true);
+			SET('formdatabase.success', true);
+			SET('formdatabase.success', false, 3500);
+		}
+	});
+
+	function formdatabase_install(el) {
+		var arr = common.templates.findItem('name', el.attr('data-value'));
+		SETTER('loading', 'show');
+		arr.items.waitFor(function(item, next) {
+			SETTER('websocket', 'send', { TYPE: 'install', body: item });
+			setTimeout(next, 500);
+		}, function() {
+			SETTER('loading', 'hide', 1000);
+			SET('formdatabase.success', true);
+			SET('formdatabase.success', false, 3500);
+		});
+	}
+
+	function formdatabase_dragdrop(files) {
+		FIND('#formdatabasefile').process(files);
+	}
+
+</script>

@@ -1,6 +1,0 @@
-name                      : Dashboard
-version                   : 4.0.0
-author                    : Peter Širka
-cookie                    : __user
-
-groups (Array)			: [{'name': 'Default', 'id': 'default'}]

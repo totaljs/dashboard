@@ -1,0 +1,361 @@
+@{layout('')}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>@(Dashboard v5.0:) @{config.name}</title>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=10" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="robots" content="all,follow" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="#A0A0A0" />
+	<meta name="apple-mobile-web-app-title" content="@{config.name}" />
+	<link rel="apple-touch-icon" href="icon.png" />
+	<link type="text/css" rel="stylesheet" href="default.css" />
+	<script>var user = JSON.parse('@{json(user)}');!user && (user = {});</script>
+</head>
+<body data-jc="exec,binder" class="themedark">
+
+	<div data-jc="audio" data-jc-path="common.volume"></div>
+	<div data-jc="autocomplete"></div>
+	<div data-jc="calendar" data-days="@(SU,MO,TU,WE,TH,FR,SO)" data-months="@(January,February,March,April,May,June,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
+	<div data-jc="colorpicker"></div>
+	<div data-jc="confirm"></div>
+	<div data-jc="contextmenu"></div>
+	<div data-jc="loading" class="ui-loading"></div>
+	<div data-jc="message" data-button="@(Close)"></div>
+	<div data-jc="websocket" data-url="@{model.url}?&token=@{query.token}&baa=@{model.baa}"></div>
+
+	<div data-jc="resource">
+		<script type="text/plain">
+			yes:@(Yes)
+			no:@(No)
+			confirm-remove-widget:@(Are you sure you want to remove widget?)
+		</script>
+	</div>
+
+	<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-navicon"></i></a>
+
+	<div class="toolbar">
+		<div class="container">
+			<div class="tabs">
+				<div data-jc="repeater" data-jc-path="common.tabs">
+					<script type="text/html">
+						<a href="#{{ linker }}" data-id="{{ id }}" data-b="common.tab" data-b-class="n => (n && n.id === common.tabs[{{ index }}].id ? '+' : '-') + 'selected +tab'">{{ name }}</a>
+					</script>
+				</div>
+				<a href="javascript:void(0)" class="last exec" data-exec="#tabs.add"><i class="fa fa-plus-circle"></i></a>
+			</div>
+		</div>
+	</div>
+
+	<div class="designer-container">
+		<div class="designer-scroll">
+			<div class="designer">
+				<div data-jc="controls"></div>
+				<div data-jc="designer"></div>
+			</div>
+		</div>
+	</div>
+
+	<div id="dashboardsettings"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="templates/form-database.html" data-reload="formdatabase_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'widgets'" data-url="templates/form-widgets.html" data-reload="formwidgets_reload"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'tab'" data-url="templates/form-tab.html"></div>
+
+	@{import(model.url + 'default.js')}
+	@{place('scripts')}
+
+	<script>
+
+		common.draft = false;
+		common.url = NAVIGATION.url;
+
+		CACHEPATH('common.theme', '1 year');
+
+		WATCH('common.theme', function(path, value) {
+			var body = $(document.body);
+			var cls = body.attr('class').match(/theme\w+/g);
+			cls && body.removeClass(cls.toString());
+			value && body.addClass('theme' + value);
+		}, true);
+
+		function centerize() {
+			var w = $(window);
+			var el = $('.designer-scroll');
+			var container = $('.designer');
+			el.scrollLeft((container.width() / 2) - (w.width() / 2));
+			el.scrollTop((container.height() / 2) - (w.height() / 2));
+		}
+
+		WATCH('common.draft', function(path, value) {
+			$('body').toggleClass('draft', value === true);
+			SETTER(true, 'designer', 'readonly', value !== true);
+		}, true);
+
+		ON('online', function(is) {
+			SETTER('loading', is ? 'hide' : 'show', is ? 1000 : 0);
+		});
+
+		ON('message', function(data) {
+			switch (data.TYPE) {
+				case 'templates':
+					SET('common.templates', data.body);
+					break;
+				case 'instances':
+					SET('common.instances', data.body);
+					break;
+				case 'component':
+					common.operations.append(data.body, data.dateupdated);
+					break;
+				case 'designer':
+					common.backup = CLONE(data.body);
+					common.designer = data.body.items;
+					FIND('designer').operations.load(data.body);
+					break;
+				case 'loaded':
+					UPDATE('common.database');
+					!common.backup && FIND('designer').operations.load({ items: [] });
+					break;
+				case 'data':
+					data.TYPE = undefined;
+					common.operations.emit('data', data);
+					common.data.push(data);
+					break;
+			}
+		});
+
+		function mainmenu(el) {
+
+			var device = WIDTH();
+			var items = [];
+
+			items.push('@(Dashboard)');
+			items.push({ name: '@(Database)', icon: 'fa-database', value: 'database' });
+
+			if (common.draft) {
+				items.push({ name: '@(Save changes)', icon: 'fa-floppy-o', value: 'save' });
+				items.push({ name: '@(Restore changes)', icon: 'fa-refresh', value: 'restore' });
+			} else
+				items.push({ name: '@(Edit mode)', icon: 'fa-object-group', value: 'edit' });
+
+			items.push({ name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' });
+			items.push({ name: '@(Toggle dark theme)', icon: 'fa-paint-brush', value: 'theme' });
+
+			if (common.page === 'dashboard' && device !== 'xs' && dashboard.current) {
+				var mode = FIND('dashboard').getMode();
+				var save = mode === 1 && dashboard.changed ? true : false;
+				items.push({ name: save ? '@(Save dashboard)' : '@(Edit dashboard)', icon: save ? 'fa-floppy-o' : 'fa-pencil', value: 'edit' });
+			}
+
+			@{if helpers.FLOW || helpers.FLOWBOARD}
+			items.push('@(Applications)');
+			@{if helpers.FLOWBOARD}
+			items.push({ name: '@(Flowboard)', icon: 'fa-object-group', url: '@{helpers.FLOWBOARD.url}' });
+			@{fi}
+			@{if helpers.FLOW}
+			items.push({ name: '@(Flow designer)', icon: 'fa-sitemap', url: '@{helpers.FLOW.url}' });
+			@{fi}
+			@{fi}
+
+			FIND('contextmenu').show('left', el, items, function(value) {
+				switch (value) {
+					@{if helpers.FLOW}
+					case 'flow':
+						location.href = '@{helpers.FLOW.url}';
+						break;
+					@{fi}
+					case 'edit':
+						SET('common.draft', true);
+						break;
+					case 'restore':
+						SET('common.draft', false);
+						var data = CLONE(common.backup);
+						FIND('designer').operations.load(data);
+						break;
+					case 'clear':
+						SETTER('loading', 'show')('loading', 'hide', 2000);
+						FIND('designer').operations.tabclear(common.tab.id);
+						break;
+					case 'database':
+						SET('common.form', 'database');
+						break;
+					case 'theme':
+						themechanger();
+						break;
+					case 'save':
+						SETTER('confirm', 'confirm', '@(Are you sure you want to save a current state?)', ['@(Yes)', '@(Cancel)'], function(index) {
+							if (index)
+								return;
+							var obj = {};
+							obj.TYPE = 'save';
+							obj.body = {};
+							obj.body.TYPE = 'designer';
+							obj.body.body = FIND('designer').operations.save();
+							obj.body.body.tabs = common.tabs;
+							common.backup = CLONE(obj.body.body);
+							SETTER('websocket', 'send', obj);
+							SET('common.draft', false);
+						});
+						break;
+				}
+			}, -3);
+		}
+
+		ON('tabs.save', function(form) {
+
+			var o = form.id ? common.tabs.findItem('id', form.id) : {};
+			o.name = form.name;
+			o.icon = form.icon;
+			o.linker = o.name.slug();
+
+			if (!o.id) {
+				o.id = Date.now().toString();
+				common.tabs.push(o);
+			}
+
+			var position = form.position - 1;
+
+			if (common.tabs[position] && common.tabs[position].id !== o.id) {
+				common.tabs = common.tabs.remove('id', o.id);
+				common.tabs.splice(position, 0, o);
+			}
+
+			UPDATE('common.tabs');
+			SETTER('binder', 'scan');
+			location.hash = o.linker;
+		});
+
+		ON('designer.selected', function(el) {
+			SET('common.selected', el);
+		});
+
+		ON('designer.contextmenu', function(button, element, widget) {
+			var items = [];
+
+			widget && items.push({ name: '@(Settings)', icon: 'fa-cog', value: 'settings' });
+			items.push({ name: widget ? '@(Replace component)' : '@(Choose component)', icon: 'fa-pie-chart', value: 'widgets' });
+			items.push({ name: '@(Remove component)', icon: 'fa-times-circle', value: 'remove' });
+
+			FIND('contextmenu').show('center', button, items, function(value) {
+				switch (value) {
+					case 'settings':
+						common.selected = element;
+						widget.settings();
+						break;
+					case 'widgets':
+						common.selected = element;
+						SET('common.form', value);
+						break;
+					case 'remove':
+						widget && widget.destroy();
+						setTimeout(function() {
+							$('.widget_offset[data-id="{0}"]'.format(element.attr('data-id'))).remove();
+							element.remove();
+						}, 100);
+						break;
+				}
+			}, 3, 5);
+		});
+
+		ON('designer.settings', function(el, instance) {
+			instance.settings();
+		});
+
+		function staticContent(instance, callback) {
+
+			if (common.statics[instance.name]) {
+				callback(true);
+				return;
+			}
+
+			common.statics[instance.name] = true;
+			COMPILE($('#dashboardsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="@(Settings:) {0}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(instance.name, common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
+			callback(false);
+		}
+
+		OPERATION('settings', function() {
+			var target = common.selected.find('figure[data-name]');
+			var instance = target.get(0).$widget;
+			var options = settings[instance.name];
+			var old = instance.options;
+			instance.options = options;
+			instance.emit('options', options, old);
+			SET('common.form', '');
+		});
+
+		function designer_duplicate() {
+			FIND('designer').operations.duplicate();
+		}
+
+		function designer_remove() {
+			FIND('designer').operations.remove();
+		}
+
+		function themechanger() {
+			SETTER('loading', 'show');
+			setTimeout(function() {
+				SET('common.theme', common.theme === 'dark' ? '' : 'dark');
+				SETTER('loading', 'hide', 1000);
+			}, 1000);
+		}
+
+		$('.designer-scroll').on('scroll', function() {
+			FIND('contextmenu').hideforce();
+		});
+
+		$(window).on('hashchange', function() {
+			var tab = common.tabs.findItem('linker', location.hash.substring(1));
+			if (tab) {
+				SET('common.tab', tab);
+				FIND('designer').operations.tab();
+			}
+		});
+
+		// Tabs operations
+		OPERATION('tabs.add', function() {
+
+			formtabpositions = [];
+			for (var i = 0; i < common.tabs.length + 1; i++)
+				formtabpositions.push({ id: i + 1, name: i + 1 });
+
+			UPDATE('formtabpositions');
+			SET('formtab', { position: common.tabs.length + 1 }, true);
+			SET('common.form', 'tab');
+		});
+
+		OPERATION('tabs.upd', function(id) {
+
+			formtabpositions = [];
+			for (var i = 0; i < common.tabs.length; i++)
+				formtabpositions.push({ id: i + 1, name: i + 1 });
+
+			UPDATE('formtabpositions');
+
+			var index = common.tabs.findIndex('id', id);
+			if (index !== -1) {
+				var data = CLONE(common.tabs[index]);
+				data.position = index + 1;
+				SET('formtab', data, true);
+				SET('common.form', 'tab');
+			}
+		});
+
+		OPERATION('tabs.rem', function(id) {
+			FIND('designer').operations.tabclear(id);
+			common.designer = common.designer.remove('tab', id);
+			SET('common.tabs', common.tabs.remove('id', id));
+			SETTER('binder', 'scan');
+			if (common.tab.id === id)
+				location.hash = common.tabs[0].linker;
+		});
+
+		$(document).on('dblclick', '.tab', function() {
+			common.draft && OPERATION('tabs.upd')(this.getAttribute('data-id'));
+		});
+
+	</script>
+</body>
+</html>
