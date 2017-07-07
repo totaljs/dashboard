@@ -228,6 +228,13 @@ RELEASE;
 // {Boolean} Determines dashboard
 ```
 
+__Common methods (client-side)__:
+
+```javascript
+common.operations.emit(event_name, [arg1], [arg2], [argN]);
+// Emits an event in all components
+```
+
 __Good to know__:
 
 - each Dashboard element is wrapped to `data-jc-scope=""` (generated randomly)
