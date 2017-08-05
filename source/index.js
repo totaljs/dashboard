@@ -90,7 +90,10 @@ function service(counter) {
 }
 
 function view_index() {
-	auth(this) && this.view('@dashboard/index', OPT);
+	if (auth(this)) {
+		this.theme('');
+		this.view('@dashboard/index', OPT);
+	}
 }
 
 function websocket() {
