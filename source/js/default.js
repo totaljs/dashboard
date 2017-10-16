@@ -238,6 +238,25 @@ Instance.prototype.css = function() {
 	return this;
 };
 
+Instance.prototype.aclass = function(v) {
+	this.element.addClass(v);
+	return this;
+};
+
+Instance.prototype.rclass = function(v) {
+	this.element.removeClass(v);
+	return this;
+};
+
+Instance.prototype.tclass = function(v, t) {
+	this.element.toggleClass(v, t);
+	return this;
+};
+
+Instance.prototype.hclass = function(v) {
+	return this.element.hasClass(v);
+};
+
 Instance.prototype.settings = function() {
 	var self = this;
 	staticContent(self, function() {

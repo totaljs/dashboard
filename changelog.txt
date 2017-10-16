@@ -1,0 +1,4 @@
+======= 4.0.0
+
+- updated jComponent version
+- updated UI components
