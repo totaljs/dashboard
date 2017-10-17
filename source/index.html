@@ -271,7 +271,7 @@
 			}
 
 			common.statics[instance.name] = true;
-			COMPILE($('#dashboardsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="@(Settings:) {0}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(instance.name, common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
+			COMPILE($('#dashboardsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-jc-path="common.form" data-jc-config="if:settings-{0};title:@(Settings\\:) {0};width:800" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" name="submit" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(instance.name.replace(/\:/g, '\:'), common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
 			callback(false);
 		}
 
