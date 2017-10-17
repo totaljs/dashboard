@@ -7,7 +7,7 @@ __Total.js Dashboard__ is dashboard for __IoT__ and [Total.js Flow](https://www.
 ## Installation
 
 - Total.js `+v2.6.0`
-- Flow `+v3.0.0`
+- Flow `+v4.0.0`
 - download and copy `dashboard.package` into the `/packages/` directory __or create a definition file with:__
 
 ```javascript
@@ -41,7 +41,7 @@ var options = {};
 // options.token = ['OUR_COMPANY_TOKEN'];
 // you can open dashboard using : /$dashboard/?token=OUR_COMPANY_TOKEN
 
-INSTALL('package', 'https://cdn.totaljs.com/2017xc9db052e/dashboard.package', options);
+INSTALL('package', 'https://cdn.totaljs.com/dashboard.package', options);
 ```
 
 - __IMPORTANT__: it doesn't support `UPTODATE` mechanism
@@ -141,7 +141,7 @@ exports.install = function(instance) {
     // Appends HTML (alias for instance.element.append())
 
     instance.html(html);
-    // Rewrites content (alias for instance.element.html())    
+    // Rewrites content (alias for instance.element.html())
 
     instance.event(html);
     // Registers a listener for the event (alias for instance.element.on())
@@ -152,7 +152,7 @@ exports.install = function(instance) {
     // =======================================
     // EVENTS
     // =======================================
-        
+
     instance.on('destroy', function() {
         // instance is destroying
     });
@@ -164,7 +164,7 @@ exports.install = function(instance) {
     instance.on('resize', function(size) {
         // size.width    {Number}
         // size.height   {Number}
-        // size.device   {String}: lg, md, sm, xs        
+        // size.device   {String}: lg, md, sm, xs
         // size.cols     {Number}
         // size.rows     {Number}
     });
@@ -253,7 +253,7 @@ instance.on('dashboard', function(type, data) {
 });
 ```
 
-### Components: jComponent +v11.0.0
+### Components: jComponent +v12.0.0
 
 Bellow jComponents can be used in `Settings form`:
 
