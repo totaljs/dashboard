@@ -1,10 +1,10 @@
-<div data-jc="form" data-title="@(Choose component)" data-jc-path="common.form" data-if="value === 'widgets'" data-width="930px" data-jc-init="formwidgets_init" class="hidden">
+<div data-jc="form" data-jc-path="common.form" class="hidden" data-jc-config="if:widgets;title:@(Choose a component);width:930">
 	<div class="padding npb">
-		<div data-jc="textbox" data-jc-path="formwidgets_init.search" data-jc-type="search" data-placeholder="@(Search components ...)" data-jc-type="search" class="mt10"></div>
+		<div data-jc="textbox" data-jc-path="formwidgets_init.search" class="mt10" data-jc-config="placeholder:@(Search components ...);type:search;type:search"></div>
 		<br />
-		<div data-jc="search" data-jc-path="formwidgets_init.search" data-selector=".jsearch">
+		<div data-jc="search" data-jc-path="formwidgets_init.search" data-jc-config="selector:.jsearch">
 			<div class="db-container">
-				<div data-jc="repeater-group" data-jc-path="common.database" data-group="group">
+				<div data-jc="repeater-group" data-jc-path="common.database" data-jc-config="group:group">
 					<script type="text/html">
 						<div class="jsearch db-widget" data-search="{{ name }}" data-id="{{ name }}">
 							<span><i class="fa {{ icon }}"></i></span>

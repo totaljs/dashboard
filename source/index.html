@@ -20,13 +20,12 @@
 
 	<div data-jc="audio" data-jc-path="common.volume"></div>
 	<div data-jc="autocomplete"></div>
-	<div data-jc="calendar" data-days="@(SU,MO,TU,WE,TH,FR,SO)" data-months="@(January,February,March,April,May,June,July,August,September,October,November,December)" data-today="@(Set date to today)" data-firstday="0"></div>
-	<div data-jc="colorpicker"></div>
+	<div data-jc="calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);firstday:0;months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today)"></div>
 	<div data-jc="confirm"></div>
 	<div data-jc="contextmenu"></div>
 	<div data-jc="loading" class="ui-loading"></div>
 	<div data-jc="message" data-button="@(Close)"></div>
-	<div data-jc="websocket" data-url="@{model.url}?&token=@{query.token}&baa=@{model.baa}"></div>
+	<div data-jc="websocket" data-jc-config="url:@{model.url}?&token=@{query.token}&baa=@{model.baa}"></div>
 
 	<div data-jc="resource">
 		<script type="text/plain">
@@ -61,9 +60,9 @@
 	</div>
 
 	<div id="dashboardsettings"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'database'" data-url="@{model.url}templates/form-database.html" data-reload="formdatabase_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'widgets'" data-url="@{model.url}templates/form-widgets.html" data-reload="formwidgets_reload"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-if="value === 'tab'" data-url="@{model.url}templates/form-tab.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:database;reload:formdatabase_reload;url:@{model.url}templates/form-database.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:widgets;reload:formwidgets_reload;url:@{model.url}templates/form-widgets.html"></div>
+	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:tab;url:@{model.url}templates/form-tab.html"></div>
 
 	@{import(model.url + 'default.js')}
 	@{place('scripts')}

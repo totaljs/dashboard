@@ -1,10 +1,10 @@
-<div data-jc="form" data-title="@(Edit tab)" data-jc-path="common.form" data-if="value === 'tab'" data-width="500px" data-jc-init="formtab_init" class="hidden" data-enter="true">
+<div data-jc="form" data-jc-path="common.form" class="hidden" data-jc-config="enter:true;submit:formtab_submit;if:tab;title:@(Edit tab);width:500">
 	<div class="padding npb">
-		<div data-jc="textbox" data-jc-path="formtab.name" data-maxlength="30" data-required="true" class="m" data-placeholder="@(Type a tab name)">@(Name)</div>
+		<div data-jc="textbox" data-jc-path="formtab.name" class="m" data-jc-config="maxlength:30;placeholder:@(Type a tab name);required:true">@(Name)</div>
 
 		<div class="row">
 			<div class="col-md-3 m">
-				<div data-jc="dropdown" data-jc-path="formtab.position" data-required="true" data-jc-type="number" data-source="formtabpositions">@(Position)</div>
+				<div data-jc="dropdown" data-jc-path="formtab.position" data-jc-config="datasource:formtabpositions;required:true;type:number">@(Position)</div>
 			</div>
 		</div>
 
@@ -24,19 +24,17 @@
 
 <script>
 
-	function formtab_init(component) {
-		component.submit = function(hide) {
-			EMIT('tabs.save', formtab);
-			hide();
-		};
+	function formtab_submit(com) {
+		EMIT('tabs.save', formtab);
+		com.hide();
 	}
 
 	function formtab_remove() {
 		SETTER('confirm', 'confirm', '@(Are you sure you want to remove this tab?)', ['@(Yes)', '@(Cancel)'], function(index) {
-			if (index)
-				return;
-			SET('common.form', '');
-			OPERATION('tabs.rem')(formtab.id);
+			if (!index) {
+				SET('common.form', '');
+				OPERATION('tabs.rem')(formtab.id);
+			}
 		});
 	}
 </script>
