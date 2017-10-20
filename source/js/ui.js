@@ -1074,14 +1074,40 @@ COMPONENT('designer', function(self) {
 			self.emit('designer.contextmenu', button, el, widget ? widget.$widget : null);
 		});
 
+		var lasttarget, sourcewidget;
+
 		self.event('mousedown mousemove mouseup', function(e) {
 			switch (e.type) {
 				case 'mousemove':
-					if (!move.drag)
+					if (!move.drag && !move.moving)
 						return;
 
 					var target = $(e.target);
-					if (target.hclass('cell') || target.hclass('space')) {
+
+					if (move.moving) {
+						sourcewidget.hide();
+    					var targetcell = $(document.elementFromPoint(e.clientX, e.clientY));
+						sourcewidget.show();
+    					if (!targetcell.hasClass('cell'))
+    						return;
+    					
+						lasttarget = targetcell;
+
+						var item = common.designer.findItem('id', sourcewidget.attr('data-id'));
+						var index = lasttarget ? lasttarget.attr('data-index') : false;
+						if (!index)
+							return;
+
+						item.index = index;
+
+						var pos = self.getPosition(item.index);
+						if ((12 - pos.col) < item.cols)
+							return;
+
+						sourcewidget.animate({ left: pos.col * size.pixels, top: pos.row * size.pixels }, 10);
+						sourcewidget.attr('data-grid', item.index + ',' + item.cols + ',' + item.rows);
+
+					} else if (target.hasClass('cell') || target.hclass('space')) {
 						self.mmove(e.pageX, e.pageY, e);
 					} else {
 						container.find('.selected').rclass('selected');
@@ -1091,13 +1117,29 @@ COMPONENT('designer', function(self) {
 					e.preventDefault();
 					break;
 				case 'mousedown':
-					self.mdown(e.pageX, e.pageY, e);
+					var el = $(e.target);
+					if (el.hasClass('drag')) {
+						move.moving = true;
+						move.movingoffset = e.pageX % size.pixels;
+						move.scrollX = scroller.prop('scrollLeft');
+						move.scrollY = scroller.prop('scrollTop');
+						container.css('cursor', 'move');
+						sourcewidget = el.closest('.widget');
+					}
+					else
+						self.mdown(e.pageX, e.pageY, e);
 					e.preventDefault();
 					break;
 				case 'mouseup':
-					if (!move.drag)
-						return;
-					self.mup(e.pageX, e.pageY, e);
+					if (move.moving) {
+						move.moving = false;
+						container.css('cursor', 'default');
+					} else {
+						if (!move.drag)
+							return;
+						self.mup(e.pageX, e.pageY, e);
+					}
+
 					e.preventDefault();
 					break;
 			}
@@ -1242,8 +1284,8 @@ COMPONENT('designer', function(self) {
 
 	self.create = function(index, cols, rows, tab, app, id) {
 		var pos = self.getPosition(index);
-		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><button class="widget-settings"><i class="fa fa-wrench"></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(app) : '', id);
-		html += '<div class="widget_offset tab_{1}" style="top:{0}px" data-id="{2}"></div>'.format((pos.row * size.pixels) + (rows * size.pixels) + 80, tab, id);
+		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="drag" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(app) : '', id);
+		//html += '<div class="widget_offset tab_{1}" style="top:{0}px" data-id="{2}"></div>'.format((pos.row * size.pixels) + (rows * size.pixels) + 80, tab, id);
 		widgets.append(html);
 		self.operations.tab();
 	};
