@@ -2091,7 +2091,7 @@ COMPONENT('dropdown', function(self, config) {
 
 				self.bind('', items);
 				break;
-			case 'condition':
+			case 'if':
 				condition = value ? FN(value) : null;
 				break;
 			case 'required':
@@ -2165,6 +2165,7 @@ COMPONENT('dropdown', function(self, config) {
 		content = self.html();
 		self.aclass('ui-dropdown-container');
 		self.redraw();
+		config.if && (condition = FN(config.if));
 		config.items && self.reconfigure({ items: config.items });
 		config.datasource && self.reconfigure('datasource:' + config.datasource);
 	};
