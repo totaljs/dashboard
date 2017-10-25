@@ -634,7 +634,7 @@ COMPONENT('repeater-group', function(self, config) {
 
 		});
 
-		self.append(builder);
+		self.html(builder);
 	};
 });
 
@@ -1090,7 +1090,7 @@ COMPONENT('designer', function(self) {
 						sourcewidget.show();
     					if (!targetcell.hasClass('cell'))
     						return;
-    					
+
 						lasttarget = targetcell;
 
 						var item = common.designer.findItem('id', sourcewidget.attr('data-id'));
