@@ -43,7 +43,7 @@
 .ui-confirm button:hover { background-color: #E5E5E5; }
 .ui-confirm button[data-index="0"] { color: #303030; font-weight: bold; border-color: #D0D0D0; font-weight: bold; }
 .ui-confirm-visible { opacity: 1; }
-.ui-confirm-visible .ui-confirm-body { -webkit-transform: scale(1); transform: scale(1); }
+.ui-confirm-visible .ui-confirm-body { transform: scale(1); }
 .ui-confirm-click { transform: scale(1.07) !important; }
 
 input:-ms-input-placeholder, input:-webkit-input-placeholder, input:-moz-input-placeholder { color: silver; }
@@ -114,7 +114,7 @@ input[type="text"]:disabled, input[type="password"]:disabled, select:disabled { 
 
 .ui-dropdown-values { position: relative; display: block; height: 26px; text-align: left; }
 .ui-dropdown { border: 1px solid #E0E0E0; padding: 0 10px; border-radius: 2px; outline: 0; height: 30px; overflow: hidden; float: left; width: 100%; background-color: white; position: relative; }
-.ui-dropdown select { width: 120%; outline: 0; border: 0; height: 24px; background-color: white; font-size: 14px; float: left; cursor: pointer; padding: 0; margin: 2px 0 0 -3px; color: black; appearance: none; -moz-appearance: none; -webkit-appearance: none; }
+.ui-dropdown select { width: 120%; outline: 0; border: 0; height: 24px; background-color: white; font-size: 14px; float: left; cursor: pointer; padding: 0; margin: 2px 0 0 -3px; color: black; appearance: none; }
 .ui-dropdown .fa { position: absolute; right: 8px; top: 6px; }
 .ui-dropdown-label { margin-bottom: 5px; font-size: 12px; }
 .ui-dropdown-label .fa { width: 14px; }
@@ -267,18 +267,19 @@ input[type="text"]:disabled, input[type="password"]:disabled, select:disabled { 
 .ui-nosqlcounter .empty { background-color: #A0A0A0; }
 .ui-nosqlcounter .current { background-color: #E74024; }
 
-@media(max-width: 767px) {
-	.ui-confirm button { display: block; margin: 10px 0 0; display: block; width: 100%; }
-}
-
 .ui-loading { position: fixed; width: 100%; height: 100%; background-color: rgba(255,255,255,0.8); left: 0; top: 0; z-index: 1000; }
 .ui-loading div { animation: loading 333ms alternate infinite cubic-bezier(0.2,0,0.5,1); width: 50px; height: 50px; background-color: black; position: absolute; left: 90%; top: 90%; border-radius: 100px; }
+
+@media(max-width: 767px) {
+	.ui-confirm button { display: block; margin: 10px 0 0; display: block; width: 100%; }
+	.ui-loading div { left: 50%; top: 50%; margin: -25px 0 0 -25px; }
+}
 
 .ui-range { width: 100%; }
 .ui-range-label { margin-bottom: 0; font-size: 12px; color: #656D78; text-align: left; }
 .ui-range-label .fa { width: 14px; }
 .ui-range-label-required:before { color: red; content: '***'; margin-right: 5px; }
-.ui-range input[type=range] { -webkit-appearance: none; margin: 10px 0; width: 100%; }
+.ui-range input[type=range] { appearance: none; margin: 10px 0; width: 100%; }
 .ui-range input[type=range]:focus { outline: none; }
 .ui-range input[type=range]::-webkit-slider-runnable-track { width: 100%; height: 10px; cursor: pointer; animate: 0.2s; box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d; background: #E0E0E0; border-radius: 25px; border: 0px solid #000101; }
 .ui-range input[type=range]::-webkit-slider-thumb { box-shadow: 0px 0px 0px #000000, 0px 0px 0px #0d0d0d; border: 0px solid #000000; height: 17px; width: 39px; border-radius: 7px; background: #505050; cursor: pointer; -webkit-appearance: none; margin-top: -3.6px; }
@@ -307,7 +308,7 @@ input[type="text"]:disabled, input[type="password"]:disabled, select:disabled { 
 
 @keyframes loading {
   to {
-    transform: translateY(12px);
+    transform: translateY(12px) scale(0.5);
   }
 }
 
@@ -390,7 +391,7 @@ input[type="text"]:disabled, input[type="password"]:disabled, select:disabled { 
 .ui-moi-value-colors .selected .fa { display: block; }
 
 .ui-moi-value-select { background-color: white; position: relative; width: 100%; overflow: hidden; margin: 7px 0 0 0; }
-.ui-moi-value-select select { width: 120%; outline: 0; border: 0; height: 20px; background-color: white; font-size: 11px; float: left; cursor: pointer; padding: 0; margin: 2px 0 0 8px; color: black; appearance: none; -moz-appearance: none; -webkit-appearance: none; }
+.ui-moi-value-select select { width: 120%; outline: 0; border: 0; height: 20px; background-color: white; font-size: 11px; float: left; cursor: pointer; padding: 0; margin: 2px 0 0 8px; color: black; appearance: none; }
 .ui-moi-value-select .fa { position: absolute; right: 7px; top: 5px; font-size: 10px; color: gray; }
 
 .ui-moi-value-boolean { margin: 9px 0 0 0; width: 19px; height: 19px; border: 1px solid #D0D0D0; text-align: center; font-size: 12px; color: white; padding: 2px 0 0 0; cursor: pointer; background-color: white; }
