@@ -308,7 +308,8 @@ input[type="text"]:disabled, input[type="password"]:disabled, select:disabled { 
 
 @keyframes loading {
   to {
-    transform: translateY(12px) scale(0.5);
+    transform: scale(0.4);
+    background-color: silver;
   }
 }
 
