@@ -625,7 +625,7 @@ COMPONENT('repeater-group', function(self, config) {
 
 			if (key !== '0') {
 				var options = {};
-				options[group] = key;
+				options[config.group] = key;
 				options.length = arr.length;
 				options.index = indexgroup++;
 				options.body = tmp;
