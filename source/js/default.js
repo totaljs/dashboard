@@ -142,7 +142,9 @@ function Instance(id, element, declaration, options, size) {
 	self.name = declaration.name;
 	self.options = $.extend(true, CLONE(declaration.options), options || {});
 
+	self.$container = $(element.closest('.widget').get(0));
 	self.element = element;
+
 	self.dom = element.get(0);
 	self.size = size;
 	declaration.install.call(self, self);
@@ -251,6 +253,10 @@ Instance.prototype.rclass = function(v) {
 Instance.prototype.tclass = function(v, t) {
 	this.element.toggleClass(v, t);
 	return this;
+};
+
+Instance.prototype.hidden = function() {
+	return this.$container.hclass('hidden')
 };
 
 Instance.prototype.hclass = function(v) {

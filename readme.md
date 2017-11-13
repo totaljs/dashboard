@@ -149,6 +149,10 @@ exports.install = function(instance) {
     instance.settings();
     // Shows settings form
 
+    instance.hidden();
+    // Determines whether the widget is hidden
+    // Returns {Boolean}
+
     // =======================================
     // EVENTS
     // =======================================
