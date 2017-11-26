@@ -1257,7 +1257,7 @@ COMPONENT('designer', function(self) {
 		if (widget.resizing) {
 			var resize_cols = Math.floor((e.pageX - offset.left) / size.pixels) - widget.mouse_offset.col - widget.origin.pos.col;
 			var resize_rows = Math.floor((e.pageY - offset.top) / size.pixels) - widget.mouse_offset.row - widget.origin.pos.row;
-			if (widget.resize_cols === resize_cols && widget.resize_rows === resize_rows)
+			if ((widget.resize_cols === resize_cols && widget.resize_rows === resize_rows) || (widget.origin.pos.col + widget.size.cols + resize_cols) > 12)
 				return;
 			widget.resize_cols = resize_cols;
 			widget.resize_rows = resize_rows;
@@ -1339,7 +1339,7 @@ COMPONENT('designer', function(self) {
 
 	self.create = function(index, cols, rows, tab, app, id) {
 		var pos = self.getPosition(index);
-		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize" style="position:absolute;color:white;padding:5px 8px;right:9px;bottom:8px;cursor:nwse-resize;"><i class="fa fa-arrows-alt"></i></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(app) : '', id);
+		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(app) : '', id);
 		//html += '<div class="widget_offset tab_{1}" style="top:{0}px" data-id="{2}"></div>'.format((pos.row * size.pixels) + (rows * size.pixels) + 80, tab, id);
 		widgets.append(html);
 		self.operations.tab();
