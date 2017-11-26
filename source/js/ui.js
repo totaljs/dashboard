@@ -1067,6 +1067,13 @@ COMPONENT('designer', function(self) {
 		cells = self.find('.cell');
 		widgets = $(self.find('.widgets').eq(0));
 		size = self.getSize();
+		if (size.width === 0)
+			WAIT(function() {
+			    return $(window).width();
+			}, function(){
+				size = self.getSize();
+				self.operations.resize();
+			});
 
 		self.event('click', '.widget-settings', function(button) {
 			var button = $(this);
