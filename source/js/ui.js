@@ -1272,7 +1272,7 @@ COMPONENT('designer', function(self) {
 				item.cols = widget.size.cols;
 				item.rows = widget.size.rows;
 				var instance = widget.element.find('figure').get(0).$widget;
-				instance.emit('resize', widget.size);
+				instance.emit('resize', { cols: widget.size.cols, rows: widget.size.rows, height: size.pixels * widget.size.rows, width: size.pixels * widget.size.cols });
 			}	
 		}
 	};
