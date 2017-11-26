@@ -1039,6 +1039,7 @@ COMPONENT('designer', function(self) {
 
 	var container, scroller;
 	var move = {};
+	var widget = {};
 	var cells, widgets;
 	var size;
 
@@ -1070,43 +1071,20 @@ COMPONENT('designer', function(self) {
 		self.event('click', '.widget-settings', function(button) {
 			var button = $(this);
 			var el = button.closest('.widget');
-			var widget = el.find('[data-name]').get(0);
-			self.emit('designer.contextmenu', button, el, widget ? widget.$widget : null);
+			var w = el.find('[data-name]').get(0);
+			self.emit('designer.contextmenu', button, el, w ? w.$widget : null);
 		});
-
-		var lasttarget, sourcewidget;
 
 		self.event('mousedown mousemove mouseup', function(e) {
 			switch (e.type) {
 				case 'mousemove':
-					if (!move.drag && !move.moving)
+					if (!move.drag && !widget.moving && !widget.resizing)
 						return;
 
 					var target = $(e.target);
 
-					if (move.moving) {
-						sourcewidget.hide();
-    					var targetcell = $(document.elementFromPoint(e.clientX, e.clientY));
-						sourcewidget.show();
-    					if (!targetcell.hasClass('cell'))
-    						return;
-
-						lasttarget = targetcell;
-
-						var item = common.designer.findItem('id', sourcewidget.attr('data-id'));
-						var index = lasttarget ? lasttarget.attr('data-index') : false;
-						if (!index)
-							return;
-
-						item.index = index;
-
-						var pos = self.getPosition(item.index);
-						if ((12 - pos.col) < item.cols)
-							return;
-
-						sourcewidget.animate({ left: pos.col * size.pixels, top: pos.row * size.pixels }, 10);
-						sourcewidget.attr('data-grid', item.index + ',' + item.cols + ',' + item.rows);
-
+					if (widget.moving || widget.resizing) {
+						self.move_resize_mmove(e);
 					} else if (target.hasClass('cell') || target.hclass('space')) {
 						self.mmove(e.pageX, e.pageY, e);
 					} else {
@@ -1118,22 +1096,18 @@ COMPONENT('designer', function(self) {
 					break;
 				case 'mousedown':
 					var el = $(e.target);
-					if (el.hasClass('drag')) {
-						move.moving = true;
-						move.movingoffset = e.pageX % size.pixels;
-						move.scrollX = scroller.prop('scrollLeft');
-						move.scrollY = scroller.prop('scrollTop');
-						container.css('cursor', 'move');
-						sourcewidget = el.closest('.widget');
-					}
-					else
+					if (el.hasClass('move') || el.hasClass('resize') || el.parent().hasClass('resize')) {
+						self.move_resize_mdown(el, e);
+					} else
 						self.mdown(e.pageX, e.pageY, e);
 					e.preventDefault();
 					break;
 				case 'mouseup':
-					if (move.moving) {
-						move.moving = false;
+					if (widget.moving || widget.resizing) {
+						widget.moving = false;
+						widget.resizing = false;
 						container.css('cursor', 'default');
+						widget.element.attr('data-grid', widget.index + ',' + widget.size.cols + ',' + widget.size.rows);
 					} else {
 						if (!move.drag)
 							return;
@@ -1222,6 +1196,87 @@ COMPONENT('designer', function(self) {
 		return obj;
 	};
 
+	self.move_resize_mdown = function(el, e) {
+		widgets.find('.widget').each(function() {
+			$(this).css('z-index', 2);
+		});
+		container.css('cursor', 'move');
+		widget.element = el.closest('.widget');
+		var offset = widget.element.offset();
+		widget.mouse_offset = { col: Math.floor((e.pageX - offset.left) / size.pixels), row: Math.floor((e.pageY - offset.top) / size.pixels)};
+		var grid = widget.element.attr('data-grid').split(',');
+		widget.zindex = widget.element.css('z-index');
+		widget.element.css('z-index', 15);
+		widget.index = +grid[0];
+		widget.pos = self.getPosition(widget.index);
+		widget.size = { cols: +grid[1], rows: +grid[2] };
+		widget.origin = {
+			pos: self.getPosition(widget.index),
+			size: { cols: +grid[1], rows: +grid[2] }
+		};
+		if (el.hasClass('move')) {
+			widget.moving = true;
+			widget.move_cols = 0;
+			widget.move_rows = 0;
+		} else {			
+			widget.resizing = true;				
+			widget.resize_cols = 0;
+			widget.resize_rows = 0;
+		}
+	};
+
+	self.move_resize_mmove = function(e) {
+
+		var item = common.designer.findItem('id', widget.element.attr('data-id'));
+		var offset = container.offset();
+
+		if (widget.moving) {
+			var mouse_col = Math.floor((e.pageX - offset.left) / size.pixels);
+			var mouse_row = Math.floor((e.pageY - offset.top) / size.pixels);
+			var move_cols = mouse_col - widget.mouse_offset.col - widget.origin.pos.col;
+			var move_rows = mouse_row - widget.mouse_offset.row - widget.origin.pos.row;
+			if (widget.move_cols === move_cols && widget.move_rows === move_rows)
+				return;
+			var item_col = widget.index % 12;
+			var item_row = Math.floor(widget.index / 12);							
+			if (item_col < 0 || item_row < 0)
+				return;
+			widget.move_cols = (widget.origin.pos.col + move_cols + widget.origin.size.cols) > 12 ? 12 - (widget.origin.pos.col + widget.origin.size.cols) : move_cols;
+			widget.move_rows = move_rows;
+			var col = widget.origin.pos.col + widget.move_cols;
+			var row = widget.origin.pos.row + widget.move_rows;
+			col = col < 0 ? 0 : col;
+			row = row < 0 ? 0 : row;
+			widget.element.animate({ left: col * size.pixels, top: row * size.pixels }, 15);
+			widget.index = (row * 12) + col;
+			if (item) {
+				item.index = widget.index;
+			}							
+		}
+
+		if (widget.resizing) {
+			var resize_cols = Math.floor((e.pageX - offset.left) / size.pixels) - widget.mouse_offset.col - widget.origin.pos.col;
+			var resize_rows = Math.floor((e.pageY - offset.top) / size.pixels) - widget.mouse_offset.row - widget.origin.pos.row;
+			if (widget.resize_cols === resize_cols && widget.resize_rows === resize_rows)
+				return;
+			widget.resize_cols = resize_cols;
+			widget.resize_rows = resize_rows;
+			widget.size.cols = +widget.origin.size.cols + resize_cols;
+			widget.size.rows = +widget.origin.size.rows + resize_rows;
+			if (widget.size.cols < 1)
+				widget.size.cols = 1;
+			if (widget.size.rows < 1)
+				widget.size.rows = 1;
+			widget.element.animate({ width: widget.size.cols * size.pixels, height: widget.size.rows * size.pixels }, 15);
+			if (item) {
+				item.cols = widget.size.cols;
+				item.rows = widget.size.rows;
+				var instance = widget.element.find('figure').get(0).$widget;
+				instance.emit('resize', widget.size);
+			}	
+		}
+	};
+
 	self.mup = function(x, y, e) {
 		move.drag = false;
 
@@ -1284,7 +1339,7 @@ COMPONENT('designer', function(self) {
 
 	self.create = function(index, cols, rows, tab, app, id) {
 		var pos = self.getPosition(index);
-		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="drag" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(app) : '', id);
+		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize" style="position:absolute;color:white;padding:5px 8px;right:9px;bottom:8px;cursor:nwse-resize;"><i class="fa fa-arrows-alt"></i></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(app) : '', id);
 		//html += '<div class="widget_offset tab_{1}" style="top:{0}px" data-id="{2}"></div>'.format((pos.row * size.pixels) + (rows * size.pixels) + 80, tab, id);
 		widgets.append(html);
 		self.operations.tab();
