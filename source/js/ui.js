@@ -1264,7 +1264,7 @@ COMPONENT('designer', function(self) {
 		if (widget.resizing) {
 			var resize_cols = Math.floor((e.pageX - offset.left) / size.pixels) - widget.mouse_offset.col - widget.origin.pos.col;
 			var resize_rows = Math.floor((e.pageY - offset.top) / size.pixels) - widget.mouse_offset.row - widget.origin.pos.row;
-			if ((widget.resize_cols === resize_cols && widget.resize_rows === resize_rows) || (widget.origin.pos.col + widget.size.cols + resize_cols) > 12)
+			if ((widget.resize_cols === resize_cols && widget.resize_rows === resize_rows) || (widget.origin.pos.col + widget.origin.size.cols + resize_cols) > 12)
 				return;
 			widget.resize_cols = resize_cols;
 			widget.resize_rows = resize_rows;
