@@ -209,11 +209,13 @@ function send_instances(client, callback) {
 		return;
 	}
 
-	var arr = global.FLOW.findByComponent(REG_INSTANCES);
+	var keys = Object.keys(FLOW.instances);
 
-	for (var i = 0, length = arr.length; i < length; i++) {
-		var instance = arr[i];
-		WS_INSTANCES.body.push({ id: instance.id, name: instance.name || instance.title, component: instance.component, reference: instance.reference });
+	for (var i = 0, length = keys.length; i < length; i++) {
+		var instance = FLOW.instances[keys[i]];
+		var declaration = FLOW.components[instance.component];
+		if (declaration.dashboard || REG_INSTANCES.test(instance.name))
+			WS_INSTANCES.body.push({ id: instance.id, name: instance.name || instance.title, component: instance.component, reference: instance.reference });
 	}
 
 	client.send(WS_INSTANCES);
