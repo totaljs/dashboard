@@ -214,7 +214,7 @@ function send_instances(client, callback) {
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
 		var declaration = FLOW.components[instance.component];
-		if (declaration.dashboard || REG_INSTANCES.test(instance.name))
+		if (declaration.dashboard || REG_INSTANCES.test(instance.component))
 			WS_INSTANCES.body.push({ id: instance.id, name: instance.name || instance.title, component: instance.component, reference: instance.reference });
 	}
 
