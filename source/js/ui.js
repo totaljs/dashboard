@@ -418,7 +418,10 @@ COMPONENT('form', function(self, config) {
 
 		var isHidden = value !== config.if;
 
-		self.toggle('hidden', isHidden);
+		if (self.hclass('hidden') === isHidden)
+			return;
+
+		self.tclass('hidden', isHidden);
 
 		setTimeout2('formreflow', function() {
 			EMIT('reflow', self.name);
@@ -695,7 +698,7 @@ COMPONENT('textbox', function(self, config) {
 				return;
 			if (config.increment) {
 				var el = $(this);
-				var inc = el.hclass('fa-caret-up') ? 1 : -1;
+				var inc = el.hasClass('fa-caret-up') ? 1 : -1;
 				self.change(true);
 				self.inc(inc);
 			}
@@ -718,12 +721,16 @@ COMPONENT('textbox', function(self, config) {
 
 		var attrs = [];
 		var builder = [];
-		var tmp;
+		var tmp = 'text';
 
-		if (config.type === 'password')
-			tmp = 'password';
-		else
-			tmp = 'text';
+		switch (config.type) {
+			case 'password':
+				tmp = config.type;
+				break;
+			case 'number':
+				isMOBILE && (tmp = 'tel');
+				break;
+		}
 
 		self.tclass('ui-disabled', config.disabled === true);
 		self.type = config.type;
@@ -740,7 +747,7 @@ COMPONENT('textbox', function(self, config) {
 		config.align && attrs.attr('class', 'ui-' + config.align);
 		!isMOBILE && config.autofocus && attrs.attr('autofocus');
 
-		builder.push('<input {0} />'.format(attrs.join(' ')));
+		builder.push('<div class="ui-textbox-input"><input {0} /></div>'.format(attrs.join(' ')));
 
 		var icon = config.icon;
 		var icon2 = config.icon2;
@@ -757,8 +764,8 @@ COMPONENT('textbox', function(self, config) {
 			};
 		}
 
-		icon2 && builder.push('<div><span class="fa fa-{0}"></span></div>'.format(icon2));
-		config.increment && !icon2 && builder.push('<div><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
+		icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-{0}"></span></div>'.format(icon2));
+		config.increment && !icon2 && builder.push('<div class="ui-textbox-control"><span class="fa fa-caret-up"></span><span class="fa fa-caret-down"></span></div>');
 
 		if (config.label)
 			content = config.label;

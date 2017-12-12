@@ -167,7 +167,6 @@ function component_install(controller, response, callback) {
 			var writer = Fs.createWriteStream(filename);
 			res.pipe(writer);
 			writer.on('finish', function() {
-
 				Fs.readFile(filename, function(err, response) {
 					if (response)
 						response = U.minifyHTML(response.toString('utf8'));
