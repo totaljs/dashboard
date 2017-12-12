@@ -167,15 +167,22 @@ function component_install(controller, response, callback) {
 			var writer = Fs.createWriteStream(filename);
 			res.pipe(writer);
 			writer.on('finish', function() {
-				callback && callback();
-				controller && send_component(filename, controller);
+
+				Fs.readFile(filename, function(err, response) {
+					if (response)
+						response = U.minifyHTML(response.toString('utf8'));
+					Fs.writeFile(filename, response, function() {
+						callback && callback();
+						controller && send_component(filename, controller);
+					});
+				});
 			});
 		});
 		return;
 	}
 
 	var filename = F.path.root(PATH + response.filename);
-	Fs.writeFile(filename, response.body, function() {
+	Fs.writeFile(filename, U.minifyHTML(response.body), function() {
 		callback && callback();
 		controller && send_component(filename, controller);
 	});
