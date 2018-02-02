@@ -29,7 +29,7 @@ common.operations.remove = function(name, uninstall) {
 		$(this).remove();
 	});
 	common.database = common.database.remove('name', name);
-	uninstall && SETTER('websocket', 'send', { type: 'uninstall', body: name });
+	uninstall && SETTER('websocket', 'send', { TYPE: 'uninstall', body: name });
 	UPDATE('common.database', 1000);
 };
 
