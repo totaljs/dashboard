@@ -27,6 +27,8 @@
 	<div data-jc="message" data-button="@(Close)"></div>
 	<div data-jc="websocket" data-jc-config="url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
 	<div data-jc="snackbar" data-jc-config="button:@(Dismiss)"></div>
+	<div data-jc="shortcuts"></div>
+
 	<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-ellipsis-h"></i></a>
 
 	<div class="toolbar">
@@ -355,6 +357,21 @@
 			common.draft && OPERATION('tabs.upd')(this.getAttribute('data-id'));
 		});
 
+		SETTER(true, 'shortcuts', 'register', 'esc', function(e) {
+			if (common.form2) {
+				SET('common.form', '');
+				e.preventDefault();
+				e.stopPropagation();
+			} else if (common.form) {
+				SET('common.form', '');
+				e.preventDefault();
+				e.stopPropagation();
+			}
+		});
+
 	</script>
+
+	@{components('dashboard')}
+
 </body>
 </html>
