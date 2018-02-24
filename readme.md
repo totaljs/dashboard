@@ -2,7 +2,7 @@
 
 [![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
 
-__Total.js Dashboard__ is dashboard for __IoT__ and [Total.js Flow](https://www.totaljs.com/flow/).
+__Total.js Dashboard__ `v6.0.0` is dashboard for __IoT__ and [Total.js Flow](https://www.totaljs.com/flow/).
 
 ## Installation
 
