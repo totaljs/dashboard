@@ -29,6 +29,25 @@ var options = {};
 // Security (OPTIONAL)
 // ====================================
 
+// +v6.0.0
+// Default light theme
+// options.dark = false;
+
+// +v6.0.0
+// Enables backing up of Dashboard designer
+// options.backup = true;
+// default: false
+
+// +v6.0.0
+// Enables link to Flow (if exists) in context menu
+// options.flow = true;
+// default: true
+
+// +v6.0.0
+// Enables link to Flowboard (if exists) in context menu
+// options.flowboard = true;
+// default: true
+
 // HTTP Basic auth:
 // options.auth = ['admin:admin', 'name:password'];
 
