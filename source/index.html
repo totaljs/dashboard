@@ -26,6 +26,7 @@
 	<div data-jc="loading" class="ui-loading"></div>
 	<div data-jc="message" data-button="@(Close)"></div>
 	<div data-jc="websocket" data-jc-config="url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
+	<div data-jc="snackbar" data-jc-config="button:@(Dismiss)"></div>
 	<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-ellipsis-h"></i></a>
 
 	<div class="toolbar">
@@ -68,7 +69,7 @@
 
 		WATCH('common.theme', function(path, value) {
 			var body = $(document.body);
-			var cls = body.attr('class').match(/theme\w+/g);
+			var cls = (body.attr('class') || '').match(/theme\w+/g);
 			cls && body.removeClass(cls.toString());
 			value && body.addClass('theme' + value);
 		}, true);

@@ -610,7 +610,7 @@ COMPONENT('repeater', 'hidden:true;check:true', function(self, config) {
 
 COMPONENT('repeater-group', function(self, config) {
 
-	var html, template_group, group = null;
+	var html, template_group;
 	var reg = /\$(index|path)/g;
 	var force = false;
 
@@ -759,7 +759,7 @@ COMPONENT('textbox', function(self, config) {
 				return;
 			if (config.increment) {
 				var el = $(this);
-				var inc = el.hasClass('fa-caret-up') ? 1 : -1;
+				var inc = el.hclass('fa-caret-up') ? 1 : -1;
 				self.change(true);
 				self.inc(inc);
 			}
@@ -933,7 +933,6 @@ COMPONENT('textbox', function(self, config) {
 		config.error && self.find('.ui-textbox-helper').tclass('ui-textbox-helper-show', invalid);
 	};
 });
-
 
 COMPONENT('importer', function(self, config) {
 
@@ -1178,7 +1177,7 @@ COMPONENT('designer', function(self) {
 
 					if (widget.moving || widget.resizing) {
 						self.move_resize_mmove(e);
-					} else if (target.hasClass('cell') || target.hclass('space')) {
+					} else if (target.hclass('cell') || target.hclass('space')) {
 						self.mmove(e.pageX, e.pageY, e);
 					} else {
 						container.find('.selected').rclass('selected');
@@ -1189,7 +1188,7 @@ COMPONENT('designer', function(self) {
 					break;
 				case 'mousedown':
 					var el = $(e.target);
-					if (el.hasClass('move') || el.hasClass('resize') || el.parent().hasClass('resize')) {
+					if (el.hclass('move') || el.hclass('resize') || el.parent().hclass('resize')) {
 						self.move_resize_mdown(el, e);
 					} else
 						self.mdown(e.pageX, e.pageY, e);
@@ -1307,7 +1306,7 @@ COMPONENT('designer', function(self) {
 			pos: self.getPosition(widget.index),
 			size: { cols: +grid[1], rows: +grid[2] }
 		};
-		if (el.hasClass('move')) {
+		if (el.hclass('move')) {
 			widget.moving = true;
 			widget.move_cols = 0;
 			widget.move_rows = 0;
@@ -2030,7 +2029,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 				W.$dropdowncheckboxelement = null;
 			}
 
-			!container.hasClass('hidden') && (W.$dropdowncheckboxelement = container);
+			!container.hclass('hidden') && (W.$dropdowncheckboxelement = container);
 			e.stopPropagation();
 		});
 
@@ -2042,7 +2041,7 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 				return;
 
 			var el = $(this);
-			var is = !el.hasClass('ui-dropdowncheckbox-checked');
+			var is = !el.hclass('ui-dropdowncheckbox-checked');
 			var index = +el.attr('data-index');
 			var value = data[index];
 
@@ -3458,7 +3457,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 	};
 });
 
-COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, config) {
+COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false', function(self, config) {
 
 	var editor = null;
 
@@ -3509,6 +3508,9 @@ COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, confi
 		options.mode = config.type || 'htmlmixed';
 		options.indentUnit = 4;
 
+		if (config.tabs)
+			options.indentWithTabs = true;
+
 		if (config.type === 'markdown') {
 			options.styleActiveLine = true;
 			options.lineWrapping = true;
@@ -3540,8 +3542,16 @@ COMPONENT('codemirror', 'linenumbers:false;required:false', function(self, confi
 
 			setTimeout2(self.id, function() {
 				var val = editor.getValue();
+
+				if (config.trim) {
+					var lines = val.split('\n');
+					for (var i = 0, length = lines.length; i < length; i++)
+						lines[i] = lines[i].replace(/\s+$/, '');
+					val = lines.join('\n').trim();
+				}
+
 				self.getter2 && self.getter2(val);
-				self.$dirty && self.change(true);
+				self.change(true);
 				self.rewrite(val);
 				config.required && self.validate2();
 			}, 200);
@@ -3706,7 +3716,7 @@ COMPONENT('contextmenu', function(self) {
 			return;
 		clearTimeout(timeout);
 		timeout = setTimeout(function() {
-			self.element.hide().removeClass('ui-contextmenu-visible');
+			self.element.hide().rclass('ui-contextmenu-visible');
 			self.emit('contextmenu', false, self, self.target);
 			self.callback = null;
 			self.target = null;
@@ -3715,7 +3725,7 @@ COMPONENT('contextmenu', function(self) {
 	};
 
 	self.hideforce = function() {
-		self.element.hide().removeClass('ui-contextmenu-visible');
+		self.element.hide().rclass('ui-contextmenu-visible');
 		self.emit('contextmenu', false, self, self.target);
 		self.callback = null;
 		self.target = null;
@@ -3803,14 +3813,14 @@ COMPONENT('disable', function(self, config) {
 		if (config.if)
 			is = EVALUATE(self.path, config.if);
 		else
-			is = value ? false : true;
+			is = !value;
 
 		self.find(config.selector || '[data-jc]').each(function() {
 			var com = $(this).component();
 			com && com.reconfigure('disabled:' + is);
 		});
 
-		validate && validate.forEach(FN('n => MAIN.reset({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
+		validate && validate.forEach(FN('n => RESET({0}n)'.format(self.pathscope ? '\'' + self.pathscope + '.\'+' : '')));
 	};
 
 	self.state = function() {
@@ -4469,7 +4479,7 @@ COMPONENT('controls', function(self) {
 	};
 });
 
-COMPONENT('multioptions', function(self) {
+COMPONENT('multioptions', 'rebind:true', function(self, config) {
 
 	var Tinput = Tangular.compile('<input class="ui-moi-save ui-moi-value-inputtext" data-name="{{ name }}" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }}{{ if max }} maxlength="{{ max }}"{{ fi }} data-type="text" />');
 	var Tselect = Tangular.compile('<div class="ui-moi-value-select"><i class="fa fa-chevron-down"></i><select data-name="{{ name }}" class="ui-moi-save ui-multioptions-select">{{ foreach m in values }}<option value="{{ $index }}"{{ if value === m.value }} selected="selected"{{ fi }}>{{ m.text }}</option>{{ end }}</select></div>');
@@ -4479,8 +4489,10 @@ COMPONENT('multioptions', function(self) {
 	var Tcolor = null;
 	var skip = false;
 	var mapping = null;
+	var dep = {};
 
-	self.readonly();
+	self.getter = null;
+	self.novalidate();
 
 	self.init = function() {
 		window.Tmultioptionscolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(['#ED5565', '#DA4453', '#FC6E51', '#E9573F', '#FFCE54', '#F6BB42', '#A0D468', '#8CC152', '#48CFAD', '#37BC9B', '#4FC1E9', '#3BAFDA', '#5D9CEC', '#4A89DC', '#AC92EC', '#967ADC', '#EC87C0', '#D770AD', '#F5F7FA', '#E6E9ED', '#CCD1D9', '#AAB2BD', '#656D78', '#434A54', '#000000'].map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n); }).join('')));
@@ -4488,14 +4500,21 @@ COMPONENT('multioptions', function(self) {
 
 	self.form = function() {};
 
+	self.dependencies = function() {
+		return dep;
+	};
+
 	self.make = function() {
 
 		Tcolor = window.Tmultioptionscolor;
 		self.aclass('ui-multioptions');
 
 		var el = self.find('script');
-		self.remap(el.html());
-		el.remove();
+
+		if (el.length) {
+			self.remap(el.html());
+			el.remove();
+		}
 
 		self.event('click', '.multioptions-operation', function(e) {
 			var el = $(this);
@@ -4562,7 +4581,8 @@ COMPONENT('multioptions', function(self) {
 			return;
 		});
 
-		self.event('change', 'input,select', self.$save);
+		self.event('change', 'select', self.$save);
+		self.event('input', 'input', self.$save);
 
 		self.event('click', '.ui-moi-date', function(e) {
 			e.stopPropagation();
@@ -4578,43 +4598,56 @@ COMPONENT('multioptions', function(self) {
 	};
 
 	self.remap = function(js) {
-
 		var fn = new Function('option', js);
-
 		mapping = {};
+		dep = {};
+		fn(self.mapping);
+		self.refresh();
+		self.change(false);
+		config.rebind && self.$save();
+	};
 
-		fn(function(key, label, def, type, max, min, step, validator) {
-			if (typeof(type) === 'number') {
-				validator = step;
-				step = min;
-				min = max;
-				max = type;
-				type = 'number';
-			} else if (!type)
-				type = def instanceof Date ? 'date' : typeof(def);
+	self.remap2 = function(callback) {
+		mapping = {};
+		dep = {};
+		callback(self.mapping);
+		self.refresh();
+		self.change(false);
+		config.rebind && self.$save();
+	};
 
-			var values;
+	self.mapping = function(key, label, def, type, max, min, step, validator) {
+		if (typeof(type) === 'number') {
+			validator = step;
+			step = min;
+			min = max;
+			max = type;
+			type = 'number';
+		} else if (!type)
+			type = def instanceof Date ? 'date' : typeof(def);
 
-			if (type instanceof Array) {
+		var values;
 
-				values = [];
+		if (type instanceof Array) {
 
-				type.forEach(function(val) {
-					values.push({ text: val.text === undefined ? val : val.text, value: val.value === undefined ? val : val.value });
-				});
+			values = [];
 
-				type = 'array';
-			}
+			type.forEach(function(val) {
+				values.push({ text: val.text === undefined ? val : val.text, value: val.value === undefined ? val : val.value });
+			});
 
-			if (validator && typeof(validator) !== 'function')
-				validator = null;
+			type = 'array';
+		}
 
-			mapping[key] = { name: key, label: label, type: type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
-		});
+		if (validator && typeof(validator) !== 'function')
+			validator = null;
+
+		dep[key] = values;
+		mapping[key] = { name: key, label: label, type: type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
 	};
 
 	self.$save = function() {
-		setTimeout2('multioptions.' + self._id, self.save, 500);
+		setTimeout2('multioptions.' + self._id, self.save, 150);
 	};
 
 	self.save = function() {
@@ -4647,12 +4680,19 @@ COMPONENT('multioptions', function(self) {
 			}
 
 			if (el.hclass('ui-moi-value-numbertext')) {
-				obj[key] = el.val().parseInt();
-				return;
-			}
 
-			if (el.hclass('ui-moi-value-numbertext')) {
 				obj[key] = el.val().parseInt();
+
+				if (opt.max !== null && obj[key] > opt.max) {
+					obj[key] = opt.max;
+					el.val(opt.max);
+				}
+
+				if (opt.min !== null && obj[key] < opt.min) {
+					obj[key] = opt.min;
+					el.val(opt.min);
+				}
+
 				return;
 			}
 
@@ -4673,13 +4713,12 @@ COMPONENT('multioptions', function(self) {
 
 	self.setter = function(options) {
 
-		if (!options || skip) {
+		if (!options || skip || !mapping) {
 			skip = false;
 			return;
 		}
 
 		var builder = [];
-
 		Object.keys(mapping).forEach(function(key) {
 
 			var option = mapping[key];
@@ -4693,11 +4732,11 @@ COMPONENT('multioptions', function(self) {
 			// option.min
 			// option.step
 
-			option.value = options[key];
+			option.value = options[key] || option.def;
 
 			var value = '';
 
-			switch (option.type) {
+			switch (option.type.toLowerCase()) {
 				case 'string':
 					value = Tinput(option);
 					break;
@@ -4721,7 +4760,7 @@ COMPONENT('multioptions', function(self) {
 			builder.push('<div class="ui-multioptions-item"><div class="ui-moi-name">{0}</div><div class="ui-moi-value">{1}</div></div>'.format(option.label, value));
 		});
 
-		self.html(builder);
+		self.empty().html(builder);
 
 		self.find('.ui-moi-value-colors').each(function() {
 			var el = $(this);
