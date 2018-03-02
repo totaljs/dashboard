@@ -1369,7 +1369,7 @@ COMPONENT('designer', function(self) {
 		}
 	};
 
-	self.mup = function(x, y, e) {
+	self.mup = function(x, y) {
 		move.drag = false;
 
 		var selected = container.find('.selected');
@@ -1405,7 +1405,7 @@ COMPONENT('designer', function(self) {
 		move.y = e.pageY - item.height();
 	};
 
-	self.mmove = function(x, y, e) {
+	self.mmove = function(x, y) {
 
 		var fx = x > move.x ? move.x : x - size.pixels;
 		var fy = y > move.y ? move.y : y - size.pixels;

@@ -115,7 +115,7 @@
 					break;
 				case 'data':
 					data.TYPE = undefined;
-					common.operations.emit('data', data);
+					common.operations.emit('data', CLONE(data));
 					common.data.push(data);
 					break;
 			}
