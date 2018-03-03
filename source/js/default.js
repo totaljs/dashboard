@@ -16,6 +16,8 @@ SETTER(true, 'loading', 'hide', 1000);
 
 common.operations.emit = function(name, a, b, c, d) {
 	$('figure').each(function() {
+		if (name === 'data')
+			a = CLONE(a);
 		this.$widget && this.$widget.$events[name] && this.$widget.emit(name, a, b, c, d);
 	});
 	return common.operations;
