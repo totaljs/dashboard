@@ -283,6 +283,7 @@
 			var options = settings[instance.name];
 			var old = instance.options;
 			instance.options = options;
+			EMIT('save.' + instance.name, instance, options, old);
 			instance.emit('options', options, old);
 			SET('common.form', '');
 		});
