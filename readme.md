@@ -276,7 +276,25 @@ instance.on('dashboard', function(type, data) {
 });
 ```
 
-### Components: jComponent +v12.0.0
+## Client-Side
+
+### Events
+
+```javascript
+ON('open.componentname', function(component, options) {
+    // Settings will be open
+});
+
+ON('save.componentname', function(component, options) {
+    // Settings will be save
+});
+
+ON('apply', function() {
+    // Designer will be sent to server
+});
+```
+
+### Components: jComponent +v14.3.0
 
 Bellow jComponents can be used in `Settings form`:
 
