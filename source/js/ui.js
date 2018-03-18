@@ -1431,8 +1431,7 @@ COMPONENT('designer', function(self) {
 
 	self.create = function(index, cols, rows, tab, app, id) {
 		var pos = self.getPosition(index);
-		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(app) : '', id);
-		//html += '<div class="widget_offset tab_{1}" style="top:{0}px" data-id="{2}"></div>'.format((pos.row * size.pixels) + (rows * size.pixels) + 80, tab, id);
+		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="scope{1}"></figure>'.format(app, id) : '', id);
 		widgets.append(html);
 		self.operations.tab();
 	};
