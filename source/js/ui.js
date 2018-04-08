@@ -1152,7 +1152,7 @@ COMPONENT('designer', function(self) {
 		cells = self.find('.cell');
 		widgets = $(self.find('.widgets').eq(0));
 		size = self.getSize();
-		if (size.width === 0)
+		if (size.width < 300)
 			WAIT(function() {
 				return $(window).width();
 			}, function(){
