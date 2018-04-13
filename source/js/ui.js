@@ -1199,7 +1199,17 @@ COMPONENT('designer', function(self) {
 						widget.moving = false;
 						widget.resizing = false;
 						container.css('cursor', 'default');
-						widget.element.attr('data-grid', widget.index + ',' + widget.size.cols + ',' + widget.size.rows);
+						var grid = widget.element.attr('data-grid').split(',');
+						if (common.device === 'desktop') {
+							grid[0] = widget.index;
+							grid[1] = widget.size.cols;
+							grid[2] = widget.size.rows;
+						} else {
+							grid[3] = widget.index;
+							grid[4] = widget.size.cols;
+							grid[5] = widget.size.rows;							
+						}
+						widget.element.attr('data-grid', grid.join(','));
 					} else {
 						if (!move.drag)
 							return;
@@ -1285,6 +1295,7 @@ COMPONENT('designer', function(self) {
 		obj.width = container.parent().width();
 		obj.cell = 100 / 12;
 		obj.pixels = (obj.width / 100) * obj.cell;
+		common.size = obj;
 		return obj;
 	};
 
@@ -1296,15 +1307,18 @@ COMPONENT('designer', function(self) {
 		widget.element = el.closest('.widget');
 		var offset = widget.element.offset();
 		widget.mouse_offset = { col: Math.floor((e.pageX - offset.left) / size.pixels), row: Math.floor((e.pageY - offset.top) / size.pixels)};
-		var grid = widget.element.attr('data-grid').split(',');
 		widget.zindex = widget.element.css('z-index');
 		widget.element.css('z-index', 15);
-		widget.index = +grid[0];
+		var grid = self.grid(widget.element.attr('data-grid').split(','));
+		widget.index = grid.index;
+		widget.size = { 
+			cols: grid.cols, 
+			rows: grid.rows
+		};
 		widget.pos = self.getPosition(widget.index);
-		widget.size = { cols: +grid[1], rows: +grid[2] };
 		widget.origin = {
-			pos: self.getPosition(widget.index),
-			size: { cols: +grid[1], rows: +grid[2] }
+			pos: CLONE(widget.pos),
+			size: CLONE(widget.size)
 		};
 		if (el.hclass('move')) {
 			widget.moving = true;
@@ -1342,7 +1356,7 @@ COMPONENT('designer', function(self) {
 			widget.element.animate({ left: col * size.pixels, top: row * size.pixels }, 15);
 			widget.index = (row * 12) + col;
 			if (item) {
-				item.index = widget.index;
+				item[common.device === 'desktop' ? 'index' : 'mindex'] = widget.index;
 			}
 		}
 
@@ -1361,8 +1375,8 @@ COMPONENT('designer', function(self) {
 				widget.size.rows = 1;
 			widget.element.animate({ width: widget.size.cols * size.pixels, height: widget.size.rows * size.pixels }, 15);
 			if (item) {
-				item.cols = widget.size.cols;
-				item.rows = widget.size.rows;
+				item[common.device === 'desktop' ? 'cols' : 'mcols'] = widget.size.cols;
+				item[common.device === 'desktop' ? 'rows' : 'mrows'] = widget.size.rows;
 				var instance = widget.element.find('figure').get(0).$widget;
 				instance.emit('resize', { cols: widget.size.cols, rows: widget.size.rows, height: size.pixels * widget.size.rows, width: size.pixels * widget.size.cols });
 			}
@@ -1379,9 +1393,10 @@ COMPONENT('designer', function(self) {
 
 		var first = selected.first();
 		var last = selected.last();
-		var grid = first.attr('data-grid').split(',');
-		var c = +grid[0];
-		var r = +grid[1];
+
+		var grid = self.grid(first.attr('data-grid').split(','));
+		var c = grid.cols;
+		var r = grid.rows;
 		var off = self.getStartPosition(c, r);
 
 		move.x = off.x;
@@ -1393,7 +1408,9 @@ COMPONENT('designer', function(self) {
 		var rows = Math.ceil((offB.top - offA.top) / size.pixels) + 1;
 
 		selected.aclass('locked').rclass('selected');
-		self.create(+first.attr('data-index'), cols, rows, common.tab.id, '', Date.now());
+		var index = +first.attr('data-index');
+		var selection = { id: Date.now(), tab: common.tab.id, rows: rows, cols: cols, index: index, mrows: rows, mcols: cols, mindex: index };
+		self.create(selection, true);
 	};
 
 	self.mdown = function(x, y, e) {
@@ -1429,9 +1446,12 @@ COMPONENT('designer', function(self) {
 		});
 	};
 
-	self.create = function(index, cols, rows, tab, app, id) {
-		var pos = self.getPosition(index);
-		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{7}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{6}</div></div>'.format(pos.col * size.pixels, pos.row * size.pixels, cols * size.pixels, rows * size.pixels, index + ',' + cols + ',' + rows, tab, app ? '<figure data-name="{0}" data-jc-scope="scope{1}"></figure>'.format(app, id) : '', id);
+	self.create = function(w) {
+		var key = common.device === 'mobile' ? 'm' : '';
+		var pos = self.getPosition(w[key + 'index']);
+		var grid = w.index + ',' + w.cols + ',' + w.rows + ',' + w.mindex + ',' + w.mcols + ',' + w.mrows;
+		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{6}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{7}</div></div>';
+		html = html.format(pos.col * size.pixels, pos.row * size.pixels, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixels, grid, w.tab, w.id, w.app ? '<figure data-name="{0}" data-jc-scope="scope{1}"></figure>'.format(w.app, w.id) : '');
 		widgets.append(html);
 		self.operations.tab();
 	};
@@ -1458,14 +1478,18 @@ COMPONENT('designer', function(self) {
 				return;
 
 			var opt = {};
+			opt.index = +grid[0];
 			opt.cols = +grid[1];
 			opt.rows = +grid[2];
+			opt.mindex = +grid[3];
+			opt.mcols = +grid[4];
+			opt.mrows = +grid[5];
 			opt.device = device;
-			opt.width = opt.cols * size.pixels;
-			opt.height = opt.rows * size.pixels;
+			opt.width = opt[common.device === 'desktop' ? 'cols' : 'mcols'] * size.pixels;
+			opt.height = opt[common.device === 'desktop' ? 'rows' : 'mrows'] * size.pixels;
 
 			if (!instance) {
-				instance = { id: id, app: declaration.name, index: +grid[0], cols: opt.cols, rows: opt.rows, tab: self.attr('data-tab'), options: null };
+				instance = { id: id, app: declaration.name, index: opt.index, cols: opt.cols, rows: opt.rows, mindex: opt.mindex, mcols: opt.mcols, mrows: opt.mrows, tab: self.attr('data-tab'), options: null };
 				common.designer.push(instance);
 			}
 
@@ -1474,7 +1498,11 @@ COMPONENT('designer', function(self) {
 			csswh.width = opt.width;
 			csswh.height = opt.height;
 			// this.$widget.css(csswh);
-			var k = opt.cols + 'x' + opt.rows;
+			var k;
+			if (common.device === 'desktop')
+				k = opt.cols + 'x' + opt.rows;
+			else
+				k = opt.mcols + 'x' + opt.mrows;
 			this.$widget.$events[k] && this.$widget.emit(k, opt);
 		});
 
@@ -1504,7 +1532,7 @@ COMPONENT('designer', function(self) {
 			var el = $(this);
 			var pos = el.attr('data-grid').split(',');
 			var app = el.find('[data-name]');
-			items.push({ id: el.attr('data-id'), index: +pos[0], cols: +pos[1], rows: +pos[2], tab: el.attr('data-tab'), app: app.length ? app.attr('data-name') : null, options: app.length ? app.get(0).$widget.options : null });
+			items.push({ id: el.attr('data-id'), index: +pos[0], cols: +pos[1], rows: +pos[2], mindex: +pos[3], mcols: +pos[4], mrows: +pos[5], tab: el.attr('data-tab'), app: app.length ? app.attr('data-name') : null, options: app.length ? app.get(0).$widget.options : null });
 		});
 
 		var data = {};
@@ -1528,7 +1556,7 @@ COMPONENT('designer', function(self) {
 
 				widgets.empty();
 				data.items.forEach(function(item) {
-					self.create(item.index, item.cols, item.rows, item.tab, item.app, item.id);
+					self.create(item);
 				});
 
 				self.compile();
@@ -1607,10 +1635,27 @@ COMPONENT('designer', function(self) {
 		}, 100);
 	};
 
+	self.grid = function(grid) {
+		var g = {};
+		if (common.device === 'desktop') {
+			g.index = +grid[0];
+			g.cols = +grid[1];
+			g.rows = +grid[2];
+		} else {
+			g.index = +grid[3];
+			g.cols = +grid[4];
+			g.rows = +grid[5];
+		}
+		return g;
+	};
+
 	self.operations.resize = function() {
 
+		if (!common.draft)
+			common.device = WIDTH() === 'xs' ? 'mobile' : 'desktop';
+
 		setTimeout2(self.id + '.resize', function() {
-			var size = self.getSize();
+			size = self.getSize();
 			var device = WIDTH();
 			var css = {};
 			var csswh = {};
@@ -1625,10 +1670,10 @@ COMPONENT('designer', function(self) {
 
 			widgets.find('.widget').each(function() {
 				var el = $(this);
-				var grid = el.attr('data-grid').split(',');
-				var rows = +grid[2];
-				var cols = +grid[1];
-				var index = +grid[0];
+				var grid = self.grid(el.attr('data-grid').split(','));
+				var cols = grid.cols;
+				var rows = grid.rows;
+				var index = grid.index;
 				var pos = self.getPosition(index);
 
 				css.left = pos.col * size.pixels + 'px';
@@ -4984,5 +5029,67 @@ COMPONENT('shortcuts', function(self) {
 			length = items.length;
 		});
 		return self;
+	};
+});
+
+COMPONENT('radiobutton', function(self, config) {
+
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
+		switch (key) {
+			case 'disabled':
+				self.tclass('ui-disabled', value);
+				break;
+			case 'required':
+				self.find('.ui-radiobutton-label').tclass('ui-radiobutton-label-required', value);
+				break;
+			case 'type':
+				self.type = config.type;
+				break;
+			case 'label':
+				self.find('.ui-radiobutton-label').html(value);
+				break;
+			case 'items':
+				self.find('span').remove();
+				var builder = [];
+				value.split(',').forEach(function(item) {
+					item = item.split('|');
+					builder.push('<span data-value="{0}"><i class="fa fa-circle-o"></i>{1}</span>'.format(item[0] || item[1], item[1] || item[0]));
+				});
+				self.append(builder.join(''));
+				self.refresh();
+				break;
+		}
+	};
+
+	self.make = function() {
+		var builder = [];
+		var label = config.label || self.html();
+		label && builder.push('<div class="ui-radiobutton-label{1}">{0}</div>'.format(label, config.required ? ' ui-radiobutton-label-required' : ''));
+		self.aclass('ui-radiobutton{0}'.format(config.inline === false ? ' ui-radiobutton-block' : ''));
+		self.event('click', 'span', function() {
+			if (config.disabled)
+				return;
+			var value = self.parser($(this).attr('data-value'));
+			self.set(value);
+			self.change(true);
+		});
+		self.html(builder.join(''));
+		config.items && self.reconfigure('items:' + config.items);
+		config.type && (self.type = config.type);
+	};
+
+	self.validate = function(value) {
+		return config.disabled || !config.required ? true : !!value;
+	};
+
+	self.setter = function(value) {
+		self.find('span').each(function() {
+			var el = $(this);
+			var is = el.attr('data-value') === (value == null ? null : value.toString());
+			el.tclass('ui-radiobutton-selected', is);
+			el.find('.fa').tclass('fa-circle-o', !is).tclass('fa-circle', is);
+		});
 	};
 });
