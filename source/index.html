@@ -44,6 +44,7 @@
 
 	<div class="designer-container">
 		<div class="designer-scroll">
+			<div class="device-type" data-jc="radiobutton" data-jc-path="common.device" data-jc-config="items:desktop,mobile"></div>
 			<div class="designer">
 				<div data-jc="controls"></div>
 				<div data-jc="designer"></div>
@@ -66,6 +67,7 @@
 
 		common.draft = false;
 		common.url = NAVIGATION.url;
+		common.device = WIDTH() === 'xs' ? 'mobile' : 'desktop';
 
 		CACHEPATH('common.theme', '1 year');
 
@@ -75,6 +77,11 @@
 			cls && body.removeClass(cls.toString());
 			value && body.addClass('theme' + value);
 		}, true);
+
+		WATCH('common.device', function(path, value) {
+			console.log('common.device resize');
+			FIND('designer').operations.resize();
+		});
 
 		function centerize() {
 			var w = $(window);
@@ -198,6 +205,10 @@
 								common.backup = CLONE(obj.body.body);
 								SETTER('websocket', 'send', obj);
 								SET('common.draft', false);
+								if (common.device === 'mobile') {
+									common.device = 'desktop';
+									FIND('designer').operations.resize();
+								}
 							}
 						});
 						break;
