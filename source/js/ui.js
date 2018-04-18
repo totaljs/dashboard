@@ -1207,7 +1207,7 @@ COMPONENT('designer', function(self) {
 						} else {
 							grid[3] = widget.index;
 							grid[4] = widget.size.cols;
-							grid[5] = widget.size.rows;							
+							grid[5] = widget.size.rows;
 						}
 						widget.element.attr('data-grid', grid.join(','));
 					} else {
@@ -1311,8 +1311,8 @@ COMPONENT('designer', function(self) {
 		widget.element.css('z-index', 15);
 		var grid = self.grid(widget.element.attr('data-grid').split(','));
 		widget.index = grid.index;
-		widget.size = { 
-			cols: grid.cols, 
+		widget.size = {
+			cols: grid.cols,
 			rows: grid.rows
 		};
 		widget.pos = self.getPosition(widget.index);
@@ -1492,6 +1492,8 @@ COMPONENT('designer', function(self) {
 				instance = { id: id, app: declaration.name, index: opt.index, cols: opt.cols, rows: opt.rows, mindex: opt.mindex, mcols: opt.mcols, mrows: opt.mrows, tab: self.attr('data-tab'), options: null };
 				common.designer.push(instance);
 			}
+
+			opt.padding = (w.css('padding') || '').parseInt();
 
 			this.$widget = new Instance(id, el, declaration, instance.options, opt);
 			this.$widget.$events[device] && this.$widget.emit(device, opt);
@@ -1694,6 +1696,10 @@ COMPONENT('designer', function(self) {
 					csswh.height = opt.height;
 					if (app.$widget) {
 						app.$widget.size = opt;
+						if (app.$widget.padding > 0) {
+							app.$widget.size.width -= app.$widget.padding;
+							app.$widget.size.height -= app.$widget.padding;
+						}
 						app.$widget.$events.resize && app.$widget.emit('resize', opt);
 						app.$widget.$events[device] && app.$widget.emit(device, opt);
 					}

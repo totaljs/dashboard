@@ -148,7 +148,13 @@ function Instance(id, element, declaration, options, size) {
 	self.element = element;
 
 	self.dom = element.get(0);
-	self.size = size;
+	self.size = CLONE(size);
+
+	if (self.size.padding > 0) {
+		self.size.width -= self.size.padding;
+		self.size.height -= self.size.padding;
+	}
+
 	declaration.install.call(self, self);
 
 	var tmp = declaration.html;
@@ -158,7 +164,7 @@ function Instance(id, element, declaration, options, size) {
 
 	if (tmp) {
 		element.html(tmp);
-		tmp.indexOf('data-jc="') !== -1 && COMPILE(element);
+		tmp.indexOf('data-jc="') !== -1 && COMPILE();
 	}
 
 	setTimeout(function() {
@@ -285,7 +291,7 @@ String.prototype.parseTransform = function() {
 		for (var i = 0, length = val.length; i < length; i++) {
 			var item = val[i];
 			var index = item.indexOf('(');
-			var v = item.substring(index + 1, item.length - 1).split(/\,|\s/);
+			var v = item.substring(index + 1, item.length - 1).split(/,|\s/);
 			var n = item.substring(0, index);
 			obj[n] = {};
 			switch (n) {

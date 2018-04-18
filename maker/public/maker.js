@@ -69,7 +69,11 @@ setTimeout(function() {
 		$('.widget').css({ width: size.width, height: size.height });
 		setTimeout(function() {
 			if (common.component) {
-				common.component.size = size;
+				var sz = common.component.size = size;
+				if (sz.padding) {
+					sz.width -= sz.padding;
+					sz.height -= sz.padding;
+				}
 				common.component.$events.resize && common.component.emit('resize', size);
 				common.component.$events[size.device] && common.component.emit(size.device, size);
 			}
@@ -102,7 +106,8 @@ function refreshcomponent(path) {
 				var el = $('figure');
 				var size = getSize();
 
-				el.closest('.widget').css({ width: size.width, height: size.height }).rclass('hidden');
+				var w = el.closest('.widget');
+				w.css({ width: size.width, height: size.height }).rclass('hidden');
 				el.attr('style', '');
 
 				delete settings[declaration.name];
@@ -111,6 +116,13 @@ function refreshcomponent(path) {
 				common.lastdata = null;
 
 				$('#dashboardsettings').empty();
+
+				size.padding = (w.css('padding') || '').parseInt();
+
+				if (size.padding) {
+					size.width -= size.padding;
+					size.height -= size.padding;
+				}
 
 				common.declaration = declaration;
 				common.component = new Instance('12345789', el, declaration, undefined, size);
@@ -252,7 +264,13 @@ function Instance(id, element, declaration, options, size) {
 	self.options = $.extend(true, CLONE(declaration.options), options || EMPTYOBJECT);
 	self.element = element;
 	self.dom = element.get(0);
-	self.size = size;
+	self.size = CLONE(size);
+
+	if (self.size.padding > 0) {
+		self.size.width -= self.size.padding;
+		self.size.height -= self.size.padding;
+	}
+
 	declaration.install.call(self, self);
 
 	var tmp = declaration.html;
@@ -262,7 +280,7 @@ function Instance(id, element, declaration, options, size) {
 
 	if (tmp) {
 		element.html(tmp);
-		tmp.indexOf('data-jc="') !== -1 && COMPILE(element);
+		tmp.indexOf('data-jc="') !== -1 && COMPILE();
 	}
 
 	setTimeout(function() {
@@ -399,7 +417,8 @@ function staticContent(instance, callback) {
 	}
 
 	common.statics[common.declaration.name] = true;
-	COMPILE($('#dashboardsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-title="Settings: {0}" data-jc-path="common.form" data-if="value === \'settings-{0}\'" data-width="800px" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">The options will be applied immediately.</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" data-exec="#settings" disabled="disabled" style="width:100%">APPLY SETTINGS</button></div></div></div></div>'.format(instance.name, common.declaration.settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>No advanced configuration.</div><br />')));
+	$('#dashboardsettings').append('<div data-jc-id="html.{0}" data-jc="form__common.form__if:settings-{0};title:Settings;width:800" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">The options will be applied immediately.</div><div data-jc="validation__?" style="width:100%"><button name="submit" class="exec" data-exec="#settings" disabled="disabled" style="width:100%">APPLY SETTINGS</button></div></div></div></div>'.format(instance.name, common.declaration.settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>No advanced configuration.</div><br />'));
+	COMPILE();
 	callback(false);
 }
 
