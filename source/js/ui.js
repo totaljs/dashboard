@@ -1690,11 +1690,11 @@ COMPONENT('designer', function(self) {
 					if (app.$widget) {
 						var sz = app.$widget.size = CLONE(opt);
 						if (sz.padding > 0) {
-							sz.width -= sz.padding;
-							sz.height -= sz.padding;
+							sz.width -= sz.padding * 2;
+							sz.height -= sz.padding * 2;
 						}
-						app.$widget.$events.resize && app.$widget.emit('resize', opt);
-						app.$widget.$events[device] && app.$widget.emit(device, opt);
+						app.$widget.$events.resize && app.$widget.emit('resize', sz);
+						app.$widget.$events[device] && app.$widget.emit(device, sz);
 					}
 				}
 			});

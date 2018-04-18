@@ -151,8 +151,8 @@ function Instance(id, element, declaration, options, size) {
 	self.size = CLONE(size);
 
 	if (self.size.padding > 0) {
-		self.size.width -= self.size.padding;
-		self.size.height -= self.size.padding;
+		self.size.width -= self.size.padding * 2;
+		self.size.height -= self.size.padding * 2;
 	}
 
 	declaration.install.call(self, self);
