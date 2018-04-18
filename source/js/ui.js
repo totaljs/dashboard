@@ -1383,7 +1383,7 @@ COMPONENT('designer', function(self) {
 		}
 	};
 
-	self.mup = function(x, y) {
+	self.mup = function() {
 		move.drag = false;
 
 		var selected = container.find('.selected');
@@ -1433,16 +1433,7 @@ COMPONENT('designer', function(self) {
 			var el = $(this);
 			var offset = el.offset();
 			var is = offset.left >= fx && offset.left <= tx && offset.top >= fy && offset.top <= ty;
-
 			el.tclass('selected', is);
-
-			/*
-			if (is && el.hclass('locked')) {
-				move.drag = false;
-				cells.rclass('selected');
-			}
-			*/
-
 		});
 	};
 
@@ -1657,7 +1648,9 @@ COMPONENT('designer', function(self) {
 			common.device = WIDTH() === 'xs' ? 'mobile' : 'desktop';
 
 		setTimeout2(self.id + '.resize', function() {
+
 			size = self.getSize();
+
 			var device = WIDTH();
 			var css = {};
 			var csswh = {};
@@ -1672,7 +1665,7 @@ COMPONENT('designer', function(self) {
 
 			widgets.find('.widget').each(function() {
 				var el = $(this);
-				var grid = self.grid(el.attr('data-grid').split(','));
+				var grid = self.grid(el.attrd('grid').split(','));
 				var cols = grid.cols;
 				var rows = grid.rows;
 				var index = grid.index;
@@ -1695,10 +1688,10 @@ COMPONENT('designer', function(self) {
 					csswh.width = opt.width;
 					csswh.height = opt.height;
 					if (app.$widget) {
-						app.$widget.size = opt;
-						if (app.$widget.padding > 0) {
-							app.$widget.size.width -= app.$widget.padding;
-							app.$widget.size.height -= app.$widget.padding;
+						var sz = app.$widget.size = CLONE(opt);
+						if (sz.padding > 0) {
+							sz.width -= sz.padding;
+							sz.height -= sz.padding;
 						}
 						app.$widget.$events.resize && app.$widget.emit('resize', opt);
 						app.$widget.$events[device] && app.$widget.emit(device, opt);
@@ -5096,6 +5089,53 @@ COMPONENT('radiobutton', function(self, config) {
 			var is = el.attr('data-value') === (value == null ? null : value.toString());
 			el.tclass('ui-radiobutton-selected', is);
 			el.find('.fa').tclass('fa-circle-o', !is).tclass('fa-circle', is);
+		});
+	};
+});
+
+COMPONENT('devicetype', function(self, config) {
+
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
+		switch (key) {
+			case 'items':
+				self.find('span').remove();
+				var builder = [];
+				value.split(',').forEach(function(item) {
+					item = item.split('|');
+					builder.push('<span data-value="{0}">{1}</span>'.format(item[1] || item[0], item[0] || item[1]));
+				});
+				self.append(builder.join(''));
+				self.refresh();
+				break;
+		}
+	};
+
+	self.make = function() {
+		var builder = [];
+		self.aclass('ui-devicetype');
+		self.event('click', 'span', function() {
+			if (config.disabled)
+				return;
+			var value = $(this).attrd('value');
+			self.set(value);
+			self.change(true);
+		});
+		self.html(builder.join(''));
+		config.items && self.reconfigure('items:' + config.items);
+		config.type && (self.type = config.type);
+	};
+
+	self.validate = function(value) {
+		return config.disabled || !config.required ? true : !!value;
+	};
+
+	self.setter = function(value) {
+		self.find('span').each(function() {
+			var el = $(this);
+			var is = el.attrd('value') === (value == null ? null : value.toString());
+			el.tclass('ui-devicetype-selected', is);
 		});
 	};
 });

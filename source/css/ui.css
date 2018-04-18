@@ -446,3 +446,11 @@ input:invalid { box-shadow: none; }
 .ui-radiobutton.ui-disabled span { cursor: not-allowed; color: gray; }
 .ui-radiobutton.ui-disabled .ui-radiobutton-selected { color: gray !important; }
 .ui-radiobutton.ui-disabled .ui-radiobutton-selected * { color: gray !important; }
+
+.ui-devicetype { height: 28px; }
+.ui-devicetype span { float: left; width: 50%; text-align: center; height: 28px; cursor: pointer; padding: 6px 0 0 0; font-size: 12px; text-transform: uppercase; }
+.ui-devicetype span:first-child { border-radius: 2px 0 0 2px; }
+.ui-devicetype span:last-child { border-radius: 0 2px 2px 0; }
+.ui-devicetype-selected { background-color: #303030; color: white; font-weight: bold; }
+
+.themedark .ui-devicetype-selected { background-color: white; color: black; }

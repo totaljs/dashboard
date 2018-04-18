@@ -127,8 +127,10 @@ body { background-color: #F0F0F0; font-smoothing: antialiased; color: #505050; }
 
 .resize { position:absolute; color:white; right:13px; bottom:13px; cursor:nwse-resize; width:0; height: 0; border-style: solid; border-width: 0 0 20px 20px; border-color: transparent transparent #808080 transparent; }
 .themedark .resize { border-color: transparent transparent #f0f0f0 transparent; }
-.device-type { display: none; }
-.draft .device-type { display: block; width: 200px; margin: 20px auto; text-align: center; padding: 10px 6px 6px; background-color: #fff; border-radius: 2px; box-shadow: 0px 5px 20px 1px #0000001a; }
+
+.devicetype { display: none; }
+.draft .devicetype { display: block; width: 200px; margin: 20px auto 10px; text-align: center; background-color: #fff; border-radius: 2px; box-shadow: 0px 5px 20px 1px rgba(0,0,0,0.1); }
+.themedark.draft .devicetype { background-color: #0F0F0F; }
 
 @media(max-width: 1199px) {
 	.cell { width: 78.3px; height: 78.3px; }
@@ -139,9 +141,7 @@ body { background-color: #F0F0F0; font-smoothing: antialiased; color: #505050; }
 }
 
 @media(max-width: 768px) {
-	/*.mainmenu { left: 20px; }*/
 	.cell { width: 8.3%; height: auto; }
-	/*.toolbar .tabs { margin-top: 17px; }*/
 	.toolbar .tabs a { padding-left: 5px; padding-right: 5px; max-width: 100px; min-width: 60px; font-size: 11px; }
 	.designer > .container { padding-left: 4px; padding-right: 4px; }
 }

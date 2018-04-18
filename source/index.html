@@ -44,7 +44,7 @@
 
 	<div class="designer-container">
 		<div class="designer-scroll">
-			<div class="device-type" data-jc="radiobutton" data-jc-path="common.device" data-jc-config="items:desktop,mobile"></div>
+			<div class="devicetype" data-jc="devicetype__common.device__items:@(Desktop)|desktop,@(Mobile)|mobile"></div>
 			<div class="designer">
 				<div data-jc="controls"></div>
 				<div data-jc="designer"></div>
@@ -79,7 +79,6 @@
 		}, true);
 
 		WATCH('common.device', function(path, value) {
-			console.log('common.device resize');
 			FIND('designer').operations.resize();
 		});
 
