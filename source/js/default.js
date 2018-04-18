@@ -248,6 +248,11 @@ Instance.prototype.css = function() {
 	return this;
 };
 
+Instance.prototype.empty = function() {
+	this.element.empty();
+	return this;
+};
+
 Instance.prototype.aclass = function(v) {
 	this.element.aclass(v);
 	return this;

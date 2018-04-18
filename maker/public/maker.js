@@ -354,6 +354,11 @@ Instance.prototype.html = function(value) {
 	return this.element.html(value);
 };
 
+Instance.prototype.empty = function() {
+	this.element.empty();
+	return this;
+};
+
 Instance.prototype.event = function() {
 	this.element.on.apply(this.element, arguments);
 	return this;
@@ -430,7 +435,7 @@ String.prototype.parseTransform = function() {
 		for (var i = 0, length = val.length; i < length; i++) {
 			var item = val[i];
 			var index = item.indexOf('(');
-			var v = item.substring(index + 1, item.length - 1).split(/\,|\s/);
+			var v = item.substring(index + 1, item.length - 1).split(/,|\s/);
 			var n = item.substring(0, index);
 			obj[n] = {};
 			switch (n) {
