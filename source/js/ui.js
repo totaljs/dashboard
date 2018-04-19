@@ -1152,13 +1152,14 @@ COMPONENT('designer', function(self) {
 		cells = self.find('.cell');
 		widgets = $(self.find('.widgets').eq(0));
 		size = self.getSize();
-		if (size.width < 300)
+		if (size.width < 300) {
 			WAIT(function() {
 				return $(window).width();
 			}, function(){
 				size = self.getSize();
 				self.operations.resize();
 			});
+		}
 
 		self.event('click', '.widget-settings', function(button) {
 			var button = $(this);
@@ -1300,9 +1301,11 @@ COMPONENT('designer', function(self) {
 	};
 
 	self.move_resize_mdown = function(el, e) {
+
 		widgets.find('.widget').each(function() {
 			$(this).css('z-index', 2);
 		});
+
 		container.css('cursor', 'move');
 		widget.element = el.closest('.widget');
 		var offset = widget.element.offset();
@@ -1311,15 +1314,10 @@ COMPONENT('designer', function(self) {
 		widget.element.css('z-index', 15);
 		var grid = self.grid(widget.element.attr('data-grid').split(','));
 		widget.index = grid.index;
-		widget.size = {
-			cols: grid.cols,
-			rows: grid.rows
-		};
+		widget.size = { cols: grid.cols, rows: grid.rows };
 		widget.pos = self.getPosition(widget.index);
-		widget.origin = {
-			pos: CLONE(widget.pos),
-			size: CLONE(widget.size)
-		};
+		widget.origin = { pos: CLONE(widget.pos), size: CLONE(widget.size) };
+
 		if (el.hclass('move')) {
 			widget.moving = true;
 			widget.move_cols = 0;
@@ -1355,9 +1353,8 @@ COMPONENT('designer', function(self) {
 			row = row < 0 ? 0 : row;
 			widget.element.animate({ left: col * size.pixels, top: row * size.pixels }, 15);
 			widget.index = (row * 12) + col;
-			if (item) {
+			if (item)
 				item[common.device === 'desktop' ? 'index' : 'mindex'] = widget.index;
-			}
 		}
 
 		if (widget.resizing) {
@@ -1378,7 +1375,9 @@ COMPONENT('designer', function(self) {
 				item[common.device === 'desktop' ? 'cols' : 'mcols'] = widget.size.cols;
 				item[common.device === 'desktop' ? 'rows' : 'mrows'] = widget.size.rows;
 				var instance = widget.element.find('figure').get(0).$widget;
-				instance.emit('resize', { cols: widget.size.cols, rows: widget.size.rows, height: size.pixels * widget.size.rows, width: size.pixels * widget.size.cols });
+				var padding = instance.size.padding;
+				instance.size = { cols: widget.size.cols, rows: widget.size.rows, height: (size.pixels * widget.size.rows) - (padding * 2), width: (size.pixels * widget.size.cols) - (padding * 2), padding: padding, pixels: size.pixels };
+				instance.emit('resize', instance.size);
 			}
 		}
 	};
@@ -1685,6 +1684,7 @@ COMPONENT('designer', function(self) {
 					opt.device = device;
 					opt.width = cols * size.pixels;
 					opt.height = rows * size.pixels;
+					opt.padding = (el.css('padding') || '').parseInt();
 					csswh.width = opt.width;
 					csswh.height = opt.height;
 					if (app.$widget) {

@@ -1,5 +1,6 @@
 /*auto*/
-html,body { height: 100%; /*overflow: hidden;*/ margin: 0; padding: 0; }
+
+html,body { height: 100%; margin: 0; padding: 0; }
 body { background-color: #F0F0F0; font-smoothing: antialiased; color: #505050; }
 .themedark { color: #A0A0A0; background-color: #202020; }
 
@@ -99,13 +100,18 @@ body { background-color: #F0F0F0; font-smoothing: antialiased; color: #505050; }
 
 .db-container { margin: 0 -10px; }
 .db-norefresh .db-refresh { display: none; }
-.db-item { position: relative; display: inline-block; background-color: white; border: 2px solid #E0E0E0; padding: 4px 10px; width: 204px; margin: 10px 10px 5px; border-radius: 3px; }
+.db-item { position: relative; display: inline-block; background-color: white; border: 2px solid #E0E0E0; padding: 4px 10px; width: 206px; margin: 10px 10px 5px; border-radius: 3px; }
 .db-item > span { float: right; width: 20px; text-align: right; margin: 0; cursor: pointer; color: #E33733; }
 .db-item > span .fa-refresh { color: #909090; }
 .db-item > span:hover { opacity: 0.8; }
 .db-item > div { margin-right: 20px; width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.db-item .canupdate { display: none; color: red; }
+.db-item-update { border-color: #70B348; border-style: dashed; }
+.db-item-update .canupdate { display: inline-block; }
 .db-item .name { font-size: 12px; font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #505050; }
 .db-item .author { font-size: 11px; color: gray; }
+.db-item .version { font-size: 11px; }
+.db-item .version b { font-size: 10px; text-transform: uppercase; margin-left: 5px; }
 .db-category { font-size: 16px; color: black; margin: 15px 10px 5px; font-weight: bold; border-bottom: 3px solid black; padding: 5px 0; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 .db-category .fa { margin-right: 8px; }
 .db-item .datetime { font-size: 11px; color: #A0A0A0; }

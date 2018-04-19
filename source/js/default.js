@@ -1,7 +1,7 @@
 var settings = {};
-var common = {};
 var DEBUG = false;
 var RELEASE = true;
+var common = {};
 
 common.database = [];
 common.events = {};
@@ -11,6 +11,44 @@ common.statics = {};
 common.instances = [];
 common.data = [];
 common.designer = [];
+common.sizing = {};
+
+$(window).on('resize', resizewindow);
+
+function resizewindow() {
+	var d = WIDTH();
+	var sizing = common.sizing;
+	var b = $('.designer-container');
+
+	if (sizing.display && sizing.display !== d)
+		b.rclass(sizing.display);
+
+	b.aclass(d);
+	sizing.display = d;
+
+	var font = 24;
+
+	switch (d) {
+		case 'xs':
+			var w = $(window).width();
+			font = w > 500 ? 12 : w > 400 ? 10 : 9;
+			break;
+		case 'sm':
+			font = 16;
+			break;
+		case 'md':
+			font = 18;
+			break;
+		case 'lg':
+			font = 24;
+			break;
+	}
+
+	sizing.fontsize = font;
+	b.css('font-size', font);
+}
+
+resizewindow();
 
 SETTER(true, 'loading', 'hide', 1000);
 
@@ -189,7 +227,7 @@ Instance.prototype.on = function(name, fn) {
 };
 
 Instance.prototype.menu = function(items, el, callback, offsetX) {
-	FIND('controls').show(el || this.element, items, callback, offsetX);
+	SETTER('controls', 'show', el || this.element, items, callback, offsetX);
 	return this;
 };
 
