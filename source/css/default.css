@@ -86,10 +86,12 @@ body { background-color: #F0F0F0; font-smoothing: antialiased; color: #505050; }
 .widget-toolbar button .fa { margin: 0; }
 .themedark .widget-toolbar button { background-color: #505050; color: white; }
 .draft .widget-toolbar { display: block; }
-.widget-body { height: 100%; overflow: hidden; }
+.widget-body { height: 100%; background-color: white; box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.1); overflow: hidden; }
+.themedark .widget-body { background-color: #101010; box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.15); }
 .widget-body > figure { height: 100%; }
-.draft .widget-body { background-color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-.draft.themedark .widget-body { background-color: #101010; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.widget-body.transparent { background-color: transparent; box-shadow: none; }
+.draft .widget-body { background-color: white; box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.1); }
+.draft.themedark .widget-body { background-color: #101010; box-shadow: 0px 3px 5px 1px rgba(0,0,0,0.1); }
 
 .help { margin-top: 5px; font-size: 11px; color: #A0A0A0; }
 .help code { font: normal normal 11px Arial; background-color: #F0F0F0; padding: 1px 5px; border-radius: 4px; }

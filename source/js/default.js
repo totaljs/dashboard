@@ -278,7 +278,7 @@ Instance.prototype.hclass = function(v) {
 
 Instance.prototype.settings = function() {
 	var self = this;
-		staticContent(self, function() {
+	staticContent(self, function() {
 		var options = CLONE(self.options);
 		EMIT('open.' + self.name, self, options);
 		SET('settings.' + self.name, options, true);
@@ -286,6 +286,11 @@ Instance.prototype.settings = function() {
 		RESET('settings.' + self.name + '.*', 500);
 	});
 	return self;
+};
+
+Instance.prototype.transparent = function(t) {
+	this.element.parent().tclass('transparent', t);
+	return this;
 };
 
 String.prototype.parseTransform = function() {
