@@ -172,6 +172,10 @@ exports.install = function(instance) {
     // Determines whether the widget is hidden
     // Returns {Boolean}
 
+    instance.transparent([true]);
+    // if true passed in then widget-body background-color is set to be transparent 
+    // and removes box-shadow
+
     // =======================================
     // EVENTS
     // =======================================
