@@ -1439,7 +1439,7 @@ COMPONENT('designer', function(self) {
 	self.create = function(w) {
 		var key = common.device === 'mobile' ? 'm' : '';
 		var pos = self.getPosition(w[key + 'index']);
-		var grid = w.index + ',' + w.cols + ',' + w.rows + ',' + w.mindex + ',' + w.mcols + ',' + w.mrows;
+		var grid = w.index + ',' + w.cols + ',' + w.rows + ',' + (w.mindex || w.index) + ',' + (w.mcols || w.cols) + ',' + (w.mrows || w.rows);
 		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{6}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{7}</div></div>';
 		html = html.format(pos.col * size.pixels, pos.row * size.pixels, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixels, grid, w.tab, w.id, w.app ? '<figure data-name="{0}" data-jc-scope="scope{1}"></figure>'.format(w.app, w.id) : '');
 		widgets.append(html);
