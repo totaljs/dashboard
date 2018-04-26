@@ -1131,7 +1131,7 @@ COMPONENT('designer', function(self) {
 	self.make = function() {
 
 		self.aclass('designer');
-		self.append('<div class="container"><div class="widgets"></div><table class="grid"></table></div>');
+		self.append('<div class="container fullwidth"><div class="widgets"></div><table class="grid"></table></div>');
 
 		scroller = self.element.closest('.designer-scroll');
 		container = self.find('.grid');
@@ -1427,7 +1427,6 @@ COMPONENT('designer', function(self) {
 		var fy = y > move.y ? move.y : y - size.pixels;
 		var tx = x > move.x ? x : move.x + size.pixels;
 		var ty = y > move.y ? y : move.y + size.pixels;
-
 		cells.each(function() {
 			var el = $(this);
 			var offset = el.offset();
@@ -1654,13 +1653,7 @@ COMPONENT('designer', function(self) {
 			var css = {};
 			var csswh = {};
 
-			cells.each(function() {
-				var el = $(this);
-				if (device !== 'xs')
-					el.css('height', '');
-				else
-					el.css('height', size.pixels + 'px');
-			});
+			cells.css('height', size.pixels + 'px');
 
 			widgets.find('.widget').each(function() {
 				var el = $(this);

@@ -70,12 +70,22 @@
 		common.device = WIDTH() === 'xs' ? 'mobile' : 'desktop';
 
 		CACHEPATH('common.theme', '1 year');
+		CACHEPATH('common.fullwidth', '1 year');
 
 		WATCH('common.theme', function(path, value) {
 			var body = $(document.body);
 			var cls = (body.attr('class') || '').match(/theme\w+/g);
 			cls && body.removeClass(cls.toString());
 			value && body.addClass('theme' + value);
+		}, true);
+
+		WATCH('common.fullwidth', function(path, value, type) {
+			if (value === undefined)
+				return;
+			FIND('designer', function(com) {
+				$('.fullwidth').rclass('container container-fluid').aclass(common.fullwidth ? 'container-fluid' : 'container');
+				com.operations.resize();
+			});
 		}, true);
 
 		WATCH('common.device', function(path, value) {
@@ -143,6 +153,7 @@
 
 			items.push({ name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' });
 			items.push({ name: '@(Toggle dark theme)', icon: 'fa-paint-brush', value: 'theme' });
+			items.push({ name: '@(Full-width layout)', icon: 'fa-arrows-h', value: 'fullwidth' });
 
 			if (common.page === 'dashboard' && device !== 'xs' && dashboard.current) {
 				var mode = FIND('dashboard').getMode();
@@ -191,6 +202,9 @@
 						break;
 					case 'theme':
 						themechanger();
+						break;
+					case 'fullwidth':
+						fullwidth();
 						break;
 					case 'save':
 						SETTER('confirm', 'confirm', '@(Are you sure you want to save a current state?)', ['"floppy-o" @(Yes)', '@(Cancel)'], function(index) {
@@ -311,6 +325,14 @@
 			setTimeout(function() {
 				SET('common.theme', common.theme === 'dark' ? '' : 'dark');
 				SETTER('loading', 'hide', 1000);
+			}, 1000);
+		}
+
+		function fullwidth() {
+			SETTER('loading', 'show');
+			setTimeout(function() {
+				SET('common.fullwidth', !common.fullwidth);
+				SETTER('loading', 'hide', 400);
 			}, 1000);
 		}
 
