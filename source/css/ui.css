@@ -321,6 +321,7 @@ input:invalid { box-shadow: none; }
 .themedark .ui-form-container { background-color: rgba(0,0,0,0.5); }
 .themedark .ui-form { box-shadow: 0 0 20px black; }
 .themedark .ui-confirm { background-color: rgba(0,0,0,0.5); }
+.themedark .ui-loading { background-color: rgba(0,0,0,0.8); }
 
 @keyframes blink {
 	from { stroke: transparent; stroke-width: 1; }
