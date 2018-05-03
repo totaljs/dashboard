@@ -63,7 +63,7 @@
 		component.onHide = function() {
 			setTimeout(function() {
 				EMIT('designer.refresh');
-				formdatabase.reload && SETTER('confirm', 'confirm', '@(Designer needs to be reloaded. Can I reload it?)', ['"refresh" @(Yes)', '@(Cancel)'], function(index) {
+				formdatabase.reload && SETTER('confirm', 'confirm', '@(Dashboard needs to be reloaded. Can I reload it?)', ['"refresh" @(Yes)', '@(Cancel)'], function(index) {
 					!index && location.reload(true);
 				});
 				formdatabase.reload = false;

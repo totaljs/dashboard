@@ -118,7 +118,7 @@
 					SET('common.instances', data.body);
 					break;
 				case 'component':
-					common.operations.append(data.body, data.dateupdated);
+					common.operations.append(data.body, data.dateupdated, data.name);
 					break;
 				case 'designer':
 					common.backup = CLONE(data.body);
@@ -143,7 +143,7 @@
 			var items = [];
 
 			items.push('@(Dashboard)');
-			items.push({ name: '@(Database)', icon: 'fa-database', value: 'database' });
+			items.push({ name: '@(Components)', icon: 'fa-database', value: 'database' });
 
 			if (common.draft) {
 				items.push({ name: '@(Save changes)', icon: 'fa-floppy-o', value: 'save' });
@@ -208,25 +208,28 @@
 						break;
 					case 'save':
 						SETTER('confirm', 'confirm', '@(Are you sure you want to save a current state?)', ['"floppy-o" @(Yes)', '@(Cancel)'], function(index) {
-							if (!index) {
-								var obj = {};
-								obj.TYPE = 'save';
-								obj.body = {};
-								obj.body.TYPE = 'designer';
-								obj.body.body = FIND('designer').operations.save();
-								obj.body.body.tabs = common.tabs;
-								common.backup = CLONE(obj.body.body);
-								SETTER('websocket', 'send', obj);
-								SET('common.draft', false);
-								if (common.device === 'mobile') {
-									common.device = 'desktop';
-									FIND('designer').operations.resize();
-								}
-							}
+							!index && save_force();
 						});
 						break;
 				}
 			}, 5);
+		}
+
+		function save_force() {
+			var obj = {};
+			obj.TYPE = 'save';
+			obj.body = {};
+			obj.body.TYPE = 'designer';
+			obj.body.body = FIND('designer').operations.save();
+			obj.body.body.tabs = common.tabs;
+			console.log(obj.body.body);
+			common.backup = CLONE(obj.body.body);
+			SETTER('websocket', 'send', obj);
+			SET('common.draft', false);
+			if (common.device === 'mobile') {
+				common.device = 'desktop';
+				FIND('designer').operations.resize();
+			}
 		}
 
 		ON('tabs.save', function(form) {
@@ -297,7 +300,7 @@
 			}
 
 			common.statics[instance.name] = true;
-			COMPILE($('#dashboardsettings').append('<div data-jc-id="html.{0}" data-jc="form" data-jc-path="common.form" data-jc-config="if:settings-{0};title:@(Settings\\:) {0};width:800" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" name="submit" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div></div></div>'.format(instance.name.replace(/\:/g, '\:'), common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
+			COMPILE($('#dashboardsettings').append(('<div data-jc-id="html.{0}" data-jc="form" data-jc-path="common.form" data-jc-config="if:settings-{0};title:@(Settings\\:) {0};width:800" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" name="submit" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(instance.name.replace(/\:/g, '\:'), common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
 			callback(false);
 		}
 
@@ -310,6 +313,7 @@
 			EMIT('save.' + instance.name, instance, options, old);
 			instance.emit('options', options, old);
 			SET('common.form', '');
+			!common.draft && save_force();
 		});
 
 		function designer_duplicate() {

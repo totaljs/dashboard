@@ -197,7 +197,12 @@ function component_install(controller, response, callback) {
 }
 
 function component_uninstall(controller, name, callback) {
-	Fs.unlink(F.path.root(PATH + name + '.html'), function() {
+
+	var index = name.indexOf('/');
+	if (index === -1)
+		name = name.substring(index + 1);
+
+	Fs.unlink(F.path.root(PATH + name), function() {
 		callback && callback();
 		controller && send_components(controller);
 	});

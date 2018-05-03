@@ -68,12 +68,14 @@ common.operations.remove = function(name, uninstall) {
 		delete instance.$events;
 		$(this).remove();
 	});
+
+	var item = common.database.findItem('name', name);
 	common.database = common.database.remove('name', name);
-	uninstall && SETTER('websocket', 'send', { TYPE: 'uninstall', body: name });
+	item && uninstall && SETTER('websocket', 'send', { TYPE: 'uninstall', body: item.filename });
 	UPDATE('common.database', 1000);
 };
 
-common.operations.append = function(html, updated) {
+common.operations.append = function(html, updated, filename) {
 
 	var beg = -1;
 	var end = -1;
@@ -150,6 +152,7 @@ common.operations.append = function(html, updated) {
 	component.readme = body_readme;
 	component.html = body_html;
 	component.dateupdated = updated;
+	component.filename = filename;
 
 	if (body_style) {
 		$('#inlinecss_' + component.name).remove();
@@ -317,6 +320,7 @@ Instance.prototype.hclass = function(v) {
 Instance.prototype.settings = function() {
 	var self = this;
 	staticContent(self, function() {
+		common.selected = self.element.parent();
 		var options = CLONE(self.options);
 		EMIT('open.' + self.name, self, options);
 		SET('settings.' + self.name, options, true);

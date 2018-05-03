@@ -147,9 +147,9 @@ input:invalid { box-shadow: none; }
 .ui-selectbox-selected { color: #A0A0A0; }
 .ui-selectbox-search { border-bottom: 1px solid #E0E0E0; height: 34px; background-color: white; }
 .ui-selectbox-search input { width: 100%; outline: 0; background-color: white; font: normal normal 12px Arial; border: 0; margin: 0; padding: 0; }
-.ui-selectbox-search span { float: left; width: 30px; text-align: center; height: 30px; padding: 10px 0 0 0; font-size: 12px; color: #A0A0A0; }
+.ui-selectbox-search span { float: left; width: 30px; text-align: center; height: 30px; padding: 8px 0 0 0; font-size: 12px; color: #A0A0A0; }
 .ui-selectbox-search .fa-times { color: red; cursor: pointer; }
-.ui-selectbox-search div { margin-left: 30px; padding: 8px 10px 0 0; }
+.ui-selectbox-search div { margin-left: 30px; padding: 6px 10px 0 0; }
 .ui-selectbox-invalid { border-color: #E1A1A1; background-color: #FFF3F3 !important; }
 .ui-selectbox-invalid .ui-selectbox-search { border-color: #E1A1A1; }
 .ui-selectbox.ui-disabled input { background-color: #F0F0F0; color: gray; }
@@ -239,7 +239,7 @@ input:invalid { box-shadow: none; }
 .ui-contextmenu-items span { float: left; color: white; width: 140px; margin: 8px 0 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; height: 20px; }
 .ui-contextmenu-items .item:first-child { border-width: 0; border-top-left-radius: 4px; border-top-right-radius: 4px; }
 .ui-contextmenu-items .item:last-child { border-bottom-left-radius: 4px; border-bottom-right-radius: 4px; }
-.ui-contextmenu-items .divider { font-size: 11px; color: #A0A0A0; text-transform: uppercase; padding: 10px 10px 5px; border-width: 0; }
+.ui-contextmenu-items .divider { font-size: 11px; color: #A0A0A0; text-transform: uppercase; padding: 10px 10px 5px; border-width: 0; text-align: left; }
 
 .ui-message { background-color: rgba(255,255,255,0.9); position: fixed; left: 0; right: 0; bottom: 0; top: 0; z-index: 1010; width: 100%; display: table; height: 100%; transition: 0.3s all; opacity: 0; }
 .ui-message > div { display: table-cell; vertical-align: middle; text-align: center; color: black; padding: 15px; }

@@ -1137,7 +1137,7 @@ COMPONENT('designer', function(self) {
 		container = self.find('.grid');
 
 		var builder = [];
-		for (var i = 0; i < 348; i++) {
+		for (var i = 0; i < 396; i++) {
 			if (i % 12 === 0) {
 				if (i)
 					builder.push('</tr>');
@@ -1440,7 +1440,7 @@ COMPONENT('designer', function(self) {
 		var pos = self.getPosition(w[key + 'index']);
 		var grid = w.index + ',' + w.cols + ',' + w.rows + ',' + (w.mindex || w.index) + ',' + (w.mcols || w.cols) + ',' + (w.mrows || w.rows);
 		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{6}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{7}</div></div>';
-		html = html.format(pos.col * size.pixels, pos.row * size.pixels, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixels, grid, w.tab, w.id, w.app ? '<figure data-name="{0}" data-jc-scope="scope{1}"></figure>'.format(w.app, w.id) : '');
+		html = html.format(pos.col * size.pixels, pos.row * size.pixels, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixels, grid, w.tab, w.id, w.app ? '<figure data-name="{0}"></figure>'.format(w.app, w.id) : '');
 		widgets.append(html);
 		self.operations.tab();
 	};
@@ -2387,9 +2387,9 @@ COMPONENT('dropdown', function(self, config) {
 
 COMPONENT('selectbox', function(self, config) {
 
-	var Eitems, Eselected, datasource = null;
+	var Eitems, Eselected = null;
 
-	self.datasource = EMPTYARRAY;
+	self.data = EMPTYARRAY;
 	self.template = Tangular.compile('<li data-search="{{ search }}" data-index="{{ index }}">{{ text }}</li>');
 
 	self.validate = function(value) {
@@ -2435,9 +2435,7 @@ COMPONENT('selectbox', function(self, config) {
 				self.bind('', arr);
 				break;
 			case 'datasource':
-				datasource && self.unwatch(datasource, self.bind);
-				self.watch(value, self.bind, true);
-				datasource = value;
+				self.datasource(value, self.bind, true);
 				break;
 		}
 
@@ -2469,7 +2467,7 @@ COMPONENT('selectbox', function(self, config) {
 		var kv = config.value || 'id';
 		var builder = [];
 
-		self.datasource = [];
+		self.data = [];
 		value && value.forEach(function(item, index) {
 
 			var text;
@@ -2484,7 +2482,7 @@ COMPONENT('selectbox', function(self, config) {
 			}
 
 			var item = { text: text, value: value, index: index, search: text.toSearch() };
-			self.datasource.push(item);
+			self.data.push(item);
 			builder.push(self.template(item));
 		});
 
@@ -2505,7 +2503,7 @@ COMPONENT('selectbox', function(self, config) {
 				return;
 			var selected = self.get() || [];
 			var index = +this.getAttribute('data-index');
-			var value = self.datasource[index];
+			var value = self.data[index];
 
 			if (selected.indexOf(value.value) === -1)
 				selected.push(value.value);
@@ -2535,7 +2533,7 @@ COMPONENT('selectbox', function(self, config) {
 		var selected = {};
 		var builder = [];
 
-		var ds = self.datasource;
+		var ds = self.data;
 		var dsl = ds.length;
 
 		if (value) {
@@ -4526,6 +4524,7 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 	var skip = false;
 	var mapping = null;
 	var dep = {};
+	var pending = 0;
 
 	self.getter = null;
 	self.novalidate();
@@ -4565,23 +4564,14 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 					el.val(date.format('yyyy-MM-dd'));
 					self.$save();
 				});
-				return;
-			}
-
-			if (type === 'color') {
+			} else if (type === 'color') {
 				el.parent().find('.selected').rclass('selected');
 				el.aclass('selected');
 				self.$save();
-				return;
-			}
-
-			if (type === 'boolean') {
+			} else if (type === 'boolean') {
 				el.tclass('checked');
 				self.$save();
-				return;
-			}
-
-			if (type === 'number') {
+			} else if (type === 'number') {
 				var input = el.parent().parent().find('input');
 				var step = (el.attrd('step') || '0').parseInt();
 				var min = el.attrd('min');
@@ -4610,11 +4600,8 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 					input.val(value);
 				}
 				self.$save();
-				return;
-			}
-
-			self.form(type, el.parent().parent().find('input'), name);
-			return;
+			} else
+				self.form(type, el.parent().parent().find('input'), name);
 		});
 
 		self.event('change', 'select', self.$save);
@@ -4633,53 +4620,77 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 		});
 	};
 
+	self.redraw = function() {
+		if (pending) {
+			setTimeout(self.redraw, 500);
+		} else {
+			self.refresh();
+			self.change(false);
+			config.rebind && self.$save();
+		}
+	};
+
 	self.remap = function(js) {
 		var fn = new Function('option', js);
 		mapping = {};
 		dep = {};
+		pending = 0;
 		fn(self.mapping);
-		self.refresh();
-		self.change(false);
-		config.rebind && self.$save();
+		self.redraw();
 	};
 
 	self.remap2 = function(callback) {
 		mapping = {};
 		dep = {};
+		pending = 0;
 		callback(self.mapping);
-		self.refresh();
-		self.change(false);
-		config.rebind && self.$save();
+		self.redraw();
 	};
 
 	self.mapping = function(key, label, def, type, max, min, step, validator) {
-		if (typeof(type) === 'number') {
+
+		var T = typeof(type);
+		var values, url;
+
+		if (T === 'number') {
 			validator = step;
 			step = min;
 			min = max;
 			max = type;
 			type = 'number';
-		} else if (!type)
+		} else if (T === 'string') {
+			var tmp = type.substring(0, 6);
+			url = type.substring(0, 1) === '/' || tmp === 'http:/' || tmp === 'https:' ? type : '';
+			if (url)
+				type = 'array';
+		} if (!type)
 			type = def instanceof Date ? 'date' : typeof(def);
 
-		var values;
-
 		if (type instanceof Array) {
-
 			values = [];
-
-			type.forEach(function(val) {
-				values.push({ text: val.text === undefined ? val : val.text, value: val.value === undefined ? val : val.value });
-			});
-
+			for (var i = 0; i < type.length; i++) {
+				var val = type[i];
+				values.push({ text: val.text == null ? val : val.text, value: val.value == null ? val : val.value });
+			}
 			type = 'array';
 		}
 
 		if (validator && typeof(validator) !== 'function')
 			validator = null;
 
-		dep[key] = values;
-		mapping[key] = { name: key, label: label, type: type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
+		var bindmapping = function(values) {
+			dep[key] = values;
+			mapping[key] = { name: key, label: label, type: url ? 'array' : type.toLowerCase(), def: def, max: max, min: min, step: step, value: def, values: values, validator: validator };
+		};
+
+		if (url) {
+			pending++;
+			AJAX('GET ' + url, function(values) {
+				pending--;
+				bindmapping(values);
+			});
+		} else
+			bindmapping(values);
 	};
 
 	self.$save = function() {
@@ -4768,7 +4779,7 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 			// option.min
 			// option.step
 
-			option.value = options[key] || option.def;
+			option.value = options[key] == null ? option.def : options[key];
 
 			var value = '';
 
