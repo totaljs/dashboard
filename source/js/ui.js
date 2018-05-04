@@ -5143,3 +5143,436 @@ COMPONENT('devicetype', function(self, config) {
 		});
 	};
 });
+
+COMPONENT('fontawesomebox', 'height:300;fa:false', function(self, config) {
+
+	self.init = function() {
+		window.fontawesomeicons = '500px,address-book,address-book-o,address-card,address-card-o,adjust,adn,align-center,align-justify,align-left,align-right,amazon,ambulance,american-sign-language-interpreting,anchor,android,angellist,angle-double-down,angle-double-left,angle-double-right,angle-double-up,angle-down,angle-left,angle-right,angle-up,apple,archive,area-chart,arrow-circle-down,arrow-circle-left,arrow-circle-o-down,arrow-circle-o-left,arrow-circle-o-right,arrow-circle-o-up,arrow-circle-right,arrow-circle-up,arrow-down,arrow-left,arrow-right,arrow-up,arrows,arrows-alt,arrows-h,arrows-v,asl-interpreting,assistive-listening-systems,asterisk,at,audio-description,automobile,backward,balance-scale,ban,bandcamp,bank,bar-chart,bar-chart-o,barcode,bars,bath,bathtub,battery,battery-0,battery-1,battery-2,battery-3,battery-4,battery-empty,battery-full,battery-half,battery-quarter,battery-three-quarters,bed,beer,behance,behance-square,bell,bell-o,bell-slash,bell-slash-o,bicycle,binoculars,birthday-cake,bitbucket,bitbucket-square,bitcoin,black-tie,blind,bluetooth,bluetooth-b,bold,bolt,bomb,book,bookmark,bookmark-o,braille,briefcase,btc,bug,building,building-o,bullhorn,bullseye,bus,buysellads,cab,calculator,calendar,calendar-check-o,calendar-minus-o,calendar-o,calendar-plus-o,calendar-times-o,camera,camera-retro,car,caret-down,caret-left,caret-right,caret-square-o-down,caret-square-o-left,caret-square-o-right,caret-square-o-up,caret-up,cart-arrow-down,cart-plus,cc,cc-amex,cc-diners-club,cc-discover,cc-jcb,cc-mastercard,cc-paypal,cc-stripe,cc-visa,certificate,chain,chain-broken,check,check-circle,check-circle-o,check-square,check-square-o,chevron-circle-down,chevron-circle-left,chevron-circle-right,chevron-circle-up,chevron-down,chevron-left,chevron-right,chevron-up,child,chrome,circle,circle-o,circle-o-notch,circle-thin,clipboard,clock-o,clone,close,cloud,cloud-download,cloud-upload,cny,code,code-fork,codepen,codiepie,coffee,cog,cogs,columns,comment,comment-o,commenting,commenting-o,comments,comments-o,compass,compress,connectdevelop,contao,copy,copyright,creative-commons,credit-card,credit-card-alt,crop,crosshairs,css3,cube,cubes,cut,cutlery,dashboard,dashcube,database,deaf,deafness,dedent,delicious,desktop,deviantart,diamond,digg,dollar,dot-circle-o,download,dribbble,drivers-license,drivers-license-o,dropbox,drupal,edge,edit,eercast,eject,ellipsis-h,ellipsis-v,empire,envelope,envelope-o,envelope-open,envelope-open-o,envelope-square,envira,eraser,etsy,eur,euro,exchange,exclamation,exclamation-circle,exclamation-triangle,expand,expeditedssl,external-link,external-link-square,eye,eye-slash,eyedropper,fa,facebook,facebook-f,facebook-official,facebook-square,fast-backward,fast-forward,fax,feed,female,fighter-jet,file,file-archive-o,file-audio-o,file-code-o,file-excel-o,file-image-o,file-movie-o,file-o,file-pdf-o,file-photo-o,file-picture-o,file-powerpoint-o,file-sound-o,file-text,file-text-o,file-video-o,file-word-o,file-zip-o,files-o,film,filter,fire,fire-extinguisher,firefox,first-order,flag,flag-checkered,flag-o,flash,flask,flickr,floppy-o,folder,folder-o,folder-open,folder-open-o,font,font-awesome,fonticons,fort-awesome,forumbee,forward,foursquare,free-code-camp,frown-o,futbol-o,gamepad,gavel,gbp,ge,gear,gears,genderless,get-pocket,gg,gg-circle,gift,git,git-square,github,github-alt,github-square,gitlab,gittip,glass,glide,glide-g,globe,google,google-plus,google-plus-circle,google-plus-official,google-plus-square,google-wallet,graduation-cap,gratipay,grav,group,h-square,hacker-news,hand-grab-o,hand-lizard-o,hand-o-down,hand-o-left,hand-o-right,hand-o-up,hand-paper-o,hand-peace-o,hand-pointer-o,hand-rock-o,hand-scissors-o,hand-spock-o,hand-stop-o,handshake-o,hard-of-hearing,hashtag,hdd-o,header,headphones,heart,heart-o,heartbeat,history,home,hospital-o,hotel,hourglass,hourglass-1,hourglass-2,hourglass-3,hourglass-end,hourglass-half,hourglass-o,hourglass-start,houzz,html5,i-cursor,id-badge,id-card,id-card-o,ils,image,imdb,inbox,indent,industry,info,info-circle,inr,instagram,institution,internet-explorer,intersex,ioxhost,italic,joomla,jpy,jsfiddle,key,keyboard-o,krw,language,laptop,lastfm,lastfm-square,leaf,leanpub,legal,lemon-o,level-down,level-up,life-bouy,life-buoy,life-ring,life-saver,lightbulb-o,line-chart,link,linkedin,linkedin-square,linode,linux,list,list-alt,list-ol,list-ul,location-arrow,lock,long-arrow-down,long-arrow-left,long-arrow-right,long-arrow-up,low-vision,magic,magnet,mail-forward,mail-reply,mail-reply-all,male,map,map-marker,map-o,map-pin,map-signs,mars,mars-double,mars-stroke,mars-stroke-h,mars-stroke-v,maxcdn,meanpath,medium,medkit,meetup,meh-o,mercury,microchip,microphone,microphone-slash,minus,minus-circle,minus-square,minus-square-o,mixcloud,mobile,mobile-phone,modx,money,moon-o,mortar-board,motorcycle,mouse-pointer,music,navicon,neuter,newspaper-o,object-group,object-ungroup,odnoklassniki,odnoklassniki-square,opencart,openid,opera,optin-monster,outdent,pagelines,paint-brush,paper-plane,paper-plane-o,paperclip,paragraph,paste,pause,pause-circle,pause-circle-o,paw,paypal,pencil,pencil-square,pencil-square-o,percent,phone,phone-square,photo,picture-o,pie-chart,pied-piper,pied-piper-alt,pied-piper-pp,pinterest,pinterest-p,pinterest-square,plane,play,play-circle,play-circle-o,plug,plus,plus-circle,plus-square,plus-square-o,podcast,power-off,print,product-hunt,puzzle-piece,qq,qrcode,question,question-circle,question-circle-o,quora,quote-left,quote-right,ra,random,ravelry,rebel,recycle,reddit,reddit-alien,reddit-square,refresh,registered,remove,renren,reorder,repeat,reply,reply-all,resistance,retweet,rmb,road,rocket,rotate-left,rotate-right,rouble,rss,rss-square,rub,ruble,rupee,s15,safari,save,scissors,scribd,search,search-minus,search-plus,sellsy,send,send-o,server,share,share-alt,share-alt-square,share-square,share-square-o,shekel,sheqel,shield,ship,shirtsinbulk,shopping-bag,shopping-basket,shopping-cart,shower,sign-in,sign-language,sign-out,signal,signing,simplybuilt,sitemap,skyatlas,skype,slack,sliders,slideshare,smile-o,snapchat,snapchat-ghost,snapchat-square,snowflake-o,soccer-ball-o,sort,sort-alpha-asc,sort-alpha-desc,sort-amount-asc,sort-amount-desc,sort-asc,sort-desc,sort-down,sort-numeric-asc,sort-numeric-desc,sort-up,soundcloud,space-shuttle,spinner,spoon,spotify,square,square-o,stack-exchange,stack-overflow,star,star-half,star-half-empty,star-half-full,star-half-o,star-o,steam,steam-square,step-backward,step-forward,stethoscope,sticky-note,sticky-note-o,stop,stop-circle,stop-circle-o,street-view,strikethrough,stumbleupon,stumbleupon-circle,subscript,subway,suitcase,sun-o,superpowers,superscript,support,table,tablet,tachometer,tag,tags,tasks,taxi,telegram,television,tencent-weibo,terminal,text-height,text-width,th,th-large,th-list,themeisle,thermometer,thermometer-0,thermometer-1,thermometer-2,thermometer-3,thermometer-4,thermometer-empty,thermometer-full,thermometer-half,thermometer-quarter,thermometer-three-quarters,thumb-tack,thumbs-down,thumbs-o-down,thumbs-o-up,thumbs-up,ticket,times,times-circle,times-circle-o,times-rectangle,times-rectangle-o,tint,toggle-down,toggle-left,toggle-off,toggle-on,toggle-right,toggle-up,trademark,train,transgender,transgender-alt,trash,trash-o,tree,trello,tripadvisor,trophy,truck,try,tty,tumblr,tumblr-square,turkish-lira,tv,twitch,twitter,twitter-square,umbrella,underline,undo,universal-access,university,unlink,unlock,unlock-alt,unsorted,upload,usb,usd,user,user-circle,user-circle-o,user-md,user-o,user-plus,user-secret,user-times,users,vcard,vcard-o,venus,venus-double,venus-mars,viacoin,viadeo,viadeo-square,video-camera,vimeo,vimeo-square,vine,vk,volume-control-phone,volume-down,volume-off,volume-up,warning,wechat,weibo,weixin,whatsapp,wheelchair,wheelchair-alt,wifi,wikipedia-w,window-close,window-close-o,window-maximize,window-minimize,window-restore,windows,won,wordpress,wpbeginner,wpexplorer,wpforms,wrench,xing,xing-square,y-combinator,y-combinator-square,yahoo,yc,yc-square,yelp,yen,yoast,youtube,youtube-play,youtube-square'.split(',');
+	};
+
+	var container, input, icon, prev;
+	var template = '<li data-search="{0}"><i class="fa fa-{0}"></i></li>';
+	var skip = false;
+	var refresh = false;
+
+	self.readonly();
+
+	self.make = function() {
+		self.aclass('ui-fontawesomebox');
+		self.css('height', config.height + 'px');
+		self.append('<div class="ui-fontawesomebox-search"><span><i class="fa fa-search clearsearch"></i></span><div><input type="text" maxlength="50" placeholder="{0}" /></div></div><div class="ui-fontawesomebox-search-empty"></div><div class="ui-fontawesomebox-icons"><ul style="height:{1}px"></ul></div>'.format(config.search, config.height - 40));
+		container = $(self.find('.ui-fontawesomebox-icons').find('ul').get(0));
+		input = self.find('input');
+		icon = self.find('.ui-fontawesomebox-search').find('.fa');
+
+		self.event('click', '.clearsearch', function() {
+			input.val('').trigger('keydown');
+		});
+
+		self.event('click', 'li', function() {
+			var el = $(this);
+			var val = '';
+
+			if (!el.hclass('selected')) {
+				var icon = el.find('.fa').attr('class').replace('fa ', '');
+				val = config.fa ? icon : icon.replace('fa-', '');
+			}
+
+			skip = true;
+			config.exec && EXEC(config.exec, val, self);
+			self.set(val);
+			self.change(true);
+		});
+
+		self.event('keydown', 'input', function() {
+			var self = this;
+			setTimeout2(self.id, function() {
+				var hide = [];
+				var show = [];
+				var value = self.value.toSearch();
+				container.find('li').each(function() {
+					if (value && this.getAttribute('data-search').toSearch().indexOf(value) === -1)
+						hide.push(this);
+					else
+						show.push(this);
+				});
+				$(hide).aclass('hidden');
+				$(show).rclass('hidden');
+				icon.tclass('fa-times', !!value).tclass('fa-search', !value);
+			}, 300);
+		});
+	};
+
+	self.configure = function (key, value, init) {
+
+		if (init)
+			return;
+
+		switch (key) {
+			case 'height':
+				self.css('height', value + 'px');
+				container.css('height', value - (38) + 'px');
+				break;
+		}
+	};
+
+	self.released = function(is) {
+		if (is) {
+			container.empty();
+		} else {
+			self.render();
+			refresh && self.refresh();
+		}
+	};
+
+	self.render = function() {
+		var builder = [];
+		var icons = window.fontawesomeicons;
+		for (var i = 0, length = icons.length; i < length; i++)
+			builder.push(template.format(icons[i]));
+		container.empty();
+		input.val('').trigger('keydown');
+		container.html(builder.join(''));
+	};
+
+	self.setter = function(value) {
+		prev && prev.rclass('selected');
+		if (value) {
+			var fa = container.find(config.fa ? ('.' + value) : ('.fa-' + value));
+			prev = fa.parent().aclass('selected');
+			setTimeout(function() {
+				!skip && prev.length && prev.rescroll(-40);
+			}, 100);
+		}
+		skip = false;
+		refresh = true;
+	};
+});
+
+COMPONENT('listing', 'pages:3;count:20', function(self, config) {
+
+	var container, paginate, current, pages = 0;
+	var layout;
+
+	self.readonly();
+
+	self.make = function() {
+
+		self.find('script').each(function(index) {
+			var T =  Tangular.compile(this.innerHTML);
+			if (index)
+				layout = T;
+			else
+				self.template = T;
+		});
+
+		self.aclass('ui-listing');
+		self.html('<div class="ui-listing-container"></div><div class="ui-listing-paginate"></div>');
+		container = self.find('.ui-listing-container');
+		paginate = self.find('.ui-listing-paginate');
+		paginate.on('click', 'button', function() {
+			var index = $(this).attrd('index');
+			switch (index) {
+				case '+':
+					index = current + 1;
+					if (index > pages)
+						index = 1;
+					break;
+				case '-':
+					index = current - 1;
+					if (index < 1)
+						index = pages;
+					break;
+				default:
+					index = +index;
+					break;
+			}
+			self.page(index);
+		});
+	};
+
+	self.page = function(index) {
+
+		var builder = [];
+		var items = self.get();
+		var arr = items.takeskip(config.count, (index - 1) * config.count);
+		var g = { count: items.length, page: index, pages: pages };
+
+		for (var i = 0; i < arr.length; i++) {
+			g.index = i;
+			builder.push(self.template(arr[i], g));
+		}
+
+		current = index;
+		self.paginate(items.length, index);
+		container.html(layout ? layout({ page: index, pages: pages, body: builder.join(''), count: items.length }) : builder.join(''));
+	};
+
+	self.paginate = function(count, page) {
+
+		var max = config.pages;
+		var half = Math.ceil(max / 2);
+
+		pages = Math.ceil(count / config.count);
+
+		var pfrom = page - half;
+		var pto = page + half;
+		var plus = 0;
+
+		if (pfrom <= 0) {
+			plus = Math.abs(pfrom);
+			pfrom = 1;
+			pto += plus;
+		}
+
+		if (pto >= pages) {
+			pto = pages;
+			pfrom = pages - max;
+		}
+
+		if (pfrom <= 0)
+			pfrom = 1;
+
+		if (page < half + 1) {
+			pto++;
+			if (pto > pages)
+				pto--;
+		}
+
+		if (page < 2) {
+			var template = '<button data-index="{0}"><i class="fa fa-caret-{1}"></i></button>';
+			var builder = [];
+			builder.push(template.format('-', 'left'));
+
+			for (var i = pfrom; i < pto + 1; i++)
+				builder.push('<button class="ui-listing-page" data-index="{0}">{0}</button>'.format(i));
+
+			builder.push(template.format('+', 'right'));
+			paginate.html(builder.join(''));
+		} else {
+
+			var max = half * 2 + 1;
+			var cur = (pto - pfrom) + 1;
+
+			if (max > cur && pages > config.pages && pfrom > 1)
+				pfrom--;
+
+			paginate.find('.ui-listing-page[data-index]').each(function(index) {
+				var page = pfrom + index;
+				$(this).attrd('index', page).html(page);
+			});
+
+		}
+
+		paginate.find('.selected').rclass('selected');
+		paginate.find('.ui-listing-page[data-index="{0}"]'.format(page)).aclass('selected');
+		paginate.tclass('hidden', pages < 2);
+		self.tclass('hidden', count === 0);
+	};
+
+	self.setter = function(value) {
+		if (value)
+			self.page(1);
+		else {
+			container.empty();
+			paginate.empty();
+		}
+	};
+
+});
+
+COMPONENT('donutchart', 'format:{{ value | format(0) }};size:0;tooltip:true;presentation:true;animate:true', function(self, config) {
+
+	var svg, g, selected, tooltip;
+	var strokew = 0;
+	var animate = true;
+	var indexer = 0;
+	var indexerskip = false;
+	var force = false;
+	var W = $(window);
+
+	self.readonly();
+	self.make = function() {
+		self.aclass('ui-donutchart');
+		self.append('<div class="ui-donutchart-tooltip"></div><svg></svg>');
+		svg = self.find('svg');
+		g = svg.asvg('g').attr('class', 'pieces');
+		tooltip = self.find('.ui-donutchart-tooltip');
+
+		W.on('resize', self.resize);
+
+		self.event('mouseenter touchstart', '.piece', function() {
+			self.select(+this.getAttribute('data-index'));
+			!indexerskip && config.presentation && setTimeout2(self.id + '.skip', self.next, 30000);
+			indexerskip = true;
+		});
+	};
+
+	self.select = function(index) {
+		var item = self.get()[index];
+		if (item === selected)
+			return;
+
+		self.find('.selected').rclass('selected').css('stroke-width', strokew);
+		selected = item;
+
+		var el = self.find('.piece' + (index + 1));
+
+		if (config.tooltip) {
+			var w = self.width();
+			tooltip.css('font-size', w / 15);
+			tooltip.html('<b>' + item.name + '</b><br />' + Tangular.render(config.format, item));
+		}
+
+		config.select && EXEC(config.select, item);
+		el.css('stroke-width', strokew.inc('+15%')).aclass('selected');
+		indexer = index;
+	};
+
+	self.destroy = function() {
+		W.off('resize', self.resize);
+	};
+
+	self.resize = function() {
+		setTimeout2('resize.' + self.id, function() {
+			animate = false;
+			force = true;
+			self.refresh();
+		}, 100);
+	};
+
+	self.next = function() {
+
+		if (self.removed)
+			return;
+
+		if (indexerskip) {
+			indexerskip = false;
+			return;
+		}
+
+		indexer++;
+
+		if (!self.get()[indexer])
+			indexer = 0;
+
+		self.select(indexer);
+		setTimeout2(self.id + '.next', self.next, 4000);
+	};
+
+	function arcradius(centerX, centerY, radius, degrees) {
+		var radians = (degrees - 90) * Math.PI / 180.0;
+		return { x: centerX + (radius * Math.cos(radians)), y: centerY + (radius * Math.sin(radians)) };
+	}
+
+	function arc(x, y, radius, startAngle, endAngle){
+		var start = arcradius(x, y, radius, endAngle);
+		var end = arcradius(x, y, radius, startAngle);
+		var largeArcFlag = endAngle - startAngle <= 180 ? 0 : 1;
+		var d = ['M', start.x, start.y, 'A', radius, radius, 0, largeArcFlag, 0, end.x, end.y].join(' ');
+		return d;
+	}
+
+	self.redraw = function(width, value) {
+
+		var sum = null;
+
+		for (var i = 0, length = value.length; i < length; i++) {
+			var item = value[i];
+
+			if (item.value == null)
+				item.value = 0;
+
+			var val = item.value + 1;
+			sum = sum ? sum + val : val;
+		}
+
+		var count = 0;
+		var beg = 0;
+		var end = 0;
+		var items = [];
+
+		for (var i = 0, length = value.length; i < length; i++) {
+			var item = value[i];
+			var p = (((item.value + 1) / sum) * 100).floor(2);
+
+			count += p;
+
+			if (i === length - 1 && count < 100)
+				p = p + (100 - count);
+
+			end = beg + ((360 / 100) * p);
+			items.push({ name: item.name, percentage: p, beg: beg, end: end });
+			beg = end;
+		}
+
+		if (!force && NOTMODIFIED(self.id, items))
+			return;
+
+		var size = width;
+		var half = size / 2;
+		var midpoint = size / 2.4;
+
+		strokew = (size / 6 >> 0).inc('-15%');
+
+		svg.attr('width', size);
+		svg.attr('height', size);
+		g.empty();
+
+		var pieces = [];
+
+		for (var i = 0, length = items.length; i < length; i++) {
+			var item = items[i];
+			if (item.percentage === 0)
+				continue;
+			if (item.end === 360)
+				item.end = 359.99;
+			pieces.push(g.asvg('path').attr('data-index', i).attr('data-beg', item.beg).attr('data-end', item.end).attr('stroke-width', strokew).attr('class', 'piece piece' + (i + 1)).attr('d', arc(half, half, midpoint, item.beg, animate ? item.beg : item.end)));
+		}
+
+		animate && pieces.waitFor(function(item, next) {
+			var beg = +item.attrd('beg');
+			var end = +item.attrd('end');
+			var diff = end - beg;
+
+			if (config.animate) {
+				item.animate({ end: diff }, { duration: 180, step: function(fx) {
+					item.attr('d', arc(half, half, midpoint, beg, beg + fx));
+				}, complete: function() {
+					next();
+				}});
+			} else {
+				item.attr('d', arc(half, half, midpoint, beg, end));
+				next();
+			}
+		});
+
+		selected = null;
+		animate = true;
+		force = false;
+
+		config.redraw && EXEC(config.redraw);
+
+		self.select(0);
+		if (config.presentation) {
+			indexerskip = false;
+			setTimeout(self.next, 4000);
+		}
+	};
+
+	self.setter = function(value) {
+
+		if (!value) {
+			g.empty();
+			return;
+		}
+
+		if (config.size) {
+			self.redraw(config.size, value);
+		} else {
+			self.width(function(width) {
+				self.redraw(width, value);
+			});
+		}
+	};
+});
