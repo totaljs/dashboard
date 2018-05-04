@@ -222,7 +222,6 @@
 			obj.body.TYPE = 'designer';
 			obj.body.body = FIND('designer').operations.save();
 			obj.body.body.tabs = common.tabs;
-			console.log(obj.body.body);
 			common.backup = CLONE(obj.body.body);
 			SETTER('websocket', 'send', obj);
 			SET('common.draft', false);
