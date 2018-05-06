@@ -145,7 +145,8 @@ figure > header button.selected { color: black; }
 .tag2 { background-color: #165b7b; }
 .block { display: block; }
 
-.resize { position:absolute; color:white; right:13px; bottom:13px; cursor:nwse-resize; width:0; height: 0; border-style: solid; border-width: 0 0 20px 20px; border-color: transparent transparent #f0f0f0 transparent; }
+.resize { position:absolute; color:white; right:13px; bottom:13px; cursor:se-resize; width:20px; height: 20px; border-style: solid; border-width: 0 3px 3px 0px; border-color: #dedede; }
+.move { position: absolute; top: 0; left: 0; right: 0; bottom: 0; cursor: move; }
 
 .devicetype { display: none; }
 .draft .devicetype { display: block; width: 200px; margin: 20px auto 10px; text-align: center; background-color: #fff; border-radius: 2px; box-shadow: 0px 5px 20px 1px rgba(0,0,0,0.1); }

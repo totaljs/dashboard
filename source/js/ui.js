@@ -1188,6 +1188,8 @@ COMPONENT('designer', function(self) {
 					e.preventDefault();
 					break;
 				case 'mousedown':
+					if (e.which === 3 || e.button === 2) // ignore right click
+						return;
 					var el = $(e.target);
 					if (el.hclass('move') || el.hclass('resize') || el.parent().hclass('resize')) {
 						self.move_resize_mdown(el, e);
@@ -1199,7 +1201,7 @@ COMPONENT('designer', function(self) {
 					if (widget.moving || widget.resizing) {
 						widget.moving = false;
 						widget.resizing = false;
-						container.css('cursor', 'default');
+						self.scroller_cursor(false); // reset
 						var grid = widget.element.attr('data-grid').split(',');
 						if (common.device === 'desktop') {
 							grid[0] = widget.index;
@@ -1300,13 +1302,28 @@ COMPONENT('designer', function(self) {
 		return obj;
 	};
 
+	self.scroller_cursor = function(el) {
+		if (el === false) {
+			scroller.css('cursor', 'default');
+			$('.widget-toolbar .move').css('cursor', 'move');
+			return;
+		}
+
+		if (el.hclass('move')) {
+			scroller.css('cursor', 'move');
+		} else {
+			scroller.css('cursor', 'se-resize');
+			$('.widget-toolbar .move').css('cursor', 'se-resize');
+		}
+	};
+
 	self.move_resize_mdown = function(el, e) {
 
 		widgets.find('.widget').each(function() {
 			$(this).css('z-index', 2);
 		});
 
-		container.css('cursor', 'move');
+		self.scroller_cursor(el);
 		widget.element = el.closest('.widget');
 		var offset = widget.element.offset();
 		widget.mouse_offset = { col: Math.floor((e.pageX - offset.left) / size.pixels), row: Math.floor((e.pageY - offset.top) / size.pixels)};
@@ -1439,8 +1456,8 @@ COMPONENT('designer', function(self) {
 		var key = common.device === 'mobile' ? 'm' : '';
 		var pos = self.getPosition(w[key + 'index']);
 		var grid = w.index + ',' + w.cols + ',' + w.rows + ',' + (w.mindex || w.index) + ',' + (w.mcols || w.cols) + ',' + (w.mrows || w.rows);
-		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{6}"><div class="widget-toolbar"><div class="move" style="position:absolute;top:0;left:0;right:0;bottom:0;cursor: move;"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{7}</div></div>';
-		html = html.format(pos.col * size.pixels, pos.row * size.pixels, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixels, grid, w.tab, w.id, w.app ? '<figure data-name="{0}"></figure>'.format(w.app, w.id) : '');
+		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{6}"><div class="widget-toolbar"><div class="move"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{7}</div></div>';
+		html = html.format(pos.col * size.pixels, pos.row * size.pixels, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixels, grid, w.tab, w.id, w.app ? '<figure data-name="{0}" data-jc-scope="scope{1}"></figure>'.format(w.app, w.id) : '');
 		widgets.append(html);
 		self.operations.tab();
 	};
