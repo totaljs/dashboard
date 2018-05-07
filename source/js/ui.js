@@ -1295,7 +1295,7 @@ COMPONENT('designer', function(self) {
 
 	self.getSize = function() {
 		var obj = {};
-		obj.width = container.parent().width();
+		obj.width = container.width();
 		obj.cell = 100 / 12;
 		obj.pixels = (obj.width / 100) * obj.cell;
 		common.size = obj;
