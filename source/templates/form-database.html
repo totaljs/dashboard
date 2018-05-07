@@ -9,7 +9,7 @@
 				<div data-jc="filereader" data-jc-path="formdatabase.file" data-jc-config="placeholder:@(Browse device);accept:text/html;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .html component)</div>
 			</div>
 		</div>
-		<div data-b="common.templates" data-b-visible="value && value.length > 0" class="hidden">
+		<div data-bind="common.templates__visible:value && value.length > 0" class="hidden">
 			<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
 			<div class="row">
 				<div data-jc="repeater" data-jc-path="common.templates">
@@ -23,7 +23,7 @@
 			<br />
 		</div>
 	</div>
-	<div class="success hidden" data-b="formdatabase.success" data-b-visible="n => n"><i class="fa fa-check-circle"></i>@(<b>The component</b> has been sent successfully.)</div>
+	<div class="success hidden" data-bind="formdatabase.success__visible:value"><i class="fa fa-check-circle"></i>@(<b>The component</b> has been sent successfully.)</div>
 	<div class="padding npb">
 		<div data-jc="textbox" data-jc-path="formdatabase.search" class="mt10" data-jc-config="placeholder:@(Search components ...);type:search;type:search"></div>
 		<br />

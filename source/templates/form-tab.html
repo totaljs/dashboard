@@ -8,7 +8,7 @@
 			</div>
 		</div>
 
-		<div data-b="formtab.id" data-b-visible="n => n && common.tabs.length > 1" class="hidden m fs12">
+		<div data-bind="formtab.id__visible:value && common.tabs.length > 1" class="hidden m fs12">
 			<hr class="nmt" />
 			<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
 			<div class="mt5"><a href="javascript:void(0)" class="link exec red" data-exec="formtab_remove"><i class="fa fa-times-circle"></i>@(Remove this tab)</a></div>

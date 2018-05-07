@@ -35,7 +35,7 @@
 		<div class="tabs">
 			<div data-jc="repeater" data-jc-path="common.tabs">
 				<script type="text/html">
-					<a href="#{{ linker }}" data-id="{{ id }}" data-b="common.tab" data-b-class="n => (n && n.id === common.tabs[{{ index }}].id ? '+' : '-') + 'selected +tab'">{{ name }}</a>
+					<a href="#{{ linker }}" data-id="{{ id }}" class="tab" data-bind="common.tab__.selected:value.id==.tabs[{{ index }}].id">{{ name }}</a>
 				</script>
 			</div>
 			<a href="javascript:void(0)" class="last exec" data-exec="#tabs.add"><i class="fa fa-plus"></i></a>
