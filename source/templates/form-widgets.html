@@ -1,10 +1,10 @@
-<div data-jc="form" data-jc-path="common.form" class="hidden" data-jc-config="if:widgets;title:@(Choose a component);width:930">
+<div data-jc="form__common.form__if:widgets;title:@(Choose a component);width:930" class="hidden">
 	<div class="padding npb">
-		<div data-jc="textbox" data-jc-path="formwidgets_init.search" class="mt10" data-jc-config="placeholder:@(Search components ...);type:search;type:search"></div>
+		<div data-jc="textbox__formwidgets_init.search__placeholder:@(Search components ...);type:search;type:search" class="mt10"></div>
 		<br />
-		<div data-jc="search" data-jc-path="formwidgets_init.search" data-jc-config="selector:.jsearch">
+		<div data-jc="search__formwidgets_init.search__selector:.jsearch">
 			<div class="db-container">
-				<div data-jc="repeater-group" data-jc-path="common.database" data-jc-config="group:group">
+				<div data-jc="repeater-group__common.database__group:group">
 					<script type="text/html">
 						<div class="jsearch db-widget" data-search="{{ name }}" data-id="{{ name }}">
 							<span><i class="fa {{ icon }}"></i></span>
@@ -36,7 +36,7 @@
 		SETTER('loading', 'show');
 
 		var el = $(this);
-		var id = el.attr('data-id');
+		var id = el.attrd('id');
 
 		var widget = common.selected.find('figure[data-name]').get(0);
 
@@ -49,7 +49,7 @@
 
 		setTimeout(function() {
 			SETTER('loading', 'hide', 1500);
-			common.selected.find('.widget-body').append('<figure data-name="{0}"></figure>'.format(id));
+			common.selected.find('.widget-body').html('<figure data-name="{0}"></figure>'.format(id));
 			SETTER('designer', 'compile');
 			setTimeout(function() {
 				var widget = common.selected.find('figure[data-name]').get(0);

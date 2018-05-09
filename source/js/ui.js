@@ -199,7 +199,7 @@ COMPONENT('binder', function(self) {
 			if (path.indexOf('?') !== -1) {
 				var scope = el.closest('[data-jc-scope]');
 				if (scope) {
-					var data = scope.get(0).$scopedata;
+					var data = scope[0].$scopedata;
 					if (data == null)
 						return;
 					path = path.replace(/\?/g, data.path);
@@ -353,18 +353,18 @@ COMPONENT('confirm', function(self) {
 COMPONENT('form', function(self, config) {
 
 	var W = window;
-	var header = null;
 	var csspos = {};
 
 	if (!W.$$form) {
+
 		W.$$form_level = W.$$form_level || 1;
 		W.$$form = true;
+
 		$(document).on('click', '.ui-form-button-close', function() {
-			SET($(this).attr('data-path'), '');
-			W.$$form_level--;
+			SET($(this).attrd('path'), '');
 		});
 
-		$(window).on('resize', function() {
+		$(W).on('resize', function() {
 			SETTER('form', 'resize');
 		});
 
@@ -398,6 +398,11 @@ COMPONENT('form', function(self, config) {
 		self.set('');
 	};
 
+	self.icon = function(value) {
+		var el = this.rclass2('fa');
+		value.icon && el.aclass('fa fa-' + value.icon);
+	};
+
 	self.resize = function() {
 		if (!config.center || self.hclass('hidden'))
 			return;
@@ -411,21 +416,11 @@ COMPONENT('form', function(self, config) {
 
 	self.make = function() {
 
-		var icon;
-
-		if (config.icon)
-			icon = '<i class="fa fa-{0}"></i>'.format(config.icon);
-		else
-			icon = '<i></i>';
-
-		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}px"><div class="ui-form-title"><button class="ui-form-button-close" data-path="{2}"><i class="fa fa-times"></i></button>{4}<span>{3}</span></div></div></div>'.format(self._id, config.width || 800, self.path, config.title, icon));
-
-		var el = $('#' + self._id);
-		el.find('.ui-form').get(0).appendChild(self.element.get(0));
+		$(document.body).append('<div id="{0}" class="hidden ui-form-container"><div class="ui-form-container-padding"><div class="ui-form" style="max-width:{1}px"><div data-bind="@config__html span:value.title__change .ui-form-icon:@icon" class="ui-form-title"><button class="ui-form-button-close{3}" data-path="{2}"><i class="fa fa-times"></i></button><i class="ui-form-icon"></i><span></span></div></div></div>'.format(self.ID, config.width || 800, self.path, config.closebutton == false ? ' hidden' : ''));
+		var el = $('#' + self.ID);
+		el.find('.ui-form')[0].appendChild(self.dom);
 		self.rclass('hidden');
 		self.replace(el);
-
-		header = self.virtualize({ title: '.ui-form-title > span', icon: '.ui-form-title > i' });
 
 		self.event('scroll', function() {
 			EMIT('scroll', self.name);
@@ -433,7 +428,6 @@ COMPONENT('form', function(self, config) {
 		});
 
 		self.find('button').on('click', function() {
-			W.$$form_level--;
 			switch (this.name) {
 				case 'submit':
 					self.submit(self.hide);
@@ -445,8 +439,8 @@ COMPONENT('form', function(self, config) {
 		});
 
 		config.enter && self.event('keydown', 'input', function(e) {
-			e.which === 13 && !self.find('button[name="submit"]').get(0).disabled && setTimeout(function() {
-				self.submit(self.hide);
+			e.which === 13 && !self.find('button[name="submit"]')[0].disabled && setTimeout(function() {
+				self.submit(self);
 			}, 800);
 		});
 	};
@@ -455,23 +449,19 @@ COMPONENT('form', function(self, config) {
 		if (init)
 			return;
 		switch (key) {
-			case 'icon':
-				header.icon.rclass(header.icon.attr('class'));
-				value && header.icon.aclass('fa fa-' + value);
-				break;
-			case 'title':
-				header.title.html(value);
-				break;
 			case 'width':
 				value !== prev && self.find('.ui-form').css('max-width', value + 'px');
+				break;
+			case 'closebutton':
+				self.find('.ui-form-button-close').tclass(value !== true);
 				break;
 		}
 	};
 
 	self.setter = function(value) {
 
-		setTimeout2('noscroll', function() {
-			$('html').tclass('noscroll', $('.ui-form-container').not('.hidden').length ? true : false);
+		setTimeout2('ui-form-noscroll', function() {
+			$('html').tclass('ui-form-noscroll', !!$('.ui-form-container').not('.hidden').length);
 		}, 50);
 
 		var isHidden = value !== config.if;
@@ -479,17 +469,26 @@ COMPONENT('form', function(self, config) {
 		if (self.hclass('hidden') === isHidden)
 			return;
 
-		self.tclass('hidden', isHidden);
-
 		setTimeout2('formreflow', function() {
 			EMIT('reflow', self.name);
 		}, 10);
 
 		if (isHidden) {
+			self.aclass('hidden');
 			self.release(true);
 			self.find('.ui-form').rclass('ui-form-animate');
+			W.$$form_level--;
 			return;
 		}
+
+		if (W.$$form_level < 1)
+			W.$$form_level = 1;
+
+		W.$$form_level++;
+
+		self.css('z-index', W.$$form_level * 10);
+		self.element.scrollTop(0);
+		self.rclass('hidden');
 
 		self.resize();
 		self.release(false);
@@ -499,15 +498,8 @@ COMPONENT('form', function(self, config) {
 
 		if (!isMOBILE && config.autofocus) {
 			var el = self.find(config.autofocus === true ? 'input[type="text"],select,textarea' : config.autofocus);
-			el.length && el.eq(0).focus();
+			el.length && el[0].focus();
 		}
-
-		if (W.$$form_level < 1)
-			W.$$form_level = 1;
-
-		W.$$form_level++;
-		self.css('z-index', W.$$form_level * 10);
-		self.element.scrollTop(0);
 
 		setTimeout(function() {
 			self.element.scrollTop(0);
@@ -515,9 +507,9 @@ COMPONENT('form', function(self, config) {
 		}, 300);
 
 		// Fixes a problem with freezing of scrolling in Chrome
-		setTimeout2(self.id, function() {
+		setTimeout2(self.ID, function() {
 			self.css('z-index', (W.$$form_level * 10) + 1);
-		}, 1000);
+		}, 500);
 	};
 });
 
@@ -1164,7 +1156,7 @@ COMPONENT('designer', function(self) {
 		self.event('click', '.widget-settings', function(button) {
 			var button = $(this);
 			var el = button.closest('.widget');
-			var w = el.find('[data-name]').get(0);
+			var w = el.find('[data-name]')[0];
 			self.emit('designer.contextmenu', button, el, w ? w.$widget : null);
 		});
 
@@ -1391,7 +1383,7 @@ COMPONENT('designer', function(self) {
 			if (item) {
 				item[common.device === 'desktop' ? 'cols' : 'mcols'] = widget.size.cols;
 				item[common.device === 'desktop' ? 'rows' : 'mrows'] = widget.size.rows;
-				var instance = widget.element.find('figure').get(0).$widget;
+				var instance = widget.element.find('figure')[0].$widget;
 				var padding = instance.size.padding;
 				instance.size = { cols: widget.size.cols, rows: widget.size.rows, height: (size.pixels * widget.size.rows) - (padding * 2), width: (size.pixels * widget.size.cols) - (padding * 2), padding: padding, pixels: size.pixels };
 				instance.emit('resize', instance.size);
@@ -1540,7 +1532,7 @@ COMPONENT('designer', function(self) {
 			var el = $(this);
 			var pos = el.attr('data-grid').split(',');
 			var app = el.find('[data-name]');
-			items.push({ id: el.attr('data-id'), index: +pos[0], cols: +pos[1], rows: +pos[2], mindex: +pos[3], mcols: +pos[4], mrows: +pos[5], tab: el.attr('data-tab'), app: app.length ? app.attr('data-name') : null, options: app.length ? app.get(0).$widget.options : null });
+			items.push({ id: el.attrd('id'), index: +pos[0], cols: +pos[1], rows: +pos[2], mindex: +pos[3], mcols: +pos[4], mrows: +pos[5], tab: el.attrd('tab'), app: app.length ? app.attrd('name') : null, options: app.length && app[0].$widget ? app[0].$widget.options : null });
 		});
 
 		var data = {};
@@ -1614,7 +1606,7 @@ COMPONENT('designer', function(self) {
 	self.operations.tabclear = function(id) {
 		widgets.find('.tab_' + id).each(function() {
 			var el = $(this);
-			var widget = el.find('figure[data-name]').get(0);
+			var widget = el.find('figure[data-name]')[0];
 
 			if (!widget) {
 				el.remove();
@@ -1686,7 +1678,7 @@ COMPONENT('designer', function(self) {
 				css.height = rows * size.pixels + 'px';
 				el.css(css);
 
-				var app = el.find('[data-name]').get(0);
+				var app = el.find('[data-name]')[0];
 				if (app) {
 					var opt = {};
 					opt.cols = cols;
@@ -2406,7 +2398,7 @@ COMPONENT('selectbox', function(self, config) {
 
 	var Eitems, Eselected = null;
 
-	self.data = EMPTYARRAY;
+	self.mydata = EMPTYARRAY;
 	self.template = Tangular.compile('<li data-search="{{ search }}" data-index="{{ index }}">{{ text }}</li>');
 
 	self.validate = function(value) {
@@ -2484,7 +2476,7 @@ COMPONENT('selectbox', function(self, config) {
 		var kv = config.value || 'id';
 		var builder = [];
 
-		self.data = [];
+		self.mydata = [];
 		value && value.forEach(function(item, index) {
 
 			var text;
@@ -2499,7 +2491,7 @@ COMPONENT('selectbox', function(self, config) {
 			}
 
 			var item = { text: text, value: value, index: index, search: text.toSearch() };
-			self.data.push(item);
+			self.mydata.push(item);
 			builder.push(self.template(item));
 		});
 
@@ -2520,7 +2512,7 @@ COMPONENT('selectbox', function(self, config) {
 				return;
 			var selected = self.get() || [];
 			var index = +this.getAttribute('data-index');
-			var value = self.data[index];
+			var value = self.mydata[index];
 
 			if (selected.indexOf(value.value) === -1)
 				selected.push(value.value);
@@ -2550,7 +2542,7 @@ COMPONENT('selectbox', function(self, config) {
 		var selected = {};
 		var builder = [];
 
-		var ds = self.data;
+		var ds = self.mydata;
 		var dsl = ds.length;
 
 		if (value) {
@@ -2909,7 +2901,7 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 		else
 			input = $(input);
 
-		if (input.get(0).tagName !== 'INPUT') {
+		if (input[0].tagName !== 'INPUT') {
 			input = input.find('input');
 		}
 
@@ -3130,14 +3122,14 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 
 	self.toggle = function(el, value, callback, offset) {
 
-		if (self.older === el.get(0)) {
+		if (self.older === el[0]) {
 			if (!self.hclass('hidden')) {
 				self.hide();
 				return;
 			}
 		}
 
-		self.older = el.get(0);
+		self.older = el[0];
 		self.show(el, value, callback, offset);
 		return self;
 	};
@@ -3428,7 +3420,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 			var inputs = parent.find('input');
 			var obj = self.get();
 			!obj && (obj = {});
-			var key = inputs.get(0).value;
+			var key = inputs[0].value;
 			parent.remove();
 			delete obj[key];
 
@@ -3443,7 +3435,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 
 			var el = $(this);
 			var inputs = el.closest('.ui-keyvalue-item').find('input');
-			var key = self.binder('key', inputs.get(0).value);
+			var key = self.binder('key', inputs[0].value);
 			var value = self.binder('value', inputs.get(1).value);
 
 			if (!key || !value)
@@ -3568,7 +3560,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 			options.matchBrackets = true;
 		}
 
-		editor = CodeMirror(container.get(0), options);
+		editor = CodeMirror(container[0], options);
 		self.editor = editor;
 
 		if (config.height !== 'auto') {
@@ -3678,7 +3670,7 @@ COMPONENT('contextmenu', function(self) {
 
 		if (is) {
 			clearTimeout(timeout);
-			var obj = target instanceof jQuery ? target.get(0) : target;
+			var obj = target instanceof jQuery ? target[0] : target;
 			if (self.target === obj) {
 				self.hide(0);
 				return;
@@ -3732,7 +3724,7 @@ COMPONENT('contextmenu', function(self) {
 			builder.push(tmp);
 		}
 
-		self.target = target.get(0);
+		self.target = target[0];
 		var offset = target.offset();
 		container.html(builder);
 		switch (orientation) {
@@ -4432,7 +4424,7 @@ COMPONENT('controls', function(self) {
 
 		if (is) {
 			clearTimeout(timeout);
-			var obj = target instanceof jQuery ? target.get(0) : target;
+			var obj = target instanceof jQuery ? target[0] : target;
 			if (self.target === obj) {
 				self.hide(0);
 				return;
@@ -4492,7 +4484,7 @@ COMPONENT('controls', function(self) {
 
 		var off = target.closest('.widget').offset();
 
-		self.target = target.get(0);
+		self.target = target[0];
 		var offset = target.offset();
 		var scroller = $('.designer-scroll');
 
@@ -4882,7 +4874,6 @@ COMPONENT('dragdropfiles', function(self, config) {
 
 COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 
-	var virtual = null;
 	var show = true;
 	var callback;
 
@@ -4891,7 +4882,6 @@ COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 	self.make = function() {
 		self.aclass('ui-snackbar hidden');
 		self.append('<div><a href="javasc' + 'ript:void(0)" class="ui-snackbar-dismiss"></a><div class="ui-snackbar-body"></div></div>');
-		virtual = self.virtualize({ body: '.ui-snackbar-body', button: '.ui-snackbar-dismiss' });
 		self.event('click', '.ui-snackbar-dismiss', function() {
 			self.hide();
 			callback && callback();
@@ -4922,8 +4912,9 @@ COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 		}
 
 		callback = close;
-		virtual.body.html(message);
-		virtual.button.html(button || config.button);
+
+		self.find('.ui-snackbar-body').html(message);
+		self.find('.ui-snackbar-dismiss').html(button || config.button);
 
 		if (show) {
 			self.rclass('hidden');
@@ -4932,7 +4923,7 @@ COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 			}, 50);
 		}
 
-		setTimeout2(self.id, self.hide, config.timeout + 50);
+		setTimeout2(self.ID, self.hide, config.timeout + 50);
 		show = false;
 	};
 });
@@ -5178,7 +5169,7 @@ COMPONENT('fontawesomebox', 'height:300;fa:false', function(self, config) {
 		self.aclass('ui-fontawesomebox');
 		self.css('height', config.height + 'px');
 		self.append('<div class="ui-fontawesomebox-search"><span><i class="fa fa-search clearsearch"></i></span><div><input type="text" maxlength="50" placeholder="{0}" /></div></div><div class="ui-fontawesomebox-search-empty"></div><div class="ui-fontawesomebox-icons"><ul style="height:{1}px"></ul></div>'.format(config.search, config.height - 40));
-		container = $(self.find('.ui-fontawesomebox-icons').find('ul').get(0));
+		container = $(self.find('.ui-fontawesomebox-icons').find('ul')[0]);
 		input = self.find('input');
 		icon = self.find('.ui-fontawesomebox-search').find('.fa');
 

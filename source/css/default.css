@@ -95,7 +95,7 @@ figure > header button.selected { color: black; }
 .widget { position: absolute; z-index: 2; padding: 10px; }
 .widget_offset { position: absolute; z-index: 1; height: 1px; width: 1px; }
 .widget-toolbar { position: absolute; left: 0; top: 0; height: 100%; width: 100%; text-align: center; margin: 0; display: none; z-index: 10; padding-top: 15px; }
-.widget-toolbar button { background-color: white; box-shadow: 0 0 5px rgba(0,0,0,0.1); border: 1px solid black; font-size: 18px; width: 40px; height: 40px; border-radius: 3px; cursor: pointer; outline: 0; text-align: center; line-height: 16px; padding: 0; position: absolute; left: 15px; }
+.widget-toolbar button { background-color: white; box-shadow: 0 0 5px rgba(0,0,0,0.1); border: 1px solid black; font-size: 16px; width: 30px; height: 30px; border-radius: 3px; cursor: pointer; outline: 0; text-align: center; line-height: 16px; padding: 0; position: absolute; left: 20px; top: 20px; }
 .widget-toolbar button .fa { margin: 0; }
 .themedark .widget-toolbar button { background-color: #505050; color: white; }
 .draft .widget-toolbar { display: block; }

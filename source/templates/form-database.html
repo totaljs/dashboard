@@ -1,18 +1,18 @@
-<div data-jc="form,dragdropfiles" data-jc-path="common.form" data-jc-init="formdatabase_init" class="hidden" data-jc-config="class:+ui-form-dragdrop;files:formdatabase_dragdrop;if:database;title:@(Dashboard components);width:932">
+<div data-jc="form,dragdropfiles__common.form__class:+ui-form-dragdrop;files:formdatabase_dragdrop;if:database;title:@(Dashboard components);width:932;close:formdatabase_close" data-jc-init="formdatabase_init" class="hidden">
 	<div class="padding npb" style="background-color:#FFFCD3">
 		<div class="b m black"><i class="fa fa-database mr5"></i>@(Installing new components)</div>
 		<div class="row">
 			<div class="col-md-6 m">
-				<div data-jc="textbox" data-jc-path="formdatabase.url" class="m" data-jc-config="keypress:false;maxlength:200;placeholder:@(E.g. https\://domain.com/component.html and press enter);required:true;type:url">@(URL address)</div>
+				<div data-jc="textbox__formdatabase.url__keypress:false;maxlength:200;placeholder:@(E.g. https\://domain.com/component.html and press enter);required:true;type:url" class="m">@(URL address)</div>
 			</div>
 			<div class="col-md-6 m">
-				<div data-jc="filereader" data-jc-path="formdatabase.file" data-jc-config="placeholder:@(Browse device);accept:text/html;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .html component)</div>
+				<div data-jc="filereader__formdatabase.file__placeholder:@(Browse device);accept:text/html;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .html component)</div>
 			</div>
 		</div>
 		<div data-bind="common.templates__visible:value && value.length > 0" class="hidden">
 			<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
 			<div class="row">
-				<div data-jc="repeater" data-jc-path="common.templates">
+				<div data-jc="repeater__common.templates">
 				<script type="text/html">
 					<div class="col-md-3 col-sm-4">
 						<span class="exec tag block" data-exec="formdatabase_install" data-value="{{ name }}">@(Install:) <b>{{ name }}</b> ({{ items.length }}x)</span>
@@ -25,11 +25,11 @@
 	</div>
 	<div class="success hidden" data-bind="formdatabase.success__visible:value"><i class="fa fa-check-circle"></i>@(<b>The component</b> has been sent successfully.)</div>
 	<div class="padding npb">
-		<div data-jc="textbox" data-jc-path="formdatabase.search" class="mt10" data-jc-config="placeholder:@(Search components ...);type:search;type:search"></div>
+		<div data-jc="textbox__formdatabase.search__placeholder:@(Search components ...);type:search;type:search" class="mt10"></div>
 		<br />
-		<div data-jc="search" data-jc-path="formdatabase.search" data-jc-config="selector:.jsearch">
+		<div data-jc="search__formdatabase.search__selector:.jsearch">
 			<div class="db-container">
-				<div data-jc="repeater-group" data-jc-path="common.database" data-jc-config="group:group">
+				<div data-jc="repeater-group__common.database__group:group">
 					<script type="text/html">
 						<div class="jsearch db-item" data-search="{{ name }}" data-id="{{ name }}">
 							<span class="exec" data-exec="formdatabase_remove"><i class="fa fa-times-circle"></i></span>
@@ -58,18 +58,6 @@
 	SETTER('websocket', 'send', { 'TYPE': 'templates' });
 
 	var formdatabase = { reload: false };
-
-	function formdatabase_init(component) {
-		component.onHide = function() {
-			setTimeout(function() {
-				EMIT('designer.refresh');
-				formdatabase.reload && SETTER('confirm', 'confirm', '@(Dashboard needs to be reloaded. Can I reload it?)', ['"refresh" @(Yes)', '@(Cancel)'], function(index) {
-					!index && location.reload(true);
-				});
-				formdatabase.reload = false;
-			}, 1000);
-		};
-	}
 
 	function formdatabase_remove(el) {
 		var id = el.closest('.db-item').attrd('id');
@@ -128,9 +116,18 @@
 		SET('common.form2', 'components');
 	}
 
+	function formdatabase_close() {
+		setTimeout(function() {
+			EMIT('designer.refresh');
+			formdatabase.reload && SETTER('confirm', 'confirm', '@(Dashboard needs to be reloaded. Can I reload it?)', ['"refresh" @(Yes)', '@(Cancel)'], function(index) {
+				!index && location.reload(true);
+			});
+			formdatabase.reload = false;
+		}, 1000);
+	}
+
 	function formdatabase_dragdrop(files) {
 		FIND('#formdatabasefile').process(files);
 	}
-
 
 </script>

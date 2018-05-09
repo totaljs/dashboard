@@ -20,20 +20,20 @@
 
 	<div data-jc="audio" data-jc-path="common.volume"></div>
 	<div data-jc="autocomplete"></div>
-	<div data-jc="calendar" data-jc-config="days:@(SU,MO,TU,WE,TH,FR,SO);firstday:0;months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today)"></div>
+	<div data-jc="calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);firstday:0;months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today)"></div>
 	<div data-jc="confirm"></div>
 	<div data-jc="contextmenu"></div>
 	<div data-jc="loading" class="ui-loading"></div>
-	<div data-jc="message" data-button="@(Close)"></div>
-	<div data-jc="websocket" data-jc-config="url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
-	<div data-jc="snackbar" data-jc-config="button:@(Dismiss)"></div>
+	<div data-jc="message__null__button:@(Close)"></div>
+	<div data-jc="websocket__null__url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
+	<div data-jc="snackbar__null__button:@(Dismiss)"></div>
 	<div data-jc="shortcuts"></div>
 
 	<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-ellipsis-h"></i></a>
 
 	<div class="toolbar">
 		<div class="tabs">
-			<div data-jc="repeater" data-jc-path="common.tabs">
+			<div data-jc="repeater__common.tabs">
 				<script type="text/html">
 					<a href="#{{ linker }}" data-id="{{ id }}" class="tab" data-bind="common.tab__.selected:value.id==common.tabs[{{ index }}].id">{{ name }}</a>
 				</script>
@@ -53,10 +53,10 @@
 	</div>
 
 	<div id="dashboardsettings"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:database;reload:formdatabase_reload;url:@{model.url}templates/form-database.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:widgets;reload:formwidgets_reload;url:@{model.url}templates/form-widgets.html"></div>
-	<div data-jc="importer" data-jc-path="common.form" data-jc-config="if:tab;url:@{model.url}templates/form-tab.html"></div>
-	<div data-jc="importer" data-jc-path="common.form2" data-jc-config="if:components;url:@{model.url}templates/form-components.html"></div>
+	<div data-jc="importer__common.form__if:database;reload:formdatabase_reload;url:@{model.url}templates/form-database.html"></div>
+	<div data-jc="importer__common.form__if:widgets;reload:formwidgets_reload;url:@{model.url}templates/form-widgets.html"></div>
+	<div data-jc="importer__common.form__if:tab;url:@{model.url}templates/form-tab.html"></div>
+	<div data-jc="importer__common.form2__if:components;url:@{model.url}templates/form-components.html"></div>
 
 	@{import(model.url + 'default.js')}
 	@{place('scripts')}

@@ -185,10 +185,10 @@ function Instance(id, element, declaration, options, size) {
 	self.name = declaration.name;
 	self.options = $.extend(true, CLONE(declaration.options), options || {});
 
-	self.$container = $(element.closest('.widget').get(0));
+	self.$container = $(element.closest('.widget')[0]);
 	self.element = element;
 
-	self.dom = element.get(0);
+	self.dom = element[0];
 	self.size = CLONE(size);
 
 	if (self.size.padding > 0) {
@@ -260,7 +260,7 @@ Instance.prototype.destroy = function() {
 	if (self.element) {
 		self.emit('destroy');
 		delete self.$events;
-		delete self.element.get(0).$widget;
+		delete self.element[0].$widget;
 		self.element.remove();
 		self.element = null;
 	}
