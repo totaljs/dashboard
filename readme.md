@@ -6,8 +6,8 @@ __Total.js Dashboard__ `v6.0.0` is dashboard for __IoT__ and [Total.js Flow](htt
 
 ## Installation
 
-- Total.js `+v2.6.0`
-- Flow `+v4.0.0`
+- Total.js `+v2.9.0`
+- Flow `+v5.0.0`
 - download and copy `dashboard.package` into the `/packages/` directory __or create a definition file with:__
 
 ```javascript
@@ -173,7 +173,7 @@ exports.install = function(instance) {
     // Returns {Boolean}
 
     instance.transparent([true]);
-    // if true passed in then widget-body background-color is set to be transparent 
+    // if true passed in then widget-body background-color is set to be transparent
     // and removes box-shadow
 
     // =======================================
@@ -253,6 +253,10 @@ DEBUG;
 
 RELEASE;
 // {Boolean} Determines dashboard
+
+Icons;
+// {Object} Contains Font-Awesome UTF-8 chars for SVG images
+// +v6.0.0
 ```
 
 __Common methods (client-side)__:
@@ -298,7 +302,7 @@ ON('apply', function() {
 });
 ```
 
-### Components: jComponent +v14.3.0
+### Components: jComponent +v14.5.0
 
 Bellow jComponents can be used in `Settings form`:
 

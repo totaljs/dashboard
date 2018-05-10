@@ -2,6 +2,7 @@ var settings = {};
 var DEBUG = false;
 var RELEASE = true;
 var common = {};
+var Icons = getIcons();
 
 common.database = [];
 common.events = {};
@@ -429,3 +430,20 @@ $.fn.setPosition = function(obj) {
 	this.css(css);
 	return this;
 };
+
+function getIcons() {
+	var classes = document.styleSheets[0].rules || document.styleSheets[0].cssRules;
+	var icons = {};
+	for (var x = 0; x < classes.length; x++) {
+		var cls = classes[x];
+		var sel = cls.selectorText;
+		if (sel && sel.substring(0, 4) == '.fa-') {
+			sel = sel.substring(4, sel.indexOf(':')).trim();
+			var val = cls.cssText ? cls.cssText : cls.cssText.style.cssText;
+			var a = val.match(/[^x00-x7F]+/);
+			if (a)
+				icons[sel] = a.toString();
+		}
+	}
+	return icons;
+}
