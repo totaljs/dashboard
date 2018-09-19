@@ -173,7 +173,12 @@
 				@{fi}
 			@{fi}
 
+			EMIT('settings.open', items);
+
 			FIND('contextmenu').show('right', el, items, function(value) {
+
+				EMIT('settings.select', value);
+
 				switch (value) {
 					@{if model.flow && helpers.FLOW}
 					case 'flow':
@@ -266,7 +271,12 @@
 			items.push({ name: widget ? '@(Replace component)' : '@(Choose component)', icon: 'fa-pie-chart', value: 'widgets' });
 			items.push({ name: '@(Remove component)', icon: 'fa-times-circle', value: 'remove' });
 
+			EMIT('component.open', items);
+
 			FIND('contextmenu').show('center', button, items, function(value) {
+
+				EMIT('component.select', value);
+
 				switch (value) {
 					case 'settings':
 						common.selected = element;
