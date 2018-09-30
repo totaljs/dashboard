@@ -270,6 +270,7 @@
 			widget && items.push({ name: '@(Settings)', icon: 'fa-cog', value: 'settings' });
 			items.push({ name: widget ? '@(Replace component)' : '@(Choose component)', icon: 'fa-pie-chart', value: 'widgets' });
 			items.push({ name: '@(Remove component)', icon: 'fa-times-circle', value: 'remove' });
+			items.push({ name: '@(Move to tab)', icon: 'fa-caret-right', value: 'moveto' });
 
 			EMIT('component.open', items);
 
@@ -286,6 +287,9 @@
 						common.selected = element;
 						SET('common.form', value);
 						break;
+					case 'moveto':
+						EMIT('designer.contextmenu.moveto', button, element, widget);
+						break;
 					case 'remove':
 						widget && widget.destroy();
 						setTimeout(function() {
@@ -295,6 +299,55 @@
 						break;
 				}
 			}, 3, 5);
+		});
+
+		ON('designer.contextmenu.moveto', function(button, element, widget) {
+			var items = [];
+
+			common.tabs.forEach(function(t){
+				items.push({ name: t.name, icon: 'fa-angle-right', value: t.id });
+			});
+
+			setTimeout(function(){
+				FIND('contextmenu').show('center', button, items, function(value) {
+
+					var w = common.designer.findItem('id', widget.id);
+					if (w.tab === value)
+						return;
+
+					var bottom = 0;
+					var m = common.device === 'desktop' ? '' : 'm';
+					common.designer.forEach(function(c){
+						if (c.id === widget.id)
+							w = c;
+
+						if (c.tab !== value)
+							return;
+
+						var b = Math.floor((c[m + 'index'] + 1) / 24) + c[m + 'rows'];
+						if (b > bottom)
+							bottom = b;
+					});
+
+					w.tab = value;
+
+					var el = $('.widgets').find('.widget[data-id="{0}"]'.format(widget.id));
+					el.aclass('hidden');
+
+					if (bottom > 0) {
+						w[m + 'index'] = bottom * 24;
+						var g = el.attrd('grid').split(',');
+						g[m ? 3 : 0] = w[m + 'index'];
+						el.attrd('grid', g.join(','));
+						FIND('designer').operations.resize();
+					}
+
+					el.rclass('tab_' + common.tab.id).aclass('tab_' + value).attrd('tab', value);
+
+					FIND('designer').operations.tab();
+					
+				}, 3, 5);				
+			}, 250);
 		});
 
 		ON('designer.settings', function(el, instance) {

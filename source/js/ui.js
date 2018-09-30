@@ -1129,13 +1129,13 @@ COMPONENT('designer', function(self) {
 		container = self.find('.grid');
 
 		var builder = [];
-		for (var i = 0; i < 396; i++) {
-			if (i % 12 === 0) {
+		for (var i = 0; i < 720; i++) {
+			if (i % 24 === 0) {
 				if (i)
 					builder.push('</tr>');
 				builder.push('<tr>');
 			}
-			builder.push('<td class="cell" data-grid="{0},{1}" data-index="{2}"><div class="space">&nbsp;</div></td>'.format(i % 12, Math.ceil((i + 1) / 12) - 1, i));
+			builder.push('<td class="cell" data-grid="{0},{1}" data-index="{2}"><div class="space">&nbsp;</div></td>'.format(i % 24, Math.ceil((i + 1) / 24) - 1, i));
 		}
 
 		builder.push('</tr>');
@@ -1288,7 +1288,7 @@ COMPONENT('designer', function(self) {
 	self.getSize = function() {
 		var obj = {};
 		obj.width = container.width();
-		obj.cell = 100 / 12;
+		obj.cell = 100 / 24;
 		obj.pixels = (obj.width / 100) * obj.cell;
 		common.size = obj;
 		return obj;
@@ -1350,18 +1350,18 @@ COMPONENT('designer', function(self) {
 			var move_rows = mouse_row - widget.mouse_offset.row - widget.origin.pos.row;
 			if (widget.move_cols === move_cols && widget.move_rows === move_rows)
 				return;
-			var item_col = widget.index % 12;
-			var item_row = Math.floor(widget.index / 12);
+			var item_col = widget.index % 24;
+			var item_row = Math.floor(widget.index / 24);
 			if (item_col < 0 || item_row < 0)
 				return;
-			widget.move_cols = (widget.origin.pos.col + move_cols + widget.origin.size.cols) > 12 ? 12 - (widget.origin.pos.col + widget.origin.size.cols) : move_cols;
+			widget.move_cols = (widget.origin.pos.col + move_cols + widget.origin.size.cols) > 24 ? 24 - (widget.origin.pos.col + widget.origin.size.cols) : move_cols;
 			widget.move_rows = move_rows;
 			var col = widget.origin.pos.col + widget.move_cols;
 			var row = widget.origin.pos.row + widget.move_rows;
 			col = col < 0 ? 0 : col;
 			row = row < 0 ? 0 : row;
 			widget.element.animate({ left: col * size.pixels, top: row * size.pixels }, 15);
-			widget.index = (row * 12) + col;
+			widget.index = (row * 24) + col;
 			if (item)
 				item[common.device === 'desktop' ? 'index' : 'mindex'] = widget.index;
 		}
@@ -1369,7 +1369,7 @@ COMPONENT('designer', function(self) {
 		if (widget.resizing) {
 			var resize_cols = Math.floor((e.pageX - offset.left) / size.pixels) - widget.mouse_offset.col - widget.origin.pos.col;
 			var resize_rows = Math.floor((e.pageY - offset.top) / size.pixels) - widget.mouse_offset.row - widget.origin.pos.row;
-			if ((widget.resize_cols === resize_cols && widget.resize_rows === resize_rows) || (widget.origin.pos.col + widget.origin.size.cols + resize_cols) > 12)
+			if ((widget.resize_cols === resize_cols && widget.resize_rows === resize_rows) || (widget.origin.pos.col + widget.origin.size.cols + resize_cols) > 24)
 				return;
 			widget.resize_cols = resize_cols;
 			widget.resize_rows = resize_rows;
@@ -1393,30 +1393,20 @@ COMPONENT('designer', function(self) {
 
 	self.mup = function() {
 		move.drag = false;
-
 		var selected = container.find('.selected');
-
 		if (!selected.length)
 			return;
-
 		var first = selected.first();
 		var last = selected.last();
-
-		var grid = self.grid(first.attr('data-grid').split(','));
-		var c = grid.cols;
-		var r = grid.rows;
-		var off = self.getStartPosition(c, r);
-
+		var gridA = first.attrd('grid').split(',');
+		var gridB = last.attrd('grid').split(',');
+		var off = self.getStartPosition(+gridA[0], +gridA[1]);
 		move.x = off.x;
 		move.y = off.y;
-
-		var offA = first.offset();
-		var offB = last.offset();
-		var cols = Math.ceil((offB.left - offA.left) / size.pixels) + 1;
-		var rows = Math.ceil((offB.top - offA.top) / size.pixels) + 1;
-
+		var cols = +gridB[0] - (+gridA[0]) + 1;
+		var rows = +gridB[1] - (+gridA[1]) + 1;
 		selected.aclass('locked').rclass('selected');
-		var index = +first.attr('data-index');
+		var index = +first.attrd('index');
 		var selection = { id: Date.now(), tab: common.tab.id, rows: rows, cols: cols, index: index, mrows: rows, mcols: cols, mindex: index };
 		self.create(selection, true);
 	};
@@ -1512,8 +1502,8 @@ COMPONENT('designer', function(self) {
 	};
 
 	self.getPosition = function(index) {
-		var ri = (index / 12) >> 0;
-		var ci = index % 12;
+		var ri = (index / 24) >> 0;
+		var ci = index % 24;
 		return { row: ri, col: ci };
 	};
 
