@@ -1035,7 +1035,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 
 	self.make = function() {
 		url = config.url || '';
-		if (!url.match(/^(ws|wss)\:\/\//))
+		if (!url.match(/^(ws|wss):\/\//))
 			url = (location.protocol.length === 6 ? 'wss' : 'ws') + '://' + location.host + (url.substring(0, 1) !== '/' ? '/' : '') + url;
 		setTimeout(self.connect, 500);
 		self.destroy = self.close;
@@ -1077,9 +1077,13 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		return self;
 	};
 
-	function onClose() {
-		self.close(true);
-		setTimeout(self.connect, config.reconnect);
+	function onClose(e) {
+		if (e.code === 4001) {
+			location.reload(true);
+		} else {
+			self.close(true);
+			setTimeout(self.connect, config.reconnect);
+		}
 	}
 
 	function onMessage(e) {
