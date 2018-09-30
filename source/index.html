@@ -15,6 +15,7 @@
 	<link rel="apple-touch-icon" href="icon.png" />
 	<link type="text/css" rel="stylesheet" href="@{model.url}default.css" />
 	<script>var user = JSON.parse('@{json(user)}');!user && (user = {});</script>
+	@{import('head')}
 </head>
 <body data-jc="exec,binder"@{if model.dark} class="themedark"@{fi}>
 
@@ -345,8 +346,8 @@
 					el.rclass('tab_' + common.tab.id).aclass('tab_' + value).attrd('tab', value);
 
 					FIND('designer').operations.tab();
-					
-				}, 3, 5);				
+
+				}, 3, 5);
 			}, 250);
 		});
 
