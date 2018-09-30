@@ -63,9 +63,13 @@ exports.install = function(options) {
 		Fs.mkdirSync(F.path.root(PATH));
 	} catch(e) {}
 
-	// Routes
-	F.route(OPT.url, view_index);
-	F.websocket(OPT.url, websocket, ['json'], OPT.limit);
+	if (OPT.auth === true) {
+		ROUTE(OPT.url, view_index, ['authorize']);
+		WEBSOCKET(OPT.url, websocket, ['authorize', 'json'], OPT.limit);
+	} else {
+		ROUTE(OPT.url, view_index);
+		WEBSOCKET(OPT.url, websocket, ['json'], OPT.limit);
+	}
 
 	// Files
 	F.localize(OPT.url + 'templates/*.html', ['compress']);
