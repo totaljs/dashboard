@@ -57,7 +57,7 @@ exports.install = function(options) {
 
 	global.DASHBOARD.url = OPT.url = U.path(OPT.url || '/$dashboard/');
 	!OPT.limit && (OPT.limit = 50);
-	!OPT.templates && (OPT.templates = 'https://rawgit.com/totaljs/dashboardcomponents/master/templates.json');
+	!OPT.templates && (OPT.templates = 'https://cdn.totaljs.com/dashboard/templates.json');
 
 	try {
 		Fs.mkdirSync(F.path.root(PATH));
