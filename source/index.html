@@ -17,18 +17,18 @@
 	<script>var user = JSON.parse('@{json(user)}');!user && (user = {});</script>
 	@{import('head')}
 </head>
-<body data-jc="exec,binder"@{if model.dark} class="themedark"@{fi}>
+<body data-jc="exec"@{if model.dark} class="themedark"@{fi}>
 
-	<div data-jc="audio" data-jc-path="common.volume"></div>
-	<div data-jc="autocomplete"></div>
-	<div data-jc="calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);firstday:0;months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today)"></div>
-	<div data-jc="confirm"></div>
-	<div data-jc="contextmenu"></div>
-	<div data-jc="loading" class="ui-loading"></div>
-	<div data-jc="message__null__button:@(Close)"></div>
-	<div data-jc="websocket__null__url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
-	<div data-jc="snackbar__null__button:@(Dismiss)"></div>
+	<div data-jc="LAZY audio" data-jc-path="common.volume"></div>
+	<div data-jc="LAZY autocomplete"></div>
+	<div data-jc="LAZY calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);firstday:0;months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today)"></div>
+	<div data-jc="LAZY confirm"></div>
+	<div data-jc="LAZY contextmenu"></div>
+	<div data-jc="LAZY message__null__button:@(Close)"></div>
+	<div data-jc="LAZY snackbar__null__button:@(Dismiss)"></div>
 	<div data-jc="shortcuts"></div>
+	<div data-jc="loading" class="ui-loading"></div>
+	<div data-jc="websocket__null__url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
 
 	<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-ellipsis-h"></i></a>
 
@@ -39,7 +39,7 @@
 					<a href="#{{ linker }}" data-id="{{ id }}" class="tab" data-bind="common.tab__.selected:value.id==common.tabs[{{ index }}].id">{{ name }}</a>
 				</script>
 			</div>
-			<a href="javascript:void(0)" class="last exec" data-exec="#tabs.add"><i class="fa fa-plus"></i></a>
+			<a href="javascript:void(0)" class="last exec" data-exec="FUNC.tabs_add"><i class="fa fa-plus"></i></a>
 		</div>
 	</div>
 
@@ -364,11 +364,11 @@
 			}
 
 			common.statics[instance.name] = true;
-			COMPILE($('#dashboardsettings').append(('<div data-jc-id="html.{0}" data-jc="form" data-jc-path="common.form" data-jc-config="if:settings-{0};title:@(Settings\\:) {0};width:800" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" name="submit" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(instance.name.replace(/\:/g, '\:'), common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
+			COMPILE($('#dashboardsettings').append(('<div data-jc-id="html.{0}" data-jc="form" data-jc-path="common.form" data-jc-config="if:settings-{0};title:@(Settings\\:) {0};width:800" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" name="submit" data-exec="FUNC.settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(instance.name.replace(/\:/g, '\:'), common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
 			callback(false);
 		}
 
-		OPERATION('settings', function() {
+		FUNC.settings = function() {
 			var target = common.selected.find('figure[data-name]');
 			var instance = target.get(0).$widget;
 			var options = settings[instance.name];
@@ -378,7 +378,7 @@
 			instance.emit('options', options, old);
 			SET('common.form', '');
 			!common.draft && save_force();
-		});
+		};
 
 		function designer_duplicate() {
 			FIND('designer').operations.duplicate();
@@ -417,7 +417,7 @@
 		});
 
 		// Tabs operations
-		OPERATION('tabs.add', function() {
+		FUNC.tabs_add = function() {
 
 			formtabpositions = [];
 			for (var i = 0; i < common.tabs.length + 1; i++)
@@ -426,9 +426,9 @@
 			UPDATE('formtabpositions');
 			SET('formtab', { position: common.tabs.length + 1 }, true);
 			SET('common.form', 'tab');
-		});
+		};
 
-		OPERATION('tabs.upd', function(id) {
+		FUNC.tabs_upd = function(id) {
 
 			formtabpositions = [];
 			for (var i = 0; i < common.tabs.length; i++)
@@ -443,19 +443,19 @@
 				SET('formtab', data, true);
 				SET('common.form', 'tab');
 			}
-		});
+		};
 
-		OPERATION('tabs.rem', function(id) {
+		FUNC.tabs_rem = function(id) {
 			FIND('designer').operations.tabclear(id);
 			common.designer = common.designer.remove('tab', id);
 			SET('common.tabs', common.tabs.remove('id', id));
 			SETTER('binder', 'scan');
 			if (common.tab.id === id)
 				location.hash = common.tabs[0].linker;
-		});
+		};
 
 		$(document).on('dblclick', '.tab', function() {
-			common.draft && OPERATION('tabs.upd')(this.getAttribute('data-id'));
+			common.draft && FUNC.tabs_upd(this.getAttribute('data-id'));
 		});
 
 		SETTER(true, 'shortcuts', 'register', 'esc', function(e) {
