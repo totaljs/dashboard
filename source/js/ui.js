@@ -37,6 +37,7 @@ COMPONENT('exec', function(self, config) {
 COMPONENT('error', function(self, config) {
 
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-error hidden');
@@ -278,6 +279,7 @@ COMPONENT('confirm', function(self) {
 
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 
@@ -697,6 +699,8 @@ COMPONENT('textbox', function(self, config) {
 
 	var input, container, content = null;
 
+	self.nocompile();
+
 	self.validate = function(value) {
 
 		if (!config.required || config.disabled)
@@ -1032,6 +1036,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 
 	self.online = false;
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
 		url = config.url || '';
@@ -1748,6 +1753,8 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 	var template = W.$checkboxlist;
 	var container, data, datasource, content, dataold, render = null;
 
+	self.nocompile();
+
 	self.validate = function(value) {
 		return config.disabled || !config.required ? true : value && value.length > 0;
 	};
@@ -2248,6 +2255,8 @@ COMPONENT('dropdown', function(self, config) {
 	var select, container, condition, content = null;
 	var render = '';
 
+	self.nocompile();
+
 	self.validate = function(value) {
 
 		if (!config.required || config.disabled)
@@ -2394,6 +2403,8 @@ COMPONENT('selectbox', function(self, config) {
 
 	self.mydata = EMPTYARRAY;
 	self.template = Tangular.compile('<li data-search="{{ search }}" data-index="{{ index }}">{{ text }}</li>');
+
+	self.nocompile();
 
 	self.validate = function(value) {
 		return config.disabled || !config.required ? true : value && value.length > 0;
@@ -2579,6 +2590,7 @@ COMPONENT('textboxlist', 'maxlength:100', function(self, config) {
 	var cempty = 'empty';
 
 	self.readonly();
+	self.nocompile();
 	self.template = Tangular.compile('<div class="ui-textboxlist-item"><div><i class="fa fa-times"></i></div><div><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder }}"{{ if disabled}} disabled="disabled"{{ fi }} value="{{ value }}" /></div></div>');
 
 	self.configure = function(key, value, init, prev) {
@@ -2744,6 +2756,7 @@ COMPONENT('autocomplete', 'height:200', function(self, config) {
 	self.template = Tangular.compile('<li{{ if index === 0 }} class="selected"{{ fi }} data-index="{{ index }}"><span>{{ name }}</span><span>{{ type }}</span></li>');
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-autocomplete-container hidden');
@@ -2958,6 +2971,7 @@ COMPONENT('calendar', 'today:Set today;firstday:0;close:Close;yearselect:true;mo
 	var skipDay = false;
 	var visible = false;
 
+	self.nocompile();
 	self.days = EMPTYARRAY;
 	self.months = EMPTYARRAY;
 	self.months_short = EMPTYARRAY;
@@ -3331,6 +3345,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 	var skip = false;
 	var empty = {};
 
+	self.nocompile();
 	self.template = Tangular.compile('<div class="ui-keyvalue-item"><div class="ui-keyvalue-item-remove"><i class="fa fa-times"></i></div><div class="ui-keyvalue-item-key"><input type="text" name="key" maxlength="{{ max }}"{{ if disabled }} disabled="disabled"{{ fi }} placeholder="{{ placeholder_key }}" value="{{ key }}" /></div><div class="ui-keyvalue-item-value"><input type="text" maxlength="{{ max }}" placeholder="{{ placeholder_value }}" value="{{ value }}" /></div></div>');
 
 	self.binder = function(type, value) {
@@ -3500,6 +3515,7 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 
 	self.getter = null;
 	self.bindvisible();
+	self.nocompile();
 
 	self.reload = function() {
 		editor.refresh();
@@ -3637,6 +3653,7 @@ COMPONENT('contextmenu', function(self) {
 	self.template = Tangular.compile('<div data-value="{{ value }}" class="item{{ if selected }} selected{{ fi }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
+	self.nocompile();
 	self.callback = null;
 
 	self.make = function() {
@@ -3777,6 +3794,7 @@ COMPONENT('message', function(self, config) {
 
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 		self.aclass('ui-message hidden');
@@ -3868,6 +3886,8 @@ COMPONENT('disable', function(self, config) {
 COMPONENT('textarea', function(self, config) {
 
 	var input, container, content = null;
+
+	self.nocompile();
 
 	self.validate = function(value) {
 		if (config.disabled || !config.required)
@@ -3990,6 +4010,7 @@ COMPONENT('textarea', function(self, config) {
 
 COMPONENT('filereader', function(self, config) {
 	self.readonly();
+	self.nocompile();
 	self.make = function() {
 
 		var element = self.element;
@@ -4032,6 +4053,7 @@ COMPONENT('nosqlcounter', 'count:0;height:80', function(self, config) {
 	var months = MONTHS;
 	var container, labels;
 
+	self.nocompile();
 	self.bindvisible();
 	self.readonly();
 
@@ -4135,6 +4157,7 @@ COMPONENT('fileupload', function(self, config) {
 	var id = 'fileupload' + self.id;
 	var input = null;
 
+	self.nocompile();
 	self.readonly();
 	self.configure = function(key, value, init) {
 		if (init)
@@ -4215,6 +4238,8 @@ COMPONENT('range', function(self, config) {
 
 	var content = '';
 
+	self.nocompile();
+
 	self.validate = function(value) {
 		return !config.required || config.disabled ? true : value != 0;
 	};
@@ -4291,6 +4316,7 @@ COMPONENT('audio', function(self) {
 	self.items = [];
 	self.readonly();
 	self.singleton();
+	self.nocompile();
 
 	self.make = function() {
 		var audio = document.createElement('audio');
@@ -4393,6 +4419,7 @@ COMPONENT('controls', function(self) {
 	self.template = Tangular.compile('<div data-value="{{ index }}" class="item{{ if selected }} selected{{ fi }}{{ if disabled }} disabled{{ fi }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
+	self.nocompile();
 	self.callback = null;
 
 	self.make = function() {
@@ -4531,6 +4558,7 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 
 	self.getter = null;
 	self.novalidate();
+	self.nocompile();
 
 	self.init = function() {
 		window.Tmultioptionscolor = Tangular.compile('<div class="ui-moi-value-colors ui-moi-save" data-name="{{ name }}" data-value="{{ value }}">{0}</div>'.format(['#ED5565', '#DA4453', '#FC6E51', '#E9573F', '#FFCE54', '#F6BB42', '#A0D468', '#8CC152', '#48CFAD', '#37BC9B', '#4FC1E9', '#3BAFDA', '#5D9CEC', '#4A89DC', '#AC92EC', '#967ADC', '#EC87C0', '#D770AD', '#F5F7FA', '#E6E9ED', '#CCD1D9', '#AAB2BD', '#656D78', '#434A54', '#000000'].map(function(n) { return '<span data-value="{0}" data-type="color" class="multioptions-operation" style="background-color:{0}"><i class="fa fa-check-circle"></i></span>'.format(n); }).join('')));
@@ -4823,6 +4851,7 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 COMPONENT('dragdropfiles', function(self, config) {
 
 	self.readonly();
+	self.nocompile();
 
 	self.mirror = function(cls) {
 		var arr = cls.split(' ');
@@ -4871,6 +4900,7 @@ COMPONENT('snackbar', 'timeout:3000;button:Dismiss', function(self, config) {
 	var show = true;
 	var callback;
 
+	self.nocompile();
 	self.readonly();
 	self.blind();
 	self.make = function() {
@@ -4930,6 +4960,7 @@ COMPONENT('shortcuts', function(self) {
 	self.singleton();
 	self.readonly();
 	self.blind();
+	self.nocompile();
 
 	self.make = function() {
 		$(window).on('keydown', function(e) {
@@ -5039,6 +5070,8 @@ COMPONENT('shortcuts', function(self) {
 
 COMPONENT('radiobutton', function(self, config) {
 
+	self.nocompile();
+
 	self.configure = function(key, value, init) {
 		if (init)
 			return;
@@ -5101,6 +5134,8 @@ COMPONENT('radiobutton', function(self, config) {
 
 COMPONENT('devicetype', function(self, config) {
 
+	self.nocompile();
+
 	self.configure = function(key, value, init) {
 		if (init)
 			return;
@@ -5157,6 +5192,7 @@ COMPONENT('fontawesomebox', 'height:300;fa:false', function(self, config) {
 	var skip = false;
 	var refresh = false;
 
+	self.nocompile();
 	self.readonly();
 
 	self.make = function() {
@@ -5257,6 +5293,7 @@ COMPONENT('listing', 'pages:3;count:20', function(self, config) {
 	var layout;
 
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
 
