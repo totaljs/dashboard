@@ -72,14 +72,14 @@ exports.install = function(options) {
 	}
 
 	// Files
-	F.localize(OPT.url + 'templates/*.html', ['compress']);
+	LOCALIZE(OPT.url + 'templates/*.html', ['compress']);
 
 	// Merging & Mapping
-	F.merge(OPT.url + 'default.css', '@dashboard/css/dep.min.css', '@dashboard/css/default.css', '@dashboard/css/ui.css');
-	F.merge(OPT.url + 'default.js', '@dashboard/js/dep.min.js', '@dashboard/js/default.js', '@dashboard/js/ui.js');
-	F.map(OPT.url + 'templates/', '@dashboard/templates/');
-	F.map(OPT.url + 'fonts/', '@dashboard/fonts/');
-	F.map(OPT.url + 'img/', '@dashboard/img/');
+	MERGE(OPT.url + 'default.css', '@dashboard/css/dep.min.css', '@dashboard/css/default.css', '@dashboard/css/ui.css');
+	MERGE(OPT.url + 'default.js', '@dashboard/js/dep.min.js', '@dashboard/js/default.js', '@dashboard/js/ui.js');
+	MAP(OPT.url + 'templates/', '@dashboard/templates/');
+	MAP(OPT.url + 'fonts/', '@dashboard/fonts/');
+	MAP(OPT.url + 'img/', '@dashboard/img/');
 
 	F.helpers.DASHBOARD = global.DASHBOARD;
 
