@@ -17,6 +17,11 @@ const REG_INSTANCES = /^dashboard\w+/i;
 var OPT;
 var DDOS = {};
 var WS = null;
+var WSEXT = null;
+
+// Internal
+var TYPE = 0;
+var FN = {};
 
 global.DASHBOARD = {};
 global.DASHBOARD.send = function(instance, type, data) {
@@ -58,58 +63,107 @@ exports.install = function(options) {
 	global.DASHBOARD.url = OPT.url = U.path(OPT.url || '/$dashboard/');
 	!OPT.limit && (OPT.limit = 50);
 	!OPT.templates && (OPT.templates = 'https://cdn.totaljs.com/dashboard/templates.json');
+	OPT.socket = OPT.url;
 
 	try {
 		Fs.mkdirSync(F.path.root(PATH));
 	} catch(e) {}
 
+	if (!OPT.type || OPT.type === 'bundle')
+		TYPE = 1;
+	else if (OPT.type === 'client')
+		TYPE = 2;
+	else if (OPT.type === 'server')
+		TYPE = 3;
+
+	if (TYPE === 2)
+		OPT.socket = OPT.external;
+
 	if (OPT.auth === true) {
-		ROUTE(OPT.url, view_index, ['authorize']);
-		WEBSOCKET(OPT.url, websocket, ['authorize', 'json'], OPT.limit);
+
+		if (TYPE !== 3)
+			ROUTE(OPT.url, FN.view_index, ['authorize']);
+
+		if (TYPE !== 2)
+			WEBSOCKET(OPT.url, FN.websocket, ['authorize', 'json'], OPT.limit);
+
 	} else {
-		ROUTE(OPT.url, view_index);
-		WEBSOCKET(OPT.url, websocket, ['json'], OPT.limit);
+
+		if (TYPE !== 3)
+			ROUTE(OPT.url, FN.view_index);
+
+		if (TYPE !== 2)
+			WEBSOCKET(OPT.url, FN.websocket, ['json'], OPT.limit);
 	}
 
-	// Files
-	LOCALIZE(OPT.url + 'templates/*.html', ['compress']);
+	if (TYPE !== 3) {
+		// Files
+		LOCALIZE(OPT.url + 'templates/*.html', ['compress']);
 
-	// Merging & Mapping
-	MERGE(OPT.url + 'default.css', '@dashboard/css/dep.min.css', '@dashboard/css/default.css', '@dashboard/css/ui.css');
-	MERGE(OPT.url + 'default.js', '@dashboard/js/dep.min.js', '@dashboard/js/default.js', '@dashboard/js/ui.js');
-	MAP(OPT.url + 'templates/', '@dashboard/templates/');
-	MAP(OPT.url + 'fonts/', '@dashboard/fonts/');
-	MAP(OPT.url + 'img/', '@dashboard/img/');
-
-	F.helpers.DASHBOARD = global.DASHBOARD;
+		// Merging & Mapping
+		MERGE(OPT.url + 'default.css', '@dashboard/css/dep.min.css', '@dashboard/css/default.css', '@dashboard/css/ui.css');
+		MERGE(OPT.url + 'default.js', '@dashboard/js/dep.min.js', '@dashboard/js/default.js', '@dashboard/js/ui.js');
+		MAP(OPT.url + 'templates/', '@dashboard/templates/');
+		MAP(OPT.url + 'fonts/', '@dashboard/fonts/');
+		MAP(OPT.url + 'img/', '@dashboard/img/');
+	}
 
 	// Service
 	ON('service', service);
 
-	WAIT(function() {
-		return global.FLOW;
-	}, function() {
-		FLOW.prototypes(function(proto) {
-			proto.Component.dashboard = function(type, data) {
-				DASHBOARD.send(this, type, data);
-				return this;
-			};
+	if (TYPE !== 2) {
+
+		F.helpers.DASHBOARD = global.DASHBOARD;
+
+		WAIT(function() {
+			return global.FLOW;
+		}, function() {
+			FLOW.prototypes(function(proto) {
+				proto.Component.dashboard = function(type, data) {
+					global.DASHBOARD.send(this, type, data);
+					return this;
+				};
+			});
 		});
-	});
+
+		ON('flow.save', function() {
+			WS && FN.send_instances(WS);
+		});
+	}
+
+	// Cleans up memory
+	switch (TYPE) {
+		case 2: // client
+			delete FN.websocket;
+			delete FN.send_instances;
+			delete FN.send_components;
+			delete FN.send_settings;
+			delete FN.send_component;
+			delete FN.component_install;
+			delete FN.component_uninstall;
+			delete FN.save;
+			delete global.DASHBOARD;
+			break;
+		case 3: // server
+			delete FN.view_index;
+			delete FN.auth;
+			break;
+	}
 };
 
 function service(counter) {
 	counter % 5 === 0 && (DDOS = {});
 }
 
-function view_index() {
-	if (auth(this)) {
-		this.theme('');
-		this.view('@dashboard/index', OPT);
+FN.view_index = function() {
+	var self = this;
+	if (FN.auth(self)) {
+		self.theme('');
+		self.view('@dashboard/index', OPT);
 	}
-}
+};
 
-function websocket() {
+FN.websocket = function() {
 	var self = WS = this;
 
 	self.autodestroy(() => WS = null);
@@ -123,7 +177,7 @@ function websocket() {
 		}
 
 		client.send(WS_INIT);
-		send_instances(client, () => send_components(client, () => send_settings(client, function() {
+		FN.send_instances(client, () => FN.send_components(client, () => FN.send_settings(client, function() {
 			self.send(WS_LOADED);
 		})));
 	});
@@ -144,27 +198,27 @@ function websocket() {
 				});
 				break;
 			case 'send':
-				var instance = FLOW.findById(message.id);
-				instance && instance.emit('dashboard', message.type, message.body);
+				if (WSEXT)
+					WSEXT.send(message);
+				else {
+					var instance = FLOW.findById(message.id);
+					instance && instance.emit('dashboard', message.type, message.body);
+				}
 				break;
 			case 'install':
-				component_install(self, message);
+				FN.component_install(self, message);
 				break;
 			case 'uninstall':
-				component_uninstall(self, message.body);
+				FN.component_uninstall(self, message.body);
 				break;
 			case 'save':
-				save(message.body);
+				FN.save(message.body);
 				break;
 		}
 	});
-}
+};
 
-ON('flow.save', function() {
-	WS && send_instances(WS);
-});
-
-function component_install(controller, response, callback) {
+FN.component_install = function(controller, response, callback) {
 
 	var u = response.body.substring(0, 6);
 	if (u === 'http:/' || u === 'https:') {
@@ -185,7 +239,7 @@ function component_install(controller, response, callback) {
 						response = U.minifyHTML(response.toString('utf8'));
 					Fs.writeFile(filename, response, function() {
 						callback && callback();
-						controller && send_component(filename, controller);
+						controller && FN.send_component(filename, controller);
 					});
 				});
 			});
@@ -196,11 +250,11 @@ function component_install(controller, response, callback) {
 	var filename = F.path.root(PATH + response.filename);
 	Fs.writeFile(filename, U.minifyHTML(response.body), function() {
 		callback && callback();
-		controller && send_component(filename, controller);
+		controller && FN.send_component(filename, controller);
 	});
-}
+};
 
-function component_uninstall(controller, name, callback) {
+FN.component_uninstall = function(controller, name, callback) {
 
 	var index = name.indexOf('/');
 	if (index === -1)
@@ -208,28 +262,26 @@ function component_uninstall(controller, name, callback) {
 
 	Fs.unlink(F.path.root(PATH + name), function() {
 		callback && callback();
-		controller && send_components(controller);
+		controller && FN.send_components(controller);
 	});
-}
+};
 
-function save(body, callback) {
+FN.save = function(body, callback) {
 	var path = F.path.root(FILEDESIGNER);
 	var json = JSON.stringify(body);
 	Fs.writeFile(path, json, callback || NOOP);
 	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
-}
+};
 
-function send_settings(client, callback) {
+FN.send_settings = function(client, callback) {
 	var path = F.path.root(FILEDESIGNER);
 	Fs.readFile(path, function(err, data) {
 		data && client.send(data.toString('utf8'), true);
 		callback && callback();
 	});
-}
+};
 
-function send_instances(client, callback) {
-
-	WS_INSTANCES.body = [];
+FN.send_instances = function(client, callback) {
 
 	if (!global.FLOW) {
 		callback && callback();
@@ -237,6 +289,8 @@ function send_instances(client, callback) {
 	}
 
 	var keys = Object.keys(FLOW.instances);
+
+	WS_INSTANCES.body = [];
 
 	for (var i = 0, length = keys.length; i < length; i++) {
 		var instance = FLOW.instances[keys[i]];
@@ -247,9 +301,9 @@ function send_instances(client, callback) {
 
 	client.send(WS_INSTANCES);
 	callback && callback();
-}
+};
 
-function send_component(filename, client, callback) {
+FN.send_component = function(filename, client, callback) {
 	Fs.stat(filename, function(err, stats) {
 
 		if (err) {
@@ -267,9 +321,9 @@ function send_component(filename, client, callback) {
 			callback && callback();
 		});
 	});
-}
+};
 
-function send_components(client, callback) {
+FN.send_components = function(client, callback) {
 	var path = F.path.root(PATH);
 	U.ls(path, function(files) {
 		files.wait(function(item, next) {
@@ -288,13 +342,9 @@ function send_components(client, callback) {
 			});
 		}, callback);
 	}, (filename) => filename.endsWith('.html'));
-}
+};
 
-ON('flow.save', function() {
-	WS && send_instances(WS);
-});
-
-function auth(controller) {
+FN.auth = function(controller) {
 
 	if (OPT.auth instanceof Array) {
 		var user = controller.baa();
@@ -306,7 +356,7 @@ function auth(controller) {
 			if (DDOS[controller.ip] > 4)
 				controller.throw401();
 			else
-				controller.baa('Secured area, please add sign-in');
+				controller.baa('Secured area, please add your credentials');
 			return false;
 		}
 		controller.repository.baa = (user.user + ':' + user.password).hash();
@@ -330,4 +380,4 @@ function auth(controller) {
 	}
 
 	return true;
-}
+};

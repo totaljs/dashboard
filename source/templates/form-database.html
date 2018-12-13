@@ -9,7 +9,7 @@
 				<div data-jc="filereader__formdatabase.file__placeholder:@(Browse device);accept:text/html;required:true" data-jc-id="formdatabasefile" class="m">@(Upload .html component)</div>
 			</div>
 		</div>
-		<div data-bind="common.templates__visible:value && value.length > 0" class="hidden">
+		<div data-bind="common.templates__show:value && value.length > 0" class="hidden">
 			<div class="b black" style="margin-bottom:10px"><i class="fa fa-table mr5"></i>@(Predefined set of components:)</div>
 			<div class="row">
 				<div data-jc="repeater__common.templates">

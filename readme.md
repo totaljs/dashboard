@@ -2,7 +2,7 @@
 
 [![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
 
-__Total.js Dashboard__ `v6.0.0` is dashboard for __IoT__ and [Total.js Flow](https://www.totaljs.com/flow/).
+__Total.js Dashboard__ `v6.1.0` is dashboard for __IoT__ and [Total.js Flow](https://www.totaljs.com/flow/).
 
 ## Installation
 
@@ -60,6 +60,17 @@ var options = {};
 // options.token = ['OUR_COMPANY_TOKEN'];
 // you can open dashboard using : /$dashboard/?token=OUR_COMPANY_TOKEN
 
+// +v6.1.0
+// options.type = 'bundle'; // 'bundle', 'server', 'client'
+// "bundle" -> loads server and client together
+// "server" -> loads server only
+// "client" -> loads client only but it needs external URL (look to "options.external")
+
+// +v6.1.0
+// options.external = 'ws://yourserver.com/$dashboard/';
+// Can contain an external URL for WebSocket
+
+// You can use CDN version of Dashboard:
 INSTALL('package', 'https://cdn.totaljs.com/dashboard.package', options);
 ```
 
@@ -302,7 +313,7 @@ ON('apply', function() {
 });
 ```
 
-### Components: jComponent +v14.5.0
+### Components: jComponent +v16
 
 Bellow jComponents can be used in `Settings form`:
 

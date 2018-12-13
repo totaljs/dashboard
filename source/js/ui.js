@@ -1052,6 +1052,13 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		return self;
 	};
 
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
+		if (key === 'url')
+			url = value;
+	};
+
 	self.process = function(callback) {
 
 		if (!ws || sending || !queue.length || ws.readyState !== 1) {
@@ -1095,7 +1102,6 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		var data;
 		try {
 			data = PARSE(decodeURIComponent(e.data));
-			self.attrd('jc-path') && self.set(data);
 		} catch (e) {
 			WARN('WebSocket "{0}": {1}'.format(url, e.toString()));
 		}
@@ -1393,9 +1399,11 @@ COMPONENT('designer', function(self) {
 				item[common.device === 'desktop' ? 'cols' : 'mcols'] = widget.size.cols;
 				item[common.device === 'desktop' ? 'rows' : 'mrows'] = widget.size.rows;
 				var instance = widget.element.find('figure')[0].$widget;
-				var padding = instance.size.padding;
-				instance.size = { cols: widget.size.cols, rows: widget.size.rows, height: (size.pixels * widget.size.rows) - (padding * 2), width: (size.pixels * widget.size.cols) - (padding * 2), padding: padding, pixels: size.pixels };
-				instance.emit('resize', instance.size);
+				if (instance) {
+					var padding = instance.size.padding;
+					instance.size = { cols: widget.size.cols, rows: widget.size.rows, height: (size.pixels * widget.size.rows) - (padding * 2), width: (size.pixels * widget.size.cols) - (padding * 2), padding: padding, pixels: size.pixels };
+					instance.emit('resize', instance.size);
+				}
 			}
 		}
 	};
@@ -1872,7 +1880,7 @@ COMPONENT('checkboxlist', 'checkicon:check', function(self, config) {
 			}
 
 			self.reset(true);
-			self.set(arr, undefined, 2);
+			self.set(arr, 2);
 		});
 	};
 
@@ -2678,7 +2686,7 @@ COMPONENT('textboxlist', 'maxlength:100', function(self, config) {
 			self.tclass(cempty, arr.length === 0);
 
 			skip = true;
-			self.set(self.path, arr, 2);
+			self.set(arr, 2);
 			self.change(true);
 		});
 
@@ -2716,7 +2724,7 @@ COMPONENT('textboxlist', 'maxlength:100', function(self, config) {
 			});
 
 			skip = true;
-			self.set(self.path, arr, 2);
+			self.set(arr, 2);
 			self.change(true);
 		});
 	};
@@ -3433,7 +3441,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 			parent.remove();
 			delete obj[key];
 
-			self.set(self.path, obj, 2);
+			self.set(obj, 2);
 			self.change(true);
 		});
 
@@ -3478,7 +3486,7 @@ COMPONENT('keyvalue', 'maxlength:100', function(self, config) {
 			});
 
 			skip = true;
-			self.set(self.path, keyvalue, 2);
+			self.set(keyvalue, 2);
 			self.change(true);
 		});
 	};
@@ -4851,7 +4859,6 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 COMPONENT('dragdropfiles', function(self, config) {
 
 	self.readonly();
-	self.nocompile();
 
 	self.mirror = function(cls) {
 		var arr = cls.split(' ');

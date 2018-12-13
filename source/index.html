@@ -28,7 +28,7 @@
 	<div data-jc="LAZY snackbar__null__button:@(Dismiss)"></div>
 	<div data-jc="shortcuts"></div>
 	<div data-jc="loading" class="ui-loading"></div>
-	<div data-jc="websocket__null__url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
+	<div data-jc="websocket__null__url:@{model.socket}?&token=@{query.token}&baa=@{repository.baa}"></div>
 
 	<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-ellipsis-h"></i></a>
 
@@ -176,8 +176,7 @@
 			@{fi}
 
 			EMIT('settings.open', items);
-
-			FIND('contextmenu').show('right', el, items, function(value) {
+			SETTER('contextmenu', 'show', 'right', el, items, function(value) {
 
 				EMIT('settings.select', value);
 
@@ -275,8 +274,7 @@
 			items.push({ name: '@(Move to tab)', icon: 'fa-caret-right', value: 'moveto' });
 
 			EMIT('component.open', items);
-
-			FIND('contextmenu').show('center', button, items, function(value) {
+			SETTER('contextmenu', 'show', 'center', button, items, function(value) {
 
 				EMIT('component.select', value);
 
@@ -311,7 +309,7 @@
 			});
 
 			setTimeout(function(){
-				FIND('contextmenu').show('center', button, items, function(value) {
+				SETTER('contextmenu', 'show', 'center', button, items, function(value) {
 
 					var w = common.designer.findItem('id', widget.id);
 					if (w.tab === value)
@@ -345,9 +343,7 @@
 					}
 
 					el.rclass('tab_' + common.tab.id).aclass('tab_' + value).attrd('tab', value);
-
 					FIND('designer').operations.tab();
-
 				}, 3, 5);
 			}, 250);
 		});
@@ -405,7 +401,7 @@
 		}
 
 		$('.designer-scroll').on('scroll', function() {
-			FIND('contextmenu').hideforce();
+			SETTER('contextmenu', 'hideforce');
 		});
 
 		$(window).on('hashchange', function() {
