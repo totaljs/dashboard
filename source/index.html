@@ -36,7 +36,7 @@
 		<div class="tabs">
 			<div data-jc="repeater__common.tabs">
 				<script type="text/html">
-					<a href="#{{ linker }}" data-id="{{ id }}" class="tab" data-bind="common.tab__.selected:value.id==common.tabs[{{ index }}].id">{{ name }}</a>
+					<a href="#{{ linker }}" data-id="{{ id }}" class="tab" data-bind="common.tab__.selected:common.tabs[{{ index }}]?(value.id==common.tabs[{{ index }}].id):false">{{ name }}</a>
 				</script>
 			</div>
 			<a href="javascript:void(0)" class="last exec" data-exec="#tabs.add"><i class="fa fa-plus"></i></a>
