@@ -1294,6 +1294,7 @@ COMPONENT('designer', function(self) {
 		obj.width = container.width();
 		obj.cell = 100 / 24;
 		obj.pixels = (obj.width / 100) * obj.cell;
+		obj.pixelsh = obj.pixels + 0.5;
 		common.size = obj;
 		return obj;
 	};
@@ -1322,7 +1323,7 @@ COMPONENT('designer', function(self) {
 		self.scroller_cursor(el);
 		widget.element = el.closest('.widget');
 		var offset = widget.element.offset();
-		widget.mouse_offset = { col: Math.floor((e.pageX - offset.left) / size.pixels), row: Math.floor((e.pageY - offset.top) / size.pixels)};
+		widget.mouse_offset = { col: Math.floor((e.pageX - offset.left) / size.pixels), row: Math.floor((e.pageY - offset.top) / size.pixelsh)};
 		widget.zindex = widget.element.css('z-index');
 		widget.element.css('z-index', 15);
 		var grid = self.grid(widget.element.attr('data-grid').split(','));
@@ -1349,7 +1350,7 @@ COMPONENT('designer', function(self) {
 
 		if (widget.moving) {
 			var mouse_col = Math.floor((e.pageX - offset.left) / size.pixels);
-			var mouse_row = Math.floor((e.pageY - offset.top) / size.pixels);
+			var mouse_row = Math.floor((e.pageY - offset.top) / size.pixelsh);
 			var move_cols = mouse_col - widget.mouse_offset.col - widget.origin.pos.col;
 			var move_rows = mouse_row - widget.mouse_offset.row - widget.origin.pos.row;
 			if (widget.move_cols === move_cols && widget.move_rows === move_rows)
@@ -1364,14 +1365,14 @@ COMPONENT('designer', function(self) {
 			var row = widget.origin.pos.row + widget.move_rows;
 			col = col < 0 ? 0 : col;
 			row = row < 0 ? 0 : row;
-			widget.element.animate({ left: col * size.pixels, top: row * size.pixels }, 15);
+			widget.element.animate({ left: col * size.pixels, top: row * size.pixelsh }, 15);
 			widget.index = (row * 24) + col;
 			if (item)
 				item[common.device === 'desktop' ? 'index' : 'mindex'] = widget.index;
 		}
 
 		if (widget.resizing) {
-			var resize_cols = Math.floor((e.pageX - offset.left) / size.pixels) - widget.mouse_offset.col - widget.origin.pos.col;
+			var resize_cols = Math.floor((e.pageX - offset.left) / size.pixelsh) - widget.mouse_offset.col - widget.origin.pos.col;
 			var resize_rows = Math.floor((e.pageY - offset.top) / size.pixels) - widget.mouse_offset.row - widget.origin.pos.row;
 			if ((widget.resize_cols === resize_cols && widget.resize_rows === resize_rows) || (widget.origin.pos.col + widget.origin.size.cols + resize_cols) > 24)
 				return;
@@ -1383,13 +1384,13 @@ COMPONENT('designer', function(self) {
 				widget.size.cols = 1;
 			if (widget.size.rows < 1)
 				widget.size.rows = 1;
-			widget.element.animate({ width: widget.size.cols * size.pixels, height: widget.size.rows * size.pixels }, 15);
+			widget.element.animate({ width: widget.size.cols * size.pixels, height: widget.size.rows * size.pixelsh }, 15);
 			if (item) {
 				item[common.device === 'desktop' ? 'cols' : 'mcols'] = widget.size.cols;
 				item[common.device === 'desktop' ? 'rows' : 'mrows'] = widget.size.rows;
 				var instance = widget.element.find('figure')[0].$widget;
 				var padding = instance.size.padding;
-				instance.size = { cols: widget.size.cols, rows: widget.size.rows, height: (size.pixels * widget.size.rows) - (padding * 2), width: (size.pixels * widget.size.cols) - (padding * 2), padding: padding, pixels: size.pixels };
+				instance.size = { cols: widget.size.cols, rows: widget.size.rows, height: (size.pixelsh * widget.size.rows) - (padding * 2), width: (size.pixels * widget.size.cols) - (padding * 2), padding: padding, pixels: size.pixels };
 				instance.emit('resize', instance.size);
 			}
 		}
@@ -1427,9 +1428,9 @@ COMPONENT('designer', function(self) {
 	self.mmove = function(x, y) {
 
 		var fx = x > move.x ? move.x : x - size.pixels;
-		var fy = y > move.y ? move.y : y - size.pixels;
+		var fy = y > move.y ? move.y : y - size.pixelsh;
 		var tx = x > move.x ? x : move.x + size.pixels;
-		var ty = y > move.y ? y : move.y + size.pixels;
+		var ty = y > move.y ? y : move.y + size.pixelsh;
 		cells.each(function() {
 			var el = $(this);
 			var offset = el.offset();
@@ -1443,7 +1444,7 @@ COMPONENT('designer', function(self) {
 		var pos = self.getPosition(w[key + 'index']);
 		var grid = w.index + ',' + w.cols + ',' + w.rows + ',' + (w.mindex === 0 ? 0 : (w.mindex || w.index)) + ',' + (w.mcols === 0 ? 0 : (w.mcols || w.cols)) + ',' + (w.mrows === 0 ? 0 : (w.mrows || w.rows));
 		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{6}"><div class="widget-toolbar"><div class="move"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{7}</div></div>';
-		html = html.format(pos.col * size.pixels, pos.row * size.pixels, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixels, grid, w.tab, w.id, w.app ? '<figure data-name="{0}"></figure>'.format(w.app) : '');
+		html = html.format(pos.col * size.pixels, pos.row * size.pixelsh, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixelsh, grid, w.tab, w.id, w.app ? '<figure data-name="{0}"></figure>'.format(w.app) : '');
 		widgets.append(html);
 		self.operations.tab();
 	};
@@ -1478,7 +1479,7 @@ COMPONENT('designer', function(self) {
 			opt.mrows = +grid[5];
 			opt.device = device;
 			opt.width = opt[common.device === 'desktop' ? 'cols' : 'mcols'] * size.pixels;
-			opt.height = opt[common.device === 'desktop' ? 'rows' : 'mrows'] * size.pixels;
+			opt.height = opt[common.device === 'desktop' ? 'rows' : 'mrows'] * size.pixelsh;
 
 			if (!instance) {
 				instance = { id: id, app: declaration.name, index: opt.index, cols: opt.cols, rows: opt.rows, mindex: opt.mindex, mcols: opt.mcols, mrows: opt.mrows, tab: self.attr('data-tab'), options: null };
@@ -1514,7 +1515,7 @@ COMPONENT('designer', function(self) {
 	self.getStartPosition = function(col, row) {
 		var obj = {};
 		obj.x = col * size.pixels;
-		obj.y = row * size.pixels;
+		obj.y = row * size.pixelsh;
 		return obj;
 	};
 
@@ -1656,7 +1657,7 @@ COMPONENT('designer', function(self) {
 			var css = {};
 			var csswh = {};
 
-			cells.css('height', size.pixels + 'px');
+			cells.css('height', size.pixelsh + 'px');
 
 			widgets.find('.widget').each(function() {
 				var el = $(this);
@@ -1667,9 +1668,9 @@ COMPONENT('designer', function(self) {
 				var pos = self.getPosition(index);
 
 				css.left = pos.col * size.pixels + 'px';
-				css.top = pos.row * size.pixels + 'px';
+				css.top = pos.row * size.pixelsh + 'px';
 				css.width = cols * size.pixels + 'px';
-				css.height = rows * size.pixels + 'px';
+				css.height = rows * size.pixelsh + 'px';
 				el.css(css);
 
 				var app = el.find('[data-name]')[0];
@@ -1679,7 +1680,7 @@ COMPONENT('designer', function(self) {
 					opt.rows = rows;
 					opt.device = device;
 					opt.width = cols * size.pixels;
-					opt.height = rows * size.pixels;
+					opt.height = rows * size.pixelsh;
 					opt.padding = (el.css('padding') || '').parseInt();
 					csswh.width = opt.width;
 					csswh.height = opt.height;
