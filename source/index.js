@@ -290,10 +290,6 @@ function send_components(client, callback) {
 	}, (filename) => filename.endsWith('.html'));
 }
 
-ON('flow.save', function() {
-	WS && send_instances(WS);
-});
-
 function auth(controller) {
 
 	if (OPT.auth instanceof Array) {
