@@ -172,7 +172,7 @@ function component_install(controller, response, callback) {
 
 			if (err) {
 				WS_ERROR.body = err.toString();
-				FLOW.send(WS_ERROR);
+				DASHBOARD.send(WS_ERROR);
 				return callback(err);
 			}
 
