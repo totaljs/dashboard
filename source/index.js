@@ -123,7 +123,7 @@ function websocket() {
 		}
 
 		client.send(WS_INIT);
-		send_instances(client, () => send_components(client, () => send_settings(client, function() {
+		send_instances(client, () => send_components(client, () => DASHBOARD.load(client, function() {
 			self.send(WS_LOADED);
 		})));
 	});
@@ -137,6 +137,7 @@ function websocket() {
 		switch (message.TYPE) {
 			case 'templates':
 				OPT.templates && U.request(OPT.templates, FLAGS, function(err, response) {
+					console.log('TEMPLATES', err, response);
 					if (!err) {
 						WS_TEMPLATES.body = response.parseJSON();
 						WS_TEMPLATES.body && client.send(WS_TEMPLATES);
@@ -154,7 +155,7 @@ function websocket() {
 				component_uninstall(self, message.body);
 				break;
 			case 'save':
-				save(message.body);
+				DASHBOARD.save(message.body, OPT.backup);
 				break;
 		}
 	});
@@ -212,6 +213,10 @@ function component_uninstall(controller, name, callback) {
 	});
 }
 
+DASHBOARD.save = function(body, backup, callback) {
+	save(body, callback);
+};
+
 function save(body, callback) {
 	var path = F.path.root(FILEDESIGNER);
 	var json = JSON.stringify(body);
@@ -219,7 +224,11 @@ function save(body, callback) {
 	OPT.backup && Fs.writeFile(F.path.root(FILEDESIGNER.replace(/\.json/g, '-' + F.datetime.format('yyyyMMdd_HHmmss') + '.backup')), json, NOOP);
 }
 
-function send_settings(client, callback) {
+DASHBOARD.load = function(client, callback) {
+	load(client, callback)
+};
+
+function load(client, callback) {
 	var path = F.path.root(FILEDESIGNER);
 	Fs.readFile(path, function(err, data) {
 		data && client.send(data.toString('utf8'), true);
