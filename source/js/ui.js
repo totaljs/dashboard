@@ -1191,7 +1191,9 @@ COMPONENT('designer', function(self) {
 						self.move_resize_mdown(el, e);
 					} else
 						self.mdown(e.pageX, e.pageY, e);
-					e.preventDefault();
+
+					// Clicks won't work if the code below is not commented
+					// e.preventDefault();
 					break;
 				case 'mouseup':
 					if (widget.moving || widget.resizing) {
@@ -1215,7 +1217,8 @@ COMPONENT('designer', function(self) {
 						self.mup(e.pageX, e.pageY, e);
 					}
 
-					e.preventDefault();
+					// Clicks won't work if the code below is not commented
+					// e.preventDefault();
 					break;
 			}
 		});
