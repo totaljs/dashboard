@@ -58,45 +58,44 @@ COMPONENT('error', function(self, config) {
 	};
 });
 
-COMPONENT('search', 'class:hidden;delay:200;attribute:data-search', function(self, config) {
+COMPONENT('search', 'class:hidden;delay:50;attribute:data-search', function(self, config) {
+
+	var cls = 'ui-search';
+
 	self.readonly();
 	self.setter = function(value) {
 
 		if (!config.selector || !config.attribute || value == null)
 			return;
 
-		KEYPRESS(function() {
+		setTimeout2('search' + self.ID, function() {
 
 			var elements = self.find(config.selector);
 			if (!value) {
 				elements.rclass(config.class);
+				self.rclass2(cls + '-');
+				config.exec && EXEC(config.exec, 0, search);
 				return;
 			}
 
 			var search = value.toSearch();
-			var hide = [];
-			var show = [];
+			var count = 0;
 
-			elements.toArray().waitFor(function(item, next) {
-				var el = $(item);
+			self.aclass(cls + '-used');
+
+			elements.each(function() {
+				var el = $(this);
 				var val = (el.attr(config.attribute) || '').toSearch();
-				if (val.indexOf(search) === -1)
-					hide.push(el);
-				else
-					show.push(el);
-				setTimeout(next, 3);
-			}, function() {
-
-				hide.forEach(function(item) {
-					item.tclass(config.class, true);
-				});
-
-				show.forEach(function(item) {
-					item.tclass(config.class, false);
-				});
+				var is = val.indexOf(search) === -1;
+				el.tclass(config.class, is);
+				if (!is)
+					count++;
 			});
 
-		}, config.delay, 'search' + self.id);
+			self.tclass(cls + '-empty', !count);
+			config.exec && EXEC(config.exec, count, search);
+
+		}, config.delay);
 	};
 });
 
@@ -693,6 +692,178 @@ COMPONENT('repeater-group', function(self, config) {
 	};
 });
 
+COMPONENT('faicons', 'search:Search', function(self, config) {
+
+	// https://gist.github.com/sakalauskas/b0c5049d5dc349713a82f1cb2a30b2fa
+	var icons = 'fas fa-ad,fas fa-address-book,fas fa-address-card,fas fa-adjust,fas fa-air-freshener,fas fa-align-center,fas fa-align-justify,fas fa-align-left,fas fa-align-right,fas fa-allergies,fas fa-ambulance,fas fa-american-sign-language-interpreting,fas fa-anchor,fas fa-angle-double-down,fas fa-angle-double-left,fas fa-angle-double-right,fas fa-angle-double-up,fas fa-angle-down,fas fa-angle-left,fas fa-angle-right,fas fa-angle-up,fas fa-angry,fas fa-ankh,fas fa-apple-alt,fas fa-archive,fas fa-archway,fas fa-arrow-alt-circle-down,fas fa-arrow-alt-circle-left,fas fa-arrow-alt-circle-right,fas fa-arrow-alt-circle-up,fas fa-arrow-circle-down,fas fa-arrow-circle-left,fas fa-arrow-circle-right,fas fa-arrow-circle-up,fas fa-arrow-down,fas fa-arrow-left,fas fa-arrow-right,fas fa-arrow-up,fas fa-arrows-alt,fas fa-arrows-alt-h,fas fa-arrows-alt-v,fas fa-assistive-listening-systems,fas fa-asterisk,fas fa-at,fas fa-atlas,fas fa-atom,fas fa-audio-description,fas fa-award,fas fa-baby,fas fa-baby-carriage,fas fa-backspace,fas fa-backward,fas fa-bacon,fas fa-balance-scale,fas fa-balance-scale-left,fas fa-balance-scale-right,fas fa-ban,fas fa-band-aid,fas fa-barcode,fas fa-bars,fas fa-baseball-ball,fas fa-basketball-ball,fas fa-bath,fas fa-battery-empty,fas fa-battery-full,fas fa-battery-half,fas fa-battery-quarter,fas fa-battery-three-quarters,fas fa-bed,fas fa-beer,fas fa-bell,fas fa-bell-slash,fas fa-bezier-curve,fas fa-bible,fas fa-bicycle,fas fa-biking,fas fa-binoculars,fas fa-biohazard,fas fa-birthday-cake,fas fa-blender,fas fa-blender-phone,fas fa-blind,fas fa-blog,fas fa-bold,fas fa-bolt,fas fa-bomb,fas fa-bone,fas fa-bong,fas fa-book,fas fa-book-dead,fas fa-book-medical,fas fa-book-open,fas fa-book-reader,fas fa-bookmark,fas fa-border-all,fas fa-border-none,fas fa-border-style,fas fa-bowling-ball,fas fa-box,fas fa-box-open,fas fa-boxes,fas fa-braille,fas fa-brain,fas fa-bread-slice,fas fa-briefcase,fas fa-briefcase-medical,fas fa-broadcast-tower,fas fa-broom,fas fa-brush,fas fa-bug,fas fa-building,fas fa-bullhorn,fas fa-bullseye,fas fa-burn,fas fa-bus,fas fa-bus-alt,fas fa-business-time,fas fa-calculator,fas fa-calendar,fas fa-calendar-alt,fas fa-calendar-check,fas fa-calendar-day,fas fa-calendar-minus,fas fa-calendar-plus,fas fa-calendar-times,fas fa-calendar-week,fas fa-camera,fas fa-camera-retro,fas fa-campground,fas fa-candy-cane,fas fa-cannabis,fas fa-capsules,fas fa-car,fas fa-car-alt,fas fa-car-battery,fas fa-car-crash,fas fa-car-side,fas fa-caret-down,fas fa-caret-left,fas fa-caret-right,fas fa-caret-square-down,fas fa-caret-square-left,fas fa-caret-square-right,fas fa-caret-square-up,fas fa-caret-up,fas fa-carrot,fas fa-cart-arrow-down,fas fa-cart-plus,fas fa-cash-register,fas fa-cat,fas fa-certificate,fas fa-chair,fas fa-chalkboard,fas fa-chalkboard-teacher,fas fa-charging-station,fas fa-chart-area,fas fa-chart-bar,fas fa-chart-line,fas fa-chart-pie,fas fa-check,fas fa-check-circle,fas fa-check-double,fas fa-check-square,fas fa-cheese,fas fa-chess,fas fa-chess-bishop,fas fa-chess-board,fas fa-chess-king,fas fa-chess-knight,fas fa-chess-pawn,fas fa-chess-queen,fas fa-chess-rook,fas fa-chevron-circle-down,fas fa-chevron-circle-left,fas fa-chevron-circle-right,fas fa-chevron-circle-up,fas fa-chevron-down,fas fa-chevron-left,fas fa-chevron-right,fas fa-chevron-up,fas fa-child,fas fa-church,fas fa-circle,fas fa-circle-notch,fas fa-city,fas fa-clinic-medical,fas fa-clipboard,fas fa-clipboard-check,fas fa-clipboard-list,fas fa-clock,fas fa-clone,fas fa-closed-captioning,fas fa-cloud,fas fa-cloud-download-alt,fas fa-cloud-meatball,fas fa-cloud-moon,fas fa-cloud-moon-rain,fas fa-cloud-rain,fas fa-cloud-showers-heavy,fas fa-cloud-sun,fas fa-cloud-sun-rain,fas fa-cloud-upload-alt,fas fa-cocktail,fas fa-code,fas fa-code-branch,fas fa-coffee,fas fa-cog,fas fa-cogs,fas fa-coins,fas fa-columns,fas fa-comment,fas fa-comment-alt,fas fa-comment-dollar,fas fa-comment-dots,fas fa-comment-medical,fas fa-comment-slash,fas fa-comments,fas fa-comments-dollar,fas fa-compact-disc,fas fa-compass,fas fa-compress,fas fa-compress-arrows-alt,fas fa-concierge-bell,fas fa-cookie,fas fa-cookie-bite,fas fa-copy,fas fa-copyright,fas fa-couch,fas fa-credit-card,fas fa-crop,fas fa-crop-alt,fas fa-cross,fas fa-crosshairs,fas fa-crow,fas fa-crown,fas fa-crutch,fas fa-cube,fas fa-cubes,fas fa-cut,fas fa-database,fas fa-deaf,fas fa-democrat,fas fa-desktop,fas fa-dharmachakra,fas fa-diagnoses,fas fa-dice,fas fa-dice-d20,fas fa-dice-d6,fas fa-dice-five,fas fa-dice-four,fas fa-dice-one,fas fa-dice-six,fas fa-dice-three,fas fa-dice-two,fas fa-digital-tachograph,fas fa-directions,fas fa-divide,fas fa-dizzy,fas fa-dna,fas fa-dog,fas fa-dollar-sign,fas fa-dolly,fas fa-dolly-flatbed,fas fa-donate,fas fa-door-closed,fas fa-door-open,fas fa-dot-circle,fas fa-dove,fas fa-download,fas fa-drafting-compass,fas fa-dragon,fas fa-draw-polygon,fas fa-drum,fas fa-drum-steelpan,fas fa-drumstick-bite,fas fa-dumbbell,fas fa-dumpster,fas fa-dumpster-fire,fas fa-dungeon,fas fa-edit,fas fa-egg,fas fa-eject,fas fa-ellipsis-h,fas fa-ellipsis-v,fas fa-envelope,fas fa-envelope-open,fas fa-envelope-open-text,fas fa-envelope-square,fas fa-equals,fas fa-eraser,fas fa-ethernet,fas fa-euro-sign,fas fa-exchange-alt,fas fa-exclamation,fas fa-exclamation-circle,fas fa-exclamation-triangle,fas fa-expand,fas fa-expand-arrows-alt,fas fa-external-link-alt,fas fa-external-link-square-alt,fas fa-eye,fas fa-eye-dropper,fas fa-eye-slash,fas fa-fan,fas fa-fast-backward,fas fa-fast-forward,fas fa-fax,fas fa-feather,fas fa-feather-alt,fas fa-female,fas fa-fighter-jet,fas fa-file,fas fa-file-alt,fas fa-file-archive,fas fa-file-audio,fas fa-file-code,fas fa-file-contract,fas fa-file-csv,fas fa-file-download,fas fa-file-excel,fas fa-file-export,fas fa-file-image,fas fa-file-import,fas fa-file-invoice,fas fa-file-invoice-dollar,fas fa-file-medical,fas fa-file-medical-alt,fas fa-file-pdf,fas fa-file-powerpoint,fas fa-file-prescription,fas fa-file-signature,fas fa-file-upload,fas fa-file-video,fas fa-file-word,fas fa-fill,fas fa-fill-drip,fas fa-film,fas fa-filter,fas fa-fingerprint,fas fa-fire,fas fa-fire-alt,fas fa-fire-extinguisher,fas fa-first-aid,fas fa-fish,fas fa-fist-raised,fas fa-flag,fas fa-flag-checkered,fas fa-flag-usa,fas fa-flask,fas fa-flushed,fas fa-folder,fas fa-folder-minus,fas fa-folder-open,fas fa-folder-plus,fas fa-font,fas fa-football-ball,fas fa-forward,fas fa-frog,fas fa-frown,fas fa-frown-open,fas fa-funnel-dollar,fas fa-futbol,fas fa-gamepad,fas fa-gas-pump,fas fa-gavel,fas fa-gem,fas fa-genderless,fas fa-ghost,fas fa-gift,fas fa-gifts,fas fa-glass-cheers,fas fa-glass-martini,fas fa-glass-martini-alt,fas fa-glass-whiskey,fas fa-glasses,fas fa-globe,fas fa-globe-africa,fas fa-globe-americas,fas fa-globe-asia,fas fa-globe-europe,fas fa-golf-ball,fas fa-gopuram,fas fa-graduation-cap,fas fa-greater-than,fas fa-greater-than-equal,fas fa-grimace,fas fa-grin,fas fa-grin-alt,fas fa-grin-beam,fas fa-grin-beam-sweat,fas fa-grin-hearts,fas fa-grin-squint,fas fa-grin-squint-tears,fas fa-grin-stars,fas fa-grin-tears,fas fa-grin-tongue,fas fa-grin-tongue-squint,fas fa-grin-tongue-wink,fas fa-grin-wink,fas fa-grip-horizontal,fas fa-grip-lines,fas fa-grip-lines-vertical,fas fa-grip-vertical,fas fa-guitar,fas fa-h-square,fas fa-hamburger,fas fa-hammer,fas fa-hamsa,fas fa-hand-holding,fas fa-hand-holding-heart,fas fa-hand-holding-usd,fas fa-hand-lizard,fas fa-hand-middle-finger,fas fa-hand-paper,fas fa-hand-peace,fas fa-hand-point-down,fas fa-hand-point-left,fas fa-hand-point-right,fas fa-hand-point-up,fas fa-hand-pointer,fas fa-hand-rock,fas fa-hand-scissors,fas fa-hand-spock,fas fa-hands,fas fa-hands-helping,fas fa-handshake,fas fa-hanukiah,fas fa-hard-hat,fas fa-hashtag,fas fa-hat-cowboy,fas fa-hat-cowboy-side,fas fa-hat-wizard,fas fa-haykal,fas fa-hdd,fas fa-heading,fas fa-headphones,fas fa-headphones-alt,fas fa-headset,fas fa-heart,fas fa-heart-broken,fas fa-heartbeat,fas fa-helicopter,fas fa-highlighter,fas fa-hiking,fas fa-hippo,fas fa-history,fas fa-hockey-puck,fas fa-holly-berry,fas fa-home,fas fa-horse,fas fa-horse-head,fas fa-hospital,fas fa-hospital-alt,fas fa-hospital-symbol,fas fa-hot-tub,fas fa-hotdog,fas fa-hotel,fas fa-hourglass,fas fa-hourglass-end,fas fa-hourglass-half,fas fa-hourglass-start,fas fa-house-damage,fas fa-hryvnia,fas fa-i-cursor,fas fa-ice-cream,fas fa-icicles,fas fa-icons,fas fa-id-badge,fas fa-id-card,fas fa-id-card-alt,fas fa-igloo,fas fa-image,fas fa-images,fas fa-inbox,fas fa-indent,fas fa-industry,fas fa-infinity,fas fa-info,fas fa-info-circle,fas fa-italic,fas fa-jedi,fas fa-joint,fas fa-journal-whills,fas fa-kaaba,fas fa-key,fas fa-keyboard,fas fa-khanda,fas fa-kiss,fas fa-kiss-beam,fas fa-kiss-wink-heart,fas fa-kiwi-bird,fas fa-landmark,fas fa-language,fas fa-laptop,fas fa-laptop-code,fas fa-laptop-medical,fas fa-laugh,fas fa-laugh-beam,fas fa-laugh-squint,fas fa-laugh-wink,fas fa-layer-group,fas fa-leaf,fas fa-lemon,fas fa-less-than,fas fa-less-than-equal,fas fa-level-down-alt,fas fa-level-up-alt,fas fa-life-ring,fas fa-lightbulb,fas fa-link,fas fa-lira-sign,fas fa-list,fas fa-list-alt,fas fa-list-ol,fas fa-list-ul,fas fa-location-arrow,fas fa-lock,fas fa-lock-open,fas fa-long-arrow-alt-down,fas fa-long-arrow-alt-left,fas fa-long-arrow-alt-right,fas fa-long-arrow-alt-up,fas fa-low-vision,fas fa-luggage-cart,fas fa-magic,fas fa-magnet,fas fa-mail-bulk,fas fa-male,fas fa-map,fas fa-map-marked,fas fa-map-marked-alt,fas fa-map-marker,fas fa-map-marker-alt,fas fa-map-pin,fas fa-map-signs,fas fa-marker,fas fa-mars,fas fa-mars-double,fas fa-mars-stroke,fas fa-mars-stroke-h,fas fa-mars-stroke-v,fas fa-mask,fas fa-medal,fas fa-medkit,fas fa-meh,fas fa-meh-blank,fas fa-meh-rolling-eyes,fas fa-memory,fas fa-menorah,fas fa-mercury,fas fa-meteor,fas fa-microchip,fas fa-microphone,fas fa-microphone-alt,fas fa-microphone-alt-slash,fas fa-microphone-slash,fas fa-microscope,fas fa-minus,fas fa-minus-circle,fas fa-minus-square,fas fa-mitten,fas fa-mobile,fas fa-mobile-alt,fas fa-money-bill,fas fa-money-bill-alt,fas fa-money-bill-wave,fas fa-money-bill-wave-alt,fas fa-money-check,fas fa-money-check-alt,fas fa-monument,fas fa-moon,fas fa-mortar-pestle,fas fa-mosque,fas fa-motorcycle,fas fa-mountain,fas fa-mouse,fas fa-mouse-pointer,fas fa-mug-hot,fas fa-music,fas fa-network-wired,fas fa-neuter,fas fa-newspaper,fas fa-not-equal,fas fa-notes-medical,fas fa-object-group,fas fa-object-ungroup,fas fa-oil-can,fas fa-om,fas fa-otter,fas fa-outdent,fas fa-pager,fas fa-paint-brush,fas fa-paint-roller,fas fa-palette,fas fa-pallet,fas fa-paper-plane,fas fa-paperclip,fas fa-parachute-box,fas fa-paragraph,fas fa-parking,fas fa-passport,fas fa-pastafarianism,fas fa-paste,fas fa-pause,fas fa-pause-circle,fas fa-paw,fas fa-peace,fas fa-pen,fas fa-pen-alt,fas fa-pen-fancy,fas fa-pen-nib,fas fa-pen-square,fas fa-pencil-alt,fas fa-pencil-ruler,fas fa-people-carry,fas fa-pepper-hot,fas fa-percent,fas fa-percentage,fas fa-person-booth,fas fa-phone,fas fa-phone-alt,fas fa-phone-slash,fas fa-phone-square,fas fa-phone-square-alt,fas fa-phone-volume,fas fa-photo-video,fas fa-piggy-bank,fas fa-pills,fas fa-pizza-slice,fas fa-place-of-worship,fas fa-plane,fas fa-plane-arrival,fas fa-plane-departure,fas fa-play,fas fa-play-circle,fas fa-plug,fas fa-plus,fas fa-plus-circle,fas fa-plus-square,fas fa-podcast,fas fa-poll,fas fa-poll-h,fas fa-poo,fas fa-poo-storm,fas fa-poop,fas fa-portrait,fas fa-pound-sign,fas fa-power-off,fas fa-pray,fas fa-praying-hands,fas fa-prescription,fas fa-prescription-bottle,fas fa-prescription-bottle-alt,fas fa-print,fas fa-procedures,fas fa-project-diagram,fas fa-puzzle-piece,fas fa-qrcode,fas fa-question,fas fa-question-circle,fas fa-quidditch,fas fa-quote-left,fas fa-quote-right,fas fa-quran,fas fa-radiation,fas fa-radiation-alt,fas fa-rainbow,fas fa-random,fas fa-receipt,fas fa-record-vinyl,fas fa-recycle,fas fa-redo,fas fa-redo-alt,fas fa-registered,fas fa-remove-format,fas fa-reply,fas fa-reply-all,fas fa-republican,fas fa-restroom,fas fa-retweet,fas fa-ribbon,fas fa-ring,fas fa-road,fas fa-robot,fas fa-rocket,fas fa-route,fas fa-rss,fas fa-rss-square,fas fa-ruble-sign,fas fa-ruler,fas fa-ruler-combined,fas fa-ruler-horizontal,fas fa-ruler-vertical,fas fa-running,fas fa-rupee-sign,fas fa-sad-cry,fas fa-sad-tear,fas fa-satellite,fas fa-satellite-dish,fas fa-save,fas fa-school,fas fa-screwdriver,fas fa-scroll,fas fa-sd-card,fas fa-search,fas fa-search-dollar,fas fa-search-location,fas fa-search-minus,fas fa-search-plus,fas fa-seedling,fas fa-server,fas fa-shapes,fas fa-share,fas fa-share-alt,fas fa-share-alt-square,fas fa-share-square,fas fa-shekel-sign,fas fa-shield-alt,fas fa-ship,fas fa-shipping-fast,fas fa-shoe-prints,fas fa-shopping-bag,fas fa-shopping-basket,fas fa-shopping-cart,fas fa-shower,fas fa-shuttle-van,fas fa-sign,fas fa-sign-in-alt,fas fa-sign-language,fas fa-sign-out-alt,fas fa-signal,fas fa-signature,fas fa-sim-card,fas fa-sitemap,fas fa-skating,fas fa-skiing,fas fa-skiing-nordic,fas fa-skull,fas fa-skull-crossbones,fas fa-slash,fas fa-sleigh,fas fa-sliders-h,fas fa-smile,fas fa-smile-beam,fas fa-smile-wink,fas fa-smog,fas fa-smoking,fas fa-smoking-ban,fas fa-sms,fas fa-snowboarding,fas fa-snowflake,fas fa-snowman,fas fa-snowplow,fas fa-socks,fas fa-solar-panel,fas fa-sort,fas fa-sort-alpha-down,fas fa-sort-alpha-down-alt,fas fa-sort-alpha-up,fas fa-sort-alpha-up-alt,fas fa-sort-amount-down,fas fa-sort-amount-down-alt,fas fa-sort-amount-up,fas fa-sort-amount-up-alt,fas fa-sort-down,fas fa-sort-numeric-down,fas fa-sort-numeric-down-alt,fas fa-sort-numeric-up,fas fa-sort-numeric-up-alt,fas fa-sort-up,fas fa-spa,fas fa-space-shuttle,fas fa-spell-check,fas fa-spider,fas fa-spinner,fas fa-splotch,fas fa-spray-can,fas fa-square,fas fa-square-full,fas fa-square-root-alt,fas fa-stamp,fas fa-star,fas fa-star-and-crescent,fas fa-star-half,fas fa-star-half-alt,fas fa-star-of-david,fas fa-star-of-life,fas fa-step-backward,fas fa-step-forward,fas fa-stethoscope,fas fa-sticky-note,fas fa-stop,fas fa-stop-circle,fas fa-stopwatch,fas fa-store,fas fa-store-alt,fas fa-stream,fas fa-street-view,fas fa-strikethrough,fas fa-stroopwafel,fas fa-subscript,fas fa-subway,fas fa-suitcase,fas fa-suitcase-rolling,fas fa-sun,fas fa-superscript,fas fa-surprise,fas fa-swatchbook,fas fa-swimmer,fas fa-swimming-pool,fas fa-synagogue,fas fa-sync,fas fa-sync-alt,fas fa-syringe,fas fa-table,fas fa-table-tennis,fas fa-tablet,fas fa-tablet-alt,fas fa-tablets,fas fa-tachometer-alt,fas fa-tag,fas fa-tags,fas fa-tape,fas fa-tasks,fas fa-taxi,fas fa-teeth,fas fa-teeth-open,fas fa-temperature-high,fas fa-temperature-low,fas fa-tenge,fas fa-terminal,fas fa-text-height,fas fa-text-width,fas fa-th,fas fa-th-large,fas fa-th-list,fas fa-theater-masks,fas fa-thermometer,fas fa-thermometer-empty,fas fa-thermometer-full,fas fa-thermometer-half,fas fa-thermometer-quarter,fas fa-thermometer-three-quarters,fas fa-thumbs-down,fas fa-thumbs-up,fas fa-thumbtack,fas fa-ticket-alt,fas fa-times,fas fa-times-circle,fas fa-tint,fas fa-tint-slash,fas fa-tired,fas fa-toggle-off,fas fa-toggle-on,fas fa-toilet,fas fa-toilet-paper,fas fa-toolbox,fas fa-tools,fas fa-tooth,fas fa-torah,fas fa-torii-gate,fas fa-tractor,fas fa-trademark,fas fa-traffic-light,fas fa-train,fas fa-tram,fas fa-transgender,fas fa-transgender-alt,fas fa-trash,fas fa-trash-alt,fas fa-trash-restore,fas fa-trash-restore-alt,fas fa-tree,fas fa-trophy,fas fa-truck,fas fa-truck-loading,fas fa-truck-monster,fas fa-truck-moving,fas fa-truck-pickup,fas fa-tshirt,fas fa-tty,fas fa-tv,fas fa-umbrella,fas fa-umbrella-beach,fas fa-underline,fas fa-undo,fas fa-undo-alt,fas fa-universal-access,fas fa-university,fas fa-unlink,fas fa-unlock,fas fa-unlock-alt,fas fa-upload,fas fa-user,fas fa-user-alt,fas fa-user-alt-slash,fas fa-user-astronaut,fas fa-user-check,fas fa-user-circle,fas fa-user-clock,fas fa-user-cog,fas fa-user-edit,fas fa-user-friends,fas fa-user-graduate,fas fa-user-injured,fas fa-user-lock,fas fa-user-md,fas fa-user-minus,fas fa-user-ninja,fas fa-user-nurse,fas fa-user-plus,fas fa-user-secret,fas fa-user-shield,fas fa-user-slash,fas fa-user-tag,fas fa-user-tie,fas fa-user-times,fas fa-users,fas fa-users-cog,fas fa-utensil-spoon,fas fa-utensils,fas fa-vector-square,fas fa-venus,fas fa-venus-double,fas fa-venus-mars,fas fa-vial,fas fa-vials,fas fa-video,fas fa-video-slash,fas fa-vihara,fas fa-voicemail,fas fa-volleyball-ball,fas fa-volume-down,fas fa-volume-mute,fas fa-volume-off,fas fa-volume-up,fas fa-vote-yea,fas fa-vr-cardboard,fas fa-walking,fas fa-wallet,fas fa-warehouse,fas fa-water,fas fa-wave-square,fas fa-weight,fas fa-weight-hanging,fas fa-wheelchair,fas fa-wifi,fas fa-wind,fas fa-window-close,fas fa-window-maximize,fas fa-window-minimize,fas fa-window-restore,fas fa-wine-bottle,fas fa-wine-glass,fas fa-wine-glass-alt,fas fa-won-sign,fas fa-wrench,fas fa-x-ray,fas fa-yen-sign,fas fa-yin-yang,far fa-address-book,far fa-address-card,far fa-angry,far fa-arrow-alt-circle-down,far fa-arrow-alt-circle-left,far fa-arrow-alt-circle-right,far fa-arrow-alt-circle-up,far fa-bell,far fa-bell-slash,far fa-bookmark,far fa-building,far fa-calendar,far fa-calendar-alt,far fa-calendar-check,far fa-calendar-minus,far fa-calendar-plus,far fa-calendar-times,far fa-caret-square-down,far fa-caret-square-left,far fa-caret-square-right,far fa-caret-square-up,far fa-chart-bar,far fa-check-circle,far fa-check-square,far fa-circle,far fa-clipboard,far fa-clock,far fa-clone,far fa-closed-captioning,far fa-comment,far fa-comment-alt,far fa-comment-dots,far fa-comments,far fa-compass,far fa-copy,far fa-copyright,far fa-credit-card,far fa-dizzy,far fa-dot-circle,far fa-edit,far fa-envelope,far fa-envelope-open,far fa-eye,far fa-eye-slash,far fa-file,far fa-file-alt,far fa-file-archive,far fa-file-audio,far fa-file-code,far fa-file-excel,far fa-file-image,far fa-file-pdf,far fa-file-powerpoint,far fa-file-video,far fa-file-word,far fa-flag,far fa-flushed,far fa-folder,far fa-folder-open,far fa-frown,far fa-frown-open,far fa-futbol,far fa-gem,far fa-grimace,far fa-grin,far fa-grin-alt,far fa-grin-beam,far fa-grin-beam-sweat,far fa-grin-hearts,far fa-grin-squint,far fa-grin-squint-tears,far fa-grin-stars,far fa-grin-tears,far fa-grin-tongue,far fa-grin-tongue-squint,far fa-grin-tongue-wink,far fa-grin-wink,far fa-hand-lizard,far fa-hand-paper,far fa-hand-peace,far fa-hand-point-down,far fa-hand-point-left,far fa-hand-point-right,far fa-hand-point-up,far fa-hand-pointer,far fa-hand-rock,far fa-hand-scissors,far fa-hand-spock,far fa-handshake,far fa-hdd,far fa-heart,far fa-hospital,far fa-hourglass,far fa-id-badge,far fa-id-card,far fa-image,far fa-images,far fa-keyboard,far fa-kiss,far fa-kiss-beam,far fa-kiss-wink-heart,far fa-laugh,far fa-laugh-beam,far fa-laugh-squint,far fa-laugh-wink,far fa-lemon,far fa-life-ring,far fa-lightbulb,far fa-list-alt,far fa-map,far fa-meh,far fa-meh-blank,far fa-meh-rolling-eyes,far fa-minus-square,far fa-money-bill-alt,far fa-moon,far fa-newspaper,far fa-object-group,far fa-object-ungroup,far fa-paper-plane,far fa-pause-circle,far fa-play-circle,far fa-plus-square,far fa-question-circle,far fa-registered,far fa-sad-cry,far fa-sad-tear,far fa-save,far fa-share-square,far fa-smile,far fa-smile-beam,far fa-smile-wink,far fa-snowflake,far fa-square,far fa-star,far fa-star-half,far fa-sticky-note,far fa-stop-circle,far fa-sun,far fa-surprise,far fa-thumbs-down,far fa-thumbs-up,far fa-times-circle,far fa-tired,far fa-trash-alt,far fa-user,far fa-user-circle,far fa-window-close,far fa-window-maximize,far fa-window-minimize,far fa-window-restore,fab fa-500px,fab fa-accessible-icon,fab fa-accusoft,fab fa-acquisitions-incorporated,fab fa-adn,fab fa-adobe,fab fa-adversal,fab fa-affiliatetheme,fab fa-airbnb,fab fa-algolia,fab fa-alipay,fab fa-amazon,fab fa-amazon-pay,fab fa-amilia,fab fa-android,fab fa-angellist,fab fa-angrycreative,fab fa-angular,fab fa-app-store,fab fa-app-store-ios,fab fa-apper,fab fa-apple,fab fa-apple-pay,fab fa-artstation,fab fa-asymmetrik,fab fa-atlassian,fab fa-audible,fab fa-autoprefixer,fab fa-avianex,fab fa-aviato,fab fa-aws,fab fa-bandcamp,fab fa-battle-net,fab fa-behance,fab fa-behance-square,fab fa-bimobject,fab fa-bitbucket,fab fa-bitcoin,fab fa-bity,fab fa-black-tie,fab fa-blackberry,fab fa-blogger,fab fa-blogger-b,fab fa-bluetooth,fab fa-bluetooth-b,fab fa-bootstrap,fab fa-btc,fab fa-buffer,fab fa-buromobelexperte,fab fa-buy-n-large,fab fa-buysellads,fab fa-canadian-maple-leaf,fab fa-cc-amazon-pay,fab fa-cc-amex,fab fa-cc-apple-pay,fab fa-cc-diners-club,fab fa-cc-discover,fab fa-cc-jcb,fab fa-cc-mastercard,fab fa-cc-paypal,fab fa-cc-stripe,fab fa-cc-visa,fab fa-centercode,fab fa-centos,fab fa-chrome,fab fa-chromecast,fab fa-cloudscale,fab fa-cloudsmith,fab fa-cloudversify,fab fa-codepen,fab fa-codiepie,fab fa-confluence,fab fa-connectdevelop,fab fa-contao,fab fa-cotton-bureau,fab fa-cpanel,fab fa-creative-commons,fab fa-creative-commons-by,fab fa-creative-commons-nc,fab fa-creative-commons-nc-eu,fab fa-creative-commons-nc-jp,fab fa-creative-commons-nd,fab fa-creative-commons-pd,fab fa-creative-commons-pd-alt,fab fa-creative-commons-remix,fab fa-creative-commons-sa,fab fa-creative-commons-sampling,fab fa-creative-commons-sampling-plus,fab fa-creative-commons-share,fab fa-creative-commons-zero,fab fa-critical-role,fab fa-css3,fab fa-css3-alt,fab fa-cuttlefish,fab fa-d-and-d,fab fa-d-and-d-beyond,fab fa-dashcube,fab fa-delicious,fab fa-deploydog,fab fa-deskpro,fab fa-dev,fab fa-deviantart,fab fa-dhl,fab fa-diaspora,fab fa-digg,fab fa-digital-ocean,fab fa-discord,fab fa-discourse,fab fa-dochub,fab fa-docker,fab fa-draft2digital,fab fa-dribbble,fab fa-dribbble-square,fab fa-dropbox,fab fa-drupal,fab fa-dyalog,fab fa-earlybirds,fab fa-ebay,fab fa-edge,fab fa-elementor,fab fa-ello,fab fa-ember,fab fa-empire,fab fa-envira,fab fa-erlang,fab fa-ethereum,fab fa-etsy,fab fa-evernote,fab fa-expeditedssl,fab fa-facebook,fab fa-facebook-f,fab fa-facebook-messenger,fab fa-facebook-square,fab fa-fantasy-flight-games,fab fa-fedex,fab fa-fedora,fab fa-figma,fab fa-firefox,fab fa-first-order,fab fa-first-order-alt,fab fa-firstdraft,fab fa-flickr,fab fa-flipboard,fab fa-fly,fab fa-font-awesome,fab fa-font-awesome-alt,fab fa-font-awesome-flag,fab fa-fonticons,fab fa-fonticons-fi,fab fa-fort-awesome,fab fa-fort-awesome-alt,fab fa-forumbee,fab fa-foursquare,fab fa-free-code-camp,fab fa-freebsd,fab fa-fulcrum,fab fa-galactic-republic,fab fa-galactic-senate,fab fa-get-pocket,fab fa-gg,fab fa-gg-circle,fab fa-git,fab fa-git-alt,fab fa-git-square,fab fa-github,fab fa-github-alt,fab fa-github-square,fab fa-gitkraken,fab fa-gitlab,fab fa-gitter,fab fa-glide,fab fa-glide-g,fab fa-gofore,fab fa-goodreads,fab fa-goodreads-g,fab fa-google,fab fa-google-drive,fab fa-google-play,fab fa-google-plus,fab fa-google-plus-g,fab fa-google-plus-square,fab fa-google-wallet,fab fa-gratipay,fab fa-grav,fab fa-gripfire,fab fa-grunt,fab fa-gulp,fab fa-hacker-news,fab fa-hacker-news-square,fab fa-hackerrank,fab fa-hips,fab fa-hire-a-helper,fab fa-hooli,fab fa-hornbill,fab fa-hotjar,fab fa-houzz,fab fa-html5,fab fa-hubspot,fab fa-imdb,fab fa-instagram,fab fa-intercom,fab fa-internet-explorer,fab fa-invision,fab fa-ioxhost,fab fa-itch-io,fab fa-itunes,fab fa-itunes-note,fab fa-java,fab fa-jedi-order,fab fa-jenkins,fab fa-jira,fab fa-joget,fab fa-joomla,fab fa-js,fab fa-js-square,fab fa-jsfiddle,fab fa-kaggle,fab fa-keybase,fab fa-keycdn,fab fa-kickstarter,fab fa-kickstarter-k,fab fa-korvue,fab fa-laravel,fab fa-lastfm,fab fa-lastfm-square,fab fa-leanpub,fab fa-less,fab fa-line,fab fa-linkedin,fab fa-linkedin-in,fab fa-linode,fab fa-linux,fab fa-lyft,fab fa-magento,fab fa-mailchimp,fab fa-mandalorian,fab fa-markdown,fab fa-mastodon,fab fa-maxcdn,fab fa-mdb,fab fa-medapps,fab fa-medium,fab fa-medium-m,fab fa-medrt,fab fa-meetup,fab fa-megaport,fab fa-mendeley,fab fa-microsoft,fab fa-mix,fab fa-mixcloud,fab fa-mizuni,fab fa-modx,fab fa-monero,fab fa-napster,fab fa-neos,fab fa-nimblr,fab fa-node,fab fa-node-js,fab fa-npm,fab fa-ns8,fab fa-nutritionix,fab fa-odnoklassniki,fab fa-odnoklassniki-square,fab fa-old-republic,fab fa-opencart,fab fa-openid,fab fa-opera,fab fa-optin-monster,fab fa-orcid,fab fa-osi,fab fa-page4,fab fa-pagelines,fab fa-palfed,fab fa-patreon,fab fa-paypal,fab fa-penny-arcade,fab fa-periscope,fab fa-phabricator,fab fa-phoenix-framework,fab fa-phoenix-squadron,fab fa-php,fab fa-pied-piper,fab fa-pied-piper-alt,fab fa-pied-piper-hat,fab fa-pied-piper-pp,fab fa-pinterest,fab fa-pinterest-p,fab fa-pinterest-square,fab fa-playstation,fab fa-product-hunt,fab fa-pushed,fab fa-python,fab fa-qq,fab fa-quinscape,fab fa-quora,fab fa-r-project,fab fa-raspberry-pi,fab fa-ravelry,fab fa-react,fab fa-reacteurope,fab fa-readme,fab fa-rebel,fab fa-red-river,fab fa-reddit,fab fa-reddit-alien,fab fa-reddit-square,fab fa-redhat,fab fa-renren,fab fa-replyd,fab fa-researchgate,fab fa-resolving,fab fa-rev,fab fa-rocketchat,fab fa-rockrms,fab fa-safari,fab fa-salesforce,fab fa-sass,fab fa-schlix,fab fa-scribd,fab fa-searchengin,fab fa-sellcast,fab fa-sellsy,fab fa-servicestack,fab fa-shirtsinbulk,fab fa-shopware,fab fa-simplybuilt,fab fa-sistrix,fab fa-sith,fab fa-sketch,fab fa-skyatlas,fab fa-skype,fab fa-slack,fab fa-slack-hash,fab fa-slideshare,fab fa-snapchat,fab fa-snapchat-ghost,fab fa-snapchat-square,fab fa-soundcloud,fab fa-sourcetree,fab fa-speakap,fab fa-speaker-deck,fab fa-spotify,fab fa-squarespace,fab fa-stack-exchange,fab fa-stack-overflow,fab fa-stackpath,fab fa-staylinked,fab fa-steam,fab fa-steam-square,fab fa-steam-symbol,fab fa-sticker-mule,fab fa-strava,fab fa-stripe,fab fa-stripe-s,fab fa-studiovinari,fab fa-stumbleupon,fab fa-stumbleupon-circle,fab fa-superpowers,fab fa-supple,fab fa-suse,fab fa-swift,fab fa-symfony,fab fa-teamspeak,fab fa-telegram,fab fa-telegram-plane,fab fa-tencent-weibo,fab fa-the-red-yeti,fab fa-themeco,fab fa-themeisle,fab fa-think-peaks,fab fa-trade-federation,fab fa-trello,fab fa-tripadvisor,fab fa-tumblr,fab fa-tumblr-square,fab fa-twitch,fab fa-twitter,fab fa-twitter-square,fab fa-typo3,fab fa-uber,fab fa-ubuntu,fab fa-uikit,fab fa-umbraco,fab fa-uniregistry,fab fa-untappd,fab fa-ups,fab fa-usb,fab fa-usps,fab fa-ussunnah,fab fa-vaadin,fab fa-viacoin,fab fa-viadeo,fab fa-viadeo-square,fab fa-viber,fab fa-vimeo,fab fa-vimeo-square,fab fa-vimeo-v,fab fa-vine,fab fa-vk,fab fa-vnv,fab fa-vuejs,fab fa-waze,fab fa-weebly,fab fa-weibo,fab fa-weixin,fab fa-whatsapp,fab fa-whatsapp-square,fab fa-whmcs,fab fa-wikipedia-w,fab fa-windows,fab fa-wix,fab fa-wizards-of-the-coast,fab fa-wolf-pack-battalion,fab fa-wordpress,fab fa-wordpress-simple,fab fa-wpbeginner,fab fa-wpexplorer,fab fa-wpforms,fab fa-wpressr,fab fa-xbox,fab fa-xing,fab fa-xing-square,fab fa-y-combinator,fab fa-yahoo,fab fa-yammer,fab fa-yandex,fab fa-yandex-international,fab fa-yarn,fab fa-yelp,fab fa-yoast,fab fa-youtube,fab fa-youtube-square,fab fa-zhihu'.split(',');
+
+	var cls = 'ui-faicons';
+	var cls2 = '.' + cls;
+	var template = '<span data-search="{0}"><i class="{1}"></i></span>';
+	var events = {};
+	var container;
+	var is = false;
+
+	self.singleton();
+	self.readonly();
+	self.blind();
+	self.nocompile();
+
+	self.redraw = function() {
+		self.html('<div class="{0}"><div class="{0}-header"><div class="{0}-search"><span><i class="fa fa-search clearsearch"></i></span><div><input type="text" placeholder="{1}" class="{0}-search-input"></div></div></div><div class="{0}-content noscrollbar"></div></div>'.format(cls, config.search));
+		container = self.find(cls2 + '-content');
+	};
+
+	self.rendericons = function(){
+		var builder = [];
+		for (var i = 0; i < icons.length; i++)
+			builder.push(template.format(icons[i].replace(/^.*?-/, '').replace(/-/g, ' ').toSearch(), icons[i]));
+		self.find(cls2 + '-content').html(builder.join(''));
+	};
+
+	self.search = function(value) {
+
+		var search = self.find('.clearsearch');
+		search.rclass2('fa-');
+
+		if (!value.length) {
+			search.aclass('fa-search');
+			container.find('.hidden').rclass('hidden');
+			return;
+		}
+
+		value = value.toSearch();
+		search.aclass('fa-times');
+		container[0].scrollTop = 0;
+		var icons = container.find('span');
+		for (var i = 0; i < icons.length; i++) {
+			var el = $(icons[i]);
+			el.tclass('hidden', el.attrd('search').indexOf(value) === -1);
+		}
+	};
+
+	self.make = function() {
+
+		self.aclass(cls + '-container hidden');
+
+		self.event('keydown', 'input', function() {
+			var t = this;
+			setTimeout2(self.ID, function() {
+				self.search(t.value);
+			}, 300);
+		});
+
+		self.event('click', '.fa-times', function() {
+			self.find('input').val('');
+			self.search('');
+		});
+
+		self.event('click', cls2 + '-content span', function() {
+			self.opt.callback && self.opt.callback($(this).find('i').attr('class'));
+			self.hide();
+		});
+
+		events.click = function(e) {
+			var el = e.target;
+			var parent = self.dom;
+			do {
+				if (el == parent)
+					return;
+				el = el.parentNode;
+			} while (el);
+			self.hide();
+		};
+
+		self.on('reflow + scroll + resize', self.hide);
+		self.redraw();
+	};
+
+	self.bindevents = function() {
+		if (!events.is) {
+			events.is = true;
+			$(document).on('click', events.click);
+		}
+	};
+
+	self.unbindevents = function() {
+		if (events.is) {
+			events.is = false;
+			$(document).off('click', events.click);
+		}
+	};
+
+	self.show = function(opt) {
+
+		var tmp = opt.element ? opt.element instanceof jQuery ? opt.element[0] : opt.element.element ? opt.element.dom : opt.element : null;
+
+		if (is && tmp && self.target === tmp) {
+			self.hide();
+			return;
+		}
+
+		var search = self.find(cls2 + '-search-input');
+		search.val('');
+		self.find('.clearsearch').rclass2('fa-').aclass('fa-search');
+
+		self.target = tmp;
+		self.opt = opt;
+		var css = {};
+
+		if (is) {
+			css.left = 0;
+			css.top = 0;
+			self.css(css);
+		} else
+			self.rclass('hidden');
+
+		var target = $(opt.element);
+		var w = self.element.width();
+		var offset = target.offset();
+
+		if (opt.element) {
+			switch (opt.align) {
+				case 'center':
+					css.left = Math.ceil((offset.left - w / 2) + (target.innerWidth() / 2));
+					break;
+				case 'right':
+					css.left = (offset.left - w) + target.innerWidth();
+					break;
+				default:
+					css.left = offset.left;
+					break;
+			}
+
+			css.top = opt.position === 'bottom' ? (offset.top - self.element.height() - 10) : (offset.top + target.innerHeight() + 10);
+
+		} else {
+			css.left = opt.x;
+			css.top = opt.y;
+		}
+
+		if (opt.offsetX)
+			css.left += opt.offsetX;
+
+		if (opt.offsetY)
+			css.top += opt.offsetY;
+
+		is = true;
+		self.rendericons();
+		self.find('.noscrollbar').noscrollbar();
+		self.css(css);
+		search.focus();
+		setTimeout(self.bindevents, 50);
+	};
+
+	self.hide = function() {
+		is = false;
+		self.target = null;
+		self.opt = null;
+		container.empty();
+		self.unbindevents();
+		self.aclass('hidden');
+	};
+});
+
 COMPONENT('textbox', function(self, config) {
 
 	var input, container, content = null;
@@ -1056,7 +1227,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 
 		sending = true;
 		var async = queue.splice(0, 3);
-		async.waitFor(function(item, next) {
+		async.wait(function(item, next) {
 			ws.send(item);
 			setTimeout(next, 5);
 		}, function() {
@@ -1114,593 +1285,6 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 		}, 100);
 		return self;
 	};
-});
-
-COMPONENT('designer', function(self) {
-
-	var container, scroller;
-	var move = {};
-	var widget = {};
-	var cells, widgets;
-	var size;
-
-	self.make = function() {
-
-		self.aclass('designer');
-		self.append('<div class="container fullwidth"><div class="widgets"></div><table class="grid"></table></div>');
-
-		scroller = self.element.closest('.designer-scroll');
-		container = self.find('.grid');
-
-		var builder = [];
-		for (var i = 0; i < 720; i++) {
-			if (i % 24 === 0) {
-				if (i)
-					builder.push('</tr>');
-				builder.push('<tr>');
-			}
-			builder.push('<td class="cell" data-grid="{0},{1}" data-index="{2}"><div class="space">&nbsp;</div></td>'.format(i % 24, Math.ceil((i + 1) / 24) - 1, i));
-		}
-
-		builder.push('</tr>');
-
-		container.append(builder.join(''));
-		cells = self.find('.cell');
-		widgets = $(self.find('.widgets').eq(0));
-		size = self.getSize();
-		if (size.width < 300) {
-			WAIT(function() {
-				return $(window).width();
-			}, function(){
-				size = self.getSize();
-				self.operations.resize();
-			});
-		}
-
-		self.event('click', '.widget-settings', function(button) {
-			var button = $(this);
-			var el = button.closest('.widget');
-			var w = el.find('[data-name]')[0];
-			self.emit('designer.contextmenu', button, el, w ? w.$widget : null);
-		});
-
-		self.event('mousedown mousemove mouseup', function(e) {
-			switch (e.type) {
-				case 'mousemove':
-					if (!move.drag && !widget.moving && !widget.resizing)
-						return;
-
-					var target = $(e.target);
-
-					if (widget.moving || widget.resizing) {
-						self.move_resize_mmove(e);
-					} else if (target.hclass('cell') || target.hclass('space')) {
-						self.mmove(e.pageX, e.pageY, e);
-					} else {
-						container.find('.selected').rclass('selected');
-						move.drag = false;
-					}
-
-					e.preventDefault();
-					break;
-				case 'mousedown':
-					if (e.which === 3 || e.button === 2) // ignore right click
-						return;
-					var el = $(e.target);
-					if (el.hclass('move') || el.hclass('resize') || el.parent().hclass('resize')) {
-						self.move_resize_mdown(el, e);
-					} else
-						self.mdown(e.pageX, e.pageY, e);
-
-					// Clicks won't work if the code below is not commented
-					// e.preventDefault();
-					break;
-				case 'mouseup':
-					if (widget.moving || widget.resizing) {
-						widget.moving = false;
-						widget.resizing = false;
-						self.scroller_cursor(false); // reset
-						var grid = widget.element.attr('data-grid').split(',');
-						if (common.device === 'desktop') {
-							grid[0] = widget.index;
-							grid[1] = widget.size.cols;
-							grid[2] = widget.size.rows;
-						} else {
-							grid[3] = widget.index;
-							grid[4] = widget.size.cols;
-							grid[5] = widget.size.rows;
-						}
-						widget.element.attr('data-grid', grid.join(','));
-					} else {
-						if (!move.drag)
-							return;
-						self.mup(e.pageX, e.pageY, e);
-					}
-
-					// Clicks won't work if the code below is not commented
-					// e.preventDefault();
-					break;
-			}
-		});
-
-		self.event('touchstart touchmove touchend', function(evt) {
-			var e = evt.touches[0];
-			switch (evt.type) {
-				case 'touchmove':
-
-					if (!move.drag)
-						return;
-
-					var target = $(evt.target);
-					if (target.hclass('cell') || target.hclass('space')) {
-						self.mmove(e.pageX, e.pageY, e);
-					} else {
-						container.find('.selected').rclass('selected');
-						move.drag = false;
-					}
-
-					for (var i = 0, length = move.intervals.length; i < length; i++) {
-						var int = move.intervals[i];
-						if (e.pageX >= int.x && e.pageX <= int.w && e.pageY >= int.y && e.pageY <= int.h) {
-							container.find('.selected').rclass('selected');
-							move.drag = false;
-							evt.preventDefault();
-							return;
-						}
-					}
-
-					move.cacheX = e.pageX;
-					move.cacheY = e.pageY;
-					evt.preventDefault();
-					break;
-
-				case 'touchstart':
-
-					var target = $(evt.target);
-					if (!target.hclass('cell'))
-						return;
-
-					move.intervals = [];
-					var r = /px/;
-
-					var off = container.offset();
-
-					widgets.find('.widget.tab_' + common.tab.id).each(function() {
-						var el = $(this);
-						var obj = { x: (+el.css('left').replace(r, '')) - 8, y: (+el.css('top').replace(r, '')) - 8, w: (+el.css('width').replace(r, '')) + 8, h: (+el.css('height').replace(r, '')) + 8 };
-						obj.x += off.left;
-						obj.y += off.top;
-						obj.w += obj.x;
-						obj.h += obj.y;
-						move.intervals.push(obj);
-					});
-
-					self.mdown(e.pageX, e.pageY, e);
-					evt.preventDefault();
-					break;
-
-				case 'touchend':
-					if (!move.drag)
-						return;
-					self.mup(move.cacheX, move.cacheY, e);
-					evt.preventDefault();
-					break;
-			}
-		});
-
-		$(window).resize(self.operations.resize);
-		WIDTH() === 'xs' && self.operations.resize();
-	};
-
-	self.getSize = function() {
-		var obj = {};
-		obj.width = container.width();
-		obj.cell = 100 / 24;
-		obj.pixels = (obj.width / 100) * obj.cell;
-		obj.pixelsh = obj.pixels + 0.5;
-		common.size = obj;
-		return obj;
-	};
-
-	self.scroller_cursor = function(el) {
-		if (el === false) {
-			scroller.css('cursor', 'default');
-			$('.widget-toolbar .move').css('cursor', 'move');
-			return;
-		}
-
-		if (el.hclass('move')) {
-			scroller.css('cursor', 'move');
-		} else {
-			scroller.css('cursor', 'se-resize');
-			$('.widget-toolbar .move').css('cursor', 'se-resize');
-		}
-	};
-
-	self.move_resize_mdown = function(el, e) {
-
-		widgets.find('.widget').each(function() {
-			$(this).css('z-index', 2);
-		});
-
-		self.scroller_cursor(el);
-		widget.element = el.closest('.widget');
-		var offset = widget.element.offset();
-		widget.mouse_offset = { col: Math.floor((e.pageX - offset.left) / size.pixels), row: Math.floor((e.pageY - offset.top) / size.pixelsh)};
-		widget.zindex = widget.element.css('z-index');
-		widget.element.css('z-index', 15);
-		var grid = self.grid(widget.element.attr('data-grid').split(','));
-		widget.index = grid.index;
-		widget.size = { cols: grid.cols, rows: grid.rows };
-		widget.pos = self.getPosition(widget.index);
-		widget.origin = { pos: CLONE(widget.pos), size: CLONE(widget.size) };
-
-		if (el.hclass('move')) {
-			widget.moving = true;
-			widget.move_cols = 0;
-			widget.move_rows = 0;
-		} else {
-			widget.resizing = true;
-			widget.resize_cols = 0;
-			widget.resize_rows = 0;
-		}
-	};
-
-	self.move_resize_mmove = function(e) {
-
-		var item = common.designer.findItem('id', widget.element.attr('data-id'));
-		var offset = container.offset();
-
-		if (widget.moving) {
-			var mouse_col = Math.floor((e.pageX - offset.left) / size.pixels);
-			var mouse_row = Math.floor((e.pageY - offset.top) / size.pixelsh);
-			var move_cols = mouse_col - widget.mouse_offset.col - widget.origin.pos.col;
-			var move_rows = mouse_row - widget.mouse_offset.row - widget.origin.pos.row;
-			if (widget.move_cols === move_cols && widget.move_rows === move_rows)
-				return;
-			var item_col = widget.index % 24;
-			var item_row = Math.floor(widget.index / 24);
-			if (item_col < 0 || item_row < 0)
-				return;
-			widget.move_cols = (widget.origin.pos.col + move_cols + widget.origin.size.cols) > 24 ? 24 - (widget.origin.pos.col + widget.origin.size.cols) : move_cols;
-			widget.move_rows = move_rows;
-			var col = widget.origin.pos.col + widget.move_cols;
-			var row = widget.origin.pos.row + widget.move_rows;
-			col = col < 0 ? 0 : col;
-			row = row < 0 ? 0 : row;
-			widget.element.animate({ left: col * size.pixels, top: row * size.pixelsh }, 15);
-			widget.index = (row * 24) + col;
-			if (item)
-				item[common.device === 'desktop' ? 'index' : 'mindex'] = widget.index;
-		}
-
-		if (widget.resizing) {
-			var resize_cols = Math.floor((e.pageX - offset.left) / size.pixelsh) - widget.mouse_offset.col - widget.origin.pos.col;
-			var resize_rows = Math.floor((e.pageY - offset.top) / size.pixels) - widget.mouse_offset.row - widget.origin.pos.row;
-			if ((widget.resize_cols === resize_cols && widget.resize_rows === resize_rows) || (widget.origin.pos.col + widget.origin.size.cols + resize_cols) > 24)
-				return;
-			widget.resize_cols = resize_cols;
-			widget.resize_rows = resize_rows;
-			widget.size.cols = +widget.origin.size.cols + resize_cols;
-			widget.size.rows = +widget.origin.size.rows + resize_rows;
-			if (widget.size.cols < 1)
-				widget.size.cols = 1;
-			if (widget.size.rows < 1)
-				widget.size.rows = 1;
-			widget.element.animate({ width: widget.size.cols * size.pixels, height: widget.size.rows * size.pixelsh }, 15);
-			if (item) {
-				item[common.device === 'desktop' ? 'cols' : 'mcols'] = widget.size.cols;
-				item[common.device === 'desktop' ? 'rows' : 'mrows'] = widget.size.rows;
-				var instance = widget.element.find('figure')[0].$widget;
-				var padding = instance.size.padding;
-				instance.size = { cols: widget.size.cols, rows: widget.size.rows, height: (size.pixelsh * widget.size.rows) - (padding * 2), width: (size.pixels * widget.size.cols) - (padding * 2), padding: padding, pixels: size.pixels };
-				instance.emit('resize', instance.size);
-			}
-		}
-	};
-
-	self.mup = function() {
-		move.drag = false;
-		var selected = container.find('.selected');
-		if (!selected.length)
-			return;
-		var first = selected.first();
-		var last = selected.last();
-		var gridA = first.attrd('grid').split(',');
-		var gridB = last.attrd('grid').split(',');
-		var off = self.getStartPosition(+gridA[0], +gridA[1]);
-		move.x = off.x;
-		move.y = off.y;
-		var cols = +gridB[0] - (+gridA[0]) + 1;
-		var rows = +gridB[1] - (+gridA[1]) + 1;
-		selected.aclass('locked').rclass('selected');
-		var index = +first.attrd('index');
-		var selection = { id: Date.now(), tab: common.tab.id, rows: rows, cols: cols, index: index, mrows: rows, mcols: cols, mindex: index };
-		self.create(selection, true);
-	};
-
-	self.mdown = function(x, y, e) {
-		move.drag = true;
-		move.scrollX = scroller.prop('scrollLeft');
-		move.scrollY = scroller.prop('scrollTop');
-		var item = cells.eq(0);
-		move.x = e.pageX - item.width();
-		move.y = e.pageY - item.height();
-	};
-
-	self.mmove = function(x, y) {
-
-		var fx = x > move.x ? move.x : x - size.pixels;
-		var fy = y > move.y ? move.y : y - size.pixelsh;
-		var tx = x > move.x ? x : move.x + size.pixels;
-		var ty = y > move.y ? y : move.y + size.pixelsh;
-		cells.each(function() {
-			var el = $(this);
-			var offset = el.offset();
-			var is = offset.left >= fx && offset.left <= tx && offset.top >= fy && offset.top <= ty;
-			el.tclass('selected', is);
-		});
-	};
-
-	self.create = function(w) {
-		var key = common.device === 'mobile' ? 'm' : '';
-		var pos = self.getPosition(w[key + 'index']);
-		var grid = w.index + ',' + w.cols + ',' + w.rows + ',' + (w.mindex === 0 ? 0 : (w.mindex || w.index)) + ',' + (w.mcols === 0 ? 0 : (w.mcols || w.cols)) + ',' + (w.mrows === 0 ? 0 : (w.mrows || w.rows));
-		var html = '<div class="widget tab_{5} hidden" style="left:{0}px;top:{1}px;width:{2}px;height:{3}px" data-grid="{4}" data-tab="{5}" data-id="{6}"><div class="widget-toolbar"><div class="move"></div><div class="resize"></div><button class="widget-settings"><i class="fa fa-wrench" style=""></i></i></button></div><div class="widget-body">{7}</div></div>';
-		html = html.format(pos.col * size.pixels, pos.row * size.pixelsh, w[key + 'cols'] * size.pixels, w[key + 'rows'] * size.pixelsh, grid, w.tab, w.id, w.app ? '<figure data-name="{0}"></figure>'.format(w.app) : '');
-		widgets.append(html);
-		self.operations.tab();
-	};
-
-	self.compile = function() {
-
-		var size = self.getSize();
-		var device = WIDTH();
-		var csswh = {};
-
-		widgets.find('figure[data-name]').each(function() {
-			var el = $(this);
-			if (this.$widget)
-				return;
-
-			var w = el.closest('.widget');
-			var grid = w.attr('data-grid').split(',');
-			var id = w.attr('data-id');
-
-			var instance = common.designer.findItem('id', id);
-			var declaration = common.database.findItem('name', el.attr('data-name'));
-
-			if (!declaration)
-				return;
-
-			var opt = {};
-			opt.index = +grid[0];
-			opt.cols = +grid[1];
-			opt.rows = +grid[2];
-			opt.mindex = +grid[3];
-			opt.mcols = +grid[4];
-			opt.mrows = +grid[5];
-			opt.device = device;
-			opt.width = opt[common.device === 'desktop' ? 'cols' : 'mcols'] * size.pixels;
-			opt.height = opt[common.device === 'desktop' ? 'rows' : 'mrows'] * size.pixelsh;
-
-			if (!instance) {
-				instance = { id: id, app: declaration.name, index: opt.index, cols: opt.cols, rows: opt.rows, mindex: opt.mindex, mcols: opt.mcols, mrows: opt.mrows, tab: self.attr('data-tab'), options: null };
-				common.designer.push(instance);
-			}
-
-			opt.padding = (w.css('padding') || '').parseInt();
-
-			this.$widget = new Instance(id, el, declaration, instance.options, opt);
-			this.$widget.$events[device] && this.$widget.emit(device, opt);
-			csswh.width = opt.width;
-			csswh.height = opt.height;
-			// this.$widget.css(csswh);
-			var k;
-			if (common.device === 'desktop')
-				k = opt.cols + 'x' + opt.rows;
-			else
-				k = opt.mcols + 'x' + opt.mrows;
-			this.$widget.$events[k] && this.$widget.emit(k, opt);
-		});
-
-		setTimeout2('designer.tabs', function() {
-			self.operations.tab();
-		}, 100);
-	};
-
-	self.getPosition = function(index) {
-		var ri = (index / 24) >> 0;
-		var ci = index % 24;
-		return { row: ri, col: ci };
-	};
-
-	self.getStartPosition = function(col, row) {
-		var obj = {};
-		obj.x = col * size.pixels;
-		obj.y = row * size.pixelsh;
-		return obj;
-	};
-
-	self.operations = {};
-	self.operations.save = function() {
-		var items = [];
-
-		widgets.find('.widget').each(function() {
-			var el = $(this);
-			var pos = el.attr('data-grid').split(',');
-			var app = el.find('[data-name]');
-			items.push({ id: el.attrd('id'), index: +pos[0], cols: +pos[1], rows: +pos[2], mindex: +pos[3], mcols: +pos[4], mrows: +pos[5], tab: el.attrd('tab'), app: app.length ? app.attrd('name') : null, options: app.length && app[0].$widget ? app[0].$widget.options : null });
-		});
-
-		var data = {};
-		data.items = items;
-		return data;
-	};
-
-	self.operations.load = function(data, callback) {
-
-		var arr = [];
-
-		widgets.find('figure[data-name]').each(function() {
-			arr.push(this.$widget);
-		});
-
-		arr.waitFor(function(item, next) {
-			item.destroy();
-			setTimeout(next, 30);
-		}, function() {
-			setTimeout2('designer.clear', function() {
-
-				widgets.empty();
-				data.items.forEach(function(item) {
-					self.create(item);
-				});
-
-				self.compile();
-
-				common.tabs = data.tabs;
-
-				if (!common.tabs || !common.tabs.length) {
-					common.tabs = [];
-					common.tabs.push({ id: Date.now().toString(), name: 'Main', icon: 'fa-object-ungroup', linker: 'main' });
-				}
-
-				UPDATE('common.tabs');
-				SETTER('binder', 'scan');
-
-				var hash = location.hash.substring(1);
-				var tab = common.tabs.findItem('linker', hash);
-
-				if (!tab)
-					tab = common.tabs[0];
-
-				SET('common.tab', tab);
-				callback && setTimeout(callback, 100);
-
-			}, widgets.length ? 500 : 0);
-		});
-	};
-
-	self.operations.upgrade = function(component) {
-
-		var arr = [];
-
-		widgets.find('figure[data-name="{0}"]'.format(component.name)).each(function() {
-			var el = $(this).parent();
-			var widget = this.$widget;
-			widget.destroy();
-			arr.push({ el: el, html: '<figure data-name="{0}" data-jc-scope="?"></figure>'.format(component.name) });
-		});
-
-		setTimeout(function() {
-			arr.waitFor(function(item, next) {
-				item.el.html(item.html);
-				next();
-			}, self.compile);
-		}, 100);
-	};
-
-	self.operations.tabclear = function(id) {
-		widgets.find('.tab_' + id).each(function() {
-			var el = $(this);
-			var widget = el.find('figure[data-name]')[0];
-
-			if (!widget) {
-				el.remove();
-				return;
-			}
-
-			widget = widget.$widget;
-			widget && widget.destroy();
-			setTimeout(function() {
-				el.remove();
-			}, 100);
-		});
-	};
-
-	self.operations.tab = function() {
-		setTimeout2('designer.tabs', function() {
-			widgets.find('.widget').each(function() {
-				var el = $(this);
-				var hidden = el.hclass('hidden');
-				if (el.hclass('tab_' + common.tab.id)) {
-					hidden && el.rclass('hidden');
-				} else {
-					!hidden && el.aclass('hidden');
-				}
-			});
-		}, 100);
-	};
-
-	self.grid = function(grid) {
-		var g = {};
-		if (common.device === 'desktop') {
-			g.index = +grid[0];
-			g.cols = +grid[1];
-			g.rows = +grid[2];
-		} else {
-			g.index = +grid[3];
-			g.cols = +grid[4];
-			g.rows = +grid[5];
-		}
-		return g;
-	};
-
-	self.operations.resize = function() {
-
-		if (!common.draft)
-			common.device = WIDTH() === 'xs' ? 'mobile' : 'desktop';
-
-		setTimeout2(self.id + '.resize', function() {
-
-			size = self.getSize();
-
-			var device = WIDTH();
-			var css = {};
-			var csswh = {};
-
-			cells.css('height', size.pixelsh + 'px');
-
-			widgets.find('.widget').each(function() {
-				var el = $(this);
-				var grid = self.grid(el.attrd('grid').split(','));
-				var cols = grid.cols;
-				var rows = grid.rows;
-				var index = grid.index;
-				var pos = self.getPosition(index);
-
-				css.left = pos.col * size.pixels + 'px';
-				css.top = pos.row * size.pixelsh + 'px';
-				css.width = cols * size.pixels + 'px';
-				css.height = rows * size.pixelsh + 'px';
-				el.css(css);
-
-				var app = el.find('[data-name]')[0];
-				if (app) {
-					var opt = {};
-					opt.cols = cols;
-					opt.rows = rows;
-					opt.device = device;
-					opt.width = cols * size.pixels;
-					opt.height = rows * size.pixelsh;
-					opt.padding = (el.css('padding') || '').parseInt();
-					csswh.width = opt.width;
-					csswh.height = opt.height;
-					if (app.$widget) {
-						var sz = app.$widget.size = CLONE(opt);
-						if (sz.padding > 0) {
-							sz.width -= sz.padding * 2;
-							sz.height -= sz.padding * 2;
-						}
-						app.$widget.$events.resize && app.$widget.emit('resize', sz);
-						app.$widget.$events[device] && app.$widget.emit(device, sz);
-					}
-				}
-			});
-		}, 100, 10);
-	};
-
 });
 
 COMPONENT('checkbox', function(self, config) {
@@ -2247,6 +1831,286 @@ COMPONENT('dropdowncheckbox', 'checkicon:check;visible:0;alltext:All selected;li
 	});
 });
 
+COMPONENT('modal', 'zindex:12;width:800;bg:true;scrollbar:false', function(self, config) {
+	var cls = 'ui-modal';
+	var cls2 = '.' + cls;
+	var W = window;
+	var eheader, earea, ebody, efooter, emodal, icon, first = true;
+
+	if (W.$$modal == null) {
+		W.$$modal = 0;
+
+		var resizemodal = function() {
+			SETTER('modal', 'resize');
+		};
+		var resize = function() {
+			setTimeout2(cls, resizemodal, 300);
+		};
+		if (W.OP)
+			W.OP.on('resize', resize);
+		else
+			$(W).on('resize', resize);
+	}
+
+	self.readonly();
+
+	self.make = function() {
+
+		$(document.body).append('<div id="{0}" class="{1}-container hidden"></div>'.format(self.ID, cls));
+
+		var scr = self.find('> script');
+		self.template = scr.length ? scr.html() : '';
+		self.aclass(cls);
+
+		var el = $('#' + self.ID);
+		el[0].appendChild(self.dom);
+
+		self.rclass('hidden');
+		self.replace(el);
+
+		self.event('click', '.cancel', self.cancel);
+		self.event('click', 'button[name]', function() {
+			var t = this;
+			if (!t.disabled) {
+				switch (t.name) {
+					case 'submit':
+					case 'cancel':
+						self[t.name]();
+						break;
+				}
+			}
+		});
+
+		if (!self.template)
+			self.prepare();
+
+		config.enter && self.event('keydown', 'input', function(e) {
+			e.which === 13 && !self.find('button[name="submit"]')[0].disabled && setTimeout(self.submit, 800);
+		});
+	};
+
+	self.submit = function() {
+		if (config.submit)
+			EXEC(config.submit, self.hide);
+		else
+			self.hide();
+	};
+
+	self.cancel = function() {
+		if (config.cancel)
+			EXEC(config.cancel, self.hide);
+		else
+			self.hide();
+	};
+
+	self.hide = function() {
+		self.set('');
+	};
+
+	self.resize = function() {
+
+		if (self.hclass('hidden'))
+			return;
+
+		var mobile = WIDTH() === 'xs';
+		var hh = eheader.height();
+		var hb = ebody.height();
+		var hf = efooter.height();
+		var h = Math.ceil((WH / 100) * (mobile ? 94 : 98));
+		var hs = hh + hb + hf;
+
+		var top = ((WH - h) / 2.2) >> 0;
+		var width = mobile ? emodal.width() : config.width;
+		var ml = Math.ceil(width / 2) * -1;
+		var empty = false;
+
+		if (!width) {
+			empty = true;
+			width = WW.inc('-10%') >> 0;
+		}
+
+		if (config.center) {
+			top = Math.ceil((WH / 2) - (hs / 2));
+			if (top < 0)
+				top = (WH - h) / 2 >> 0;
+		}
+
+		if (!mobile && config.align) {
+			top = '';
+			ml = '';
+			hh += 25;
+		} else {
+			if (top < 20) {
+				top = 20;
+				h -= 27;
+			}
+		}
+
+		var css = { top: top, 'margin-left': ml };
+		if (empty)
+			css.width = width;
+
+		emodal.css(css);
+
+		if (config.scrollbar) {
+			var nh = 0;
+			if (config.height && (hb - hh - hf) < config.height) {
+				if (config.height < (h - hh - hf))
+					nh = config.height;
+				else
+					nh = h - hh - hf;
+			} else
+				nh = h - hh - hf;
+
+			earea.css({ height: nh, width: width });
+			self.scrollbar && self.scrollbar.resize();
+		} else {
+			earea[0].$noscrollbarwidth = 0;
+			earea.css({ 'max-height': h - hh - hf, width: width });
+			earea.noscrollbar();
+		}
+	};
+
+	self.configure = function(key, value, init, prev) {
+		switch (key) {
+			case 'bg':
+				self.tclass(cls + '-bg', !!value);
+				break;
+			case 'title':
+				eheader && eheader.find('label').html(value);
+				break;
+			case 'width':
+				emodal && emodal.css('max-width', config.width);
+				self.resize();
+				break;
+			case 'center':
+				self.resize();
+				break;
+			case 'align':
+				prev && self.rclass(cls + '-align-' + prev);
+				value && self.aclass(cls + '-align-' + value);
+				self.resize();
+				break;
+			case 'icon':
+				if (eheader) {
+					if (icon) {
+						prev && icon.rclass('fa-' + prev);
+					} else {
+						eheader.prepend('<i class="{0}-icon fa"></i>'.format(cls));
+						icon = eheader.find(cls2 + '-icon');
+					}
+					value && icon.aclass('fa-' + value);
+				}
+				break;
+		}
+	};
+
+	self.prepare = function(dynamic) {
+
+		self.find(cls2 + ' > div').each(function(index) {
+			$(this).aclass(cls + '-' + (index === 0 ? 'header' : index === 1 ? 'body' : 'footer'));
+		});
+
+		eheader = self.find(cls2 + '-header');
+		ebody = self.find(cls2 + '-body');
+		efooter = self.find(cls2 + '-footer');
+		emodal = self.find(cls2);
+		ebody.wrap('<div class="{0}-body-area" />'.format(cls));
+		earea = self.find(cls2 + '-body-area');
+		config.label && eheader.find('label').html(config.label);
+		dynamic && self.reconfigure(config);
+
+		earea.on('scroll', function() {
+			if (!self.$scrolling) {
+				EMIT('scrolling', self.name);
+				EMIT('reflow', self.name);
+				self.$scrolling = true;
+				setTimeout(function() {
+					self.$scrolling = false;
+				}, 1500);
+			}
+		});
+	};
+
+	self.setter = function(value) {
+
+		setTimeout2(cls + '-noscroll', function() {
+			$('html').tclass(cls + '-noscroll', !!$(cls2 + '-bg').not('.hidden').length);
+		}, 789);
+
+		var hidden = value !== config.if;
+
+		if (self.hclass('hidden') === hidden)
+			return;
+
+		setTimeout2(cls + 'reflow', function() {
+			EMIT('reflow', self.name);
+		}, 10);
+
+		if (hidden) {
+			self.rclass(cls + '-visible');
+			setTimeout(function() {
+				self.aclass('hidden');
+				self.release(true);
+			}, 100);
+			W.$$modal--;
+			return;
+		}
+
+		if (self.template) {
+			var is = self.template.COMPILABLE();
+			self.find('div[data-jc-replaced]').html(self.template);
+			self.prepare(true);
+			self.template = null;
+			is && COMPILE();
+		}
+
+		if (W.$$modal < 1)
+			W.$$modal = 1;
+
+		W.$$modal++;
+
+		self.css('z-index', W.$$modal * config.zindex);
+		self.element.scrollTop(0);
+		self.rclass('hidden');
+
+		self.resize();
+		self.release(false);
+
+		config.reload && EXEC(config.reload, self);
+		config.default && DEFAULT(config.default, true);
+
+		if (config.scrollbar) {
+			!self.scrollbar && (self.scrollbar = SCROLLBAR(self.find(cls2 + '-body-area'), { visibleY: true }));
+		} else
+			$(cls2 + '-body-area').noscrollbar();
+
+		if (!isMOBILE && config.autofocus) {
+			var el = self.find(config.autofocus ? 'input[type="text"],input[type="password"],select,textarea' : config.autofocus);
+			el.length && setTimeout(function() {
+				el[0].focus();
+			}, 1500);
+		}
+
+		var delay = first ? 500 : 0;
+
+		setTimeout(function() {
+			if (self.scrollbar)
+				self.scrollbar.scrollTop(0);
+			else
+				earea[0].scrollTop = 0;
+			self.aclass(cls + '-visible');
+		}, 300 + delay);
+
+		// Fixes a problem with freezing of scrolling in Chrome
+		setTimeout2(self.ID, function() {
+			self.css('z-index', (W.$$modal * config.zindex) + 1);
+		}, 500 + delay);
+
+		first = false;
+	};
+});
+
 COMPONENT('dropdown', function(self, config) {
 
 	var select, container, condition, content = null;
@@ -2394,18 +2258,20 @@ COMPONENT('dropdown', function(self, config) {
 
 COMPONENT('selectbox', function(self, config) {
 
-	var Eitems, Eselected = null;
+	var cls = 'ui-' + self.name;
+	var cls2 = '.' + cls;
 
-	self.mydata = EMPTYARRAY;
-	self.template = Tangular.compile('<li data-search="{{ search }}" data-index="{{ index }}">{{ text }}</li>');
+	var Eitems, Eselected, datasource, condition;
+
+	self.datasource = EMPTYARRAY;
+	self.template = Tangular.compile('<span data-search="{{ search }}" data-index="{{ index }}">{{ text }}</span>');
+	self.nocompile && self.nocompile();
 
 	self.validate = function(value) {
 		return config.disabled || !config.required ? true : value && value.length > 0;
 	};
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
+	self.configure = function(key, value) {
 
 		var redraw = false;
 
@@ -2417,9 +2283,12 @@ COMPONENT('selectbox', function(self, config) {
 				self.tclass('ui-disabled', value);
 				self.find('input').prop('disabled', value);
 				if (value)
-					self.rclass('ui-selectbox-invalid');
+					self.rclass(cls + '-invalid');
 				else if (config.required)
 					self.state(1, 1);
+				break;
+			case 'if':
+				condition = value ? FN(value) : null;
 				break;
 			case 'required':
 				!value && self.state(1, 1);
@@ -2442,7 +2311,9 @@ COMPONENT('selectbox', function(self, config) {
 				self.bind('', arr);
 				break;
 			case 'datasource':
-				self.datasource(value, self.bind, true);
+				datasource && self.unwatch(datasource, self.bind);
+				self.watch(value, self.bind, true);
+				datasource = value;
 				break;
 		}
 
@@ -2451,16 +2322,16 @@ COMPONENT('selectbox', function(self, config) {
 
 	self.search = function() {
 		var search = config.search ? self.find('input').val().toSearch() : '';
-		Eitems.find('li').each(function() {
+		self.find(cls2 + '-main').find('span').each(function() {
 			var el = $(this);
 			el.tclass('hidden', el.attrd('search').indexOf(search) === -1);
 		});
-		self.find('.ui-selectbox-search-icon').tclass('fa-search', search.length === 0).tclass('fa-times', search.length > 0);
+		self.find(cls2 + '-search-icon').tclass('fa-search', search.length === 0).tclass('fa-times', search.length > 0);
 	};
 
 	self.redraw = function() {
-		self.html((typeof(config.search) === 'string' ? '<div class="ui-selectbox-search"><span><i class="fa fa-search ui-selectbox-search-icon"></i></span><div><input type="text" placeholder="{0}" /></div></div><div>'.format(config.search) : '') + '<div style="height:{0}px"><ul></ul><ul style="height:{0}px"></ul></div>'.format(config.height || '200'));
-		self.find('ul').each(function(index) {
+		self.html((typeof(config.search) === 'string' ? '<div class="{0}-search"><span><i class="fa fa-search {0}-search-icon"></i></span><div><input type="text" placeholder="{1}" /></div></div><div>'.format(cls, config.search) : '') + '<div class="{0}-container" style="height:{1}px"><div class="{0}-area {0}-main"><div class="{0}-body noscrollbar"></div></div><div class="{0}-area"><div class="{0}-body noscrollbar" style="height:{1}px"></div></div></div>'.format(cls, config.height || '200'));
+		self.find(cls2 + '-body').each(function(index) {
 			if (index)
 				Eselected = $(this);
 			else
@@ -2474,43 +2345,54 @@ COMPONENT('selectbox', function(self, config) {
 		var kv = config.value || 'id';
 		var builder = [];
 
-		self.mydata = [];
-		value && value.forEach(function(item, index) {
+		self.datasource = [];
 
-			var text;
-			var value;
+		if (value) {
+			var index = 0;
+			for (var i = 0; i < value.length; i++) {
+				var item = value[i];
 
-			if (typeof(item) === 'string') {
-				text = item;
-				value = self.parser(item);
-			} else {
-				text = item[kt];
-				value = item[kv];
+				if (condition && !condition(item))
+					continue;
+
+				var text, val;
+
+				if (typeof(item) === 'string') {
+					text = item;
+					val = self.parser(item);
+				} else {
+					text = item[kt];
+					val = item[kv];
+				}
+
+				item = { text: text, value: val, index: index++, search: text.toSearch() };
+				self.datasource.push(item);
+				builder.push(self.template(item));
 			}
+		}
 
-			var item = { text: text, value: value, index: index, search: text.toSearch() };
-			self.mydata.push(item);
-			builder.push(self.template(item));
-		});
 
-		self.search();
 		Eitems.empty().append(builder.join(''));
+		self.refresh();
+		self.search();
 	};
 
 	self.make = function() {
 
-		self.aclass('ui-selectbox');
+		self.aclass(cls);
 		self.redraw();
 
 		config.datasource && self.reconfigure('datasource:' + config.datasource);
 		config.items && self.reconfigure('items:' + config.items);
 
-		self.event('click', 'li', function() {
+		self.event('click', 'span[data-index]', function() {
+
 			if (config.disabled)
 				return;
+
 			var selected = self.get() || [];
 			var index = +this.getAttribute('data-index');
-			var value = self.mydata[index];
+			var value = self.datasource[index];
 
 			if (selected.indexOf(value.value) === -1)
 				selected.push(value.value);
@@ -2522,25 +2404,23 @@ COMPONENT('selectbox', function(self, config) {
 		});
 
 		self.event('click', '.fa-times', function() {
-			if (config.disabled)
-				return;
-			self.find('input').val('');
-			self.search();
+			if (!config.disabled) {
+				self.find('input').val('');
+				self.search();
+			}
 		});
 
 		typeof(config.search) === 'string' && self.event('keydown', 'input', function() {
-			if (config.disabled)
-				return;
-			setTimeout2(self.id, self.search, 500);
+			!config.disabled && setTimeout2(self.id, self.search, 500);
 		});
 	};
 
-	self.setter = function(value) {
+	self.setter = function(value, path, type) {
 
 		var selected = {};
 		var builder = [];
 
-		var ds = self.mydata;
+		var ds = self.datasource;
 		var dsl = ds.length;
 
 		if (value) {
@@ -2554,24 +2434,31 @@ COMPONENT('selectbox', function(self, config) {
 			}
 		}
 
-		Eitems.find('li').each(function() {
+		Eitems.find('span').each(function() {
 			var el = $(this);
 			var index = +el.attrd('index');
-			el.tclass('ui-selectbox-selected', selected[index] !== undefined);
+			el.tclass(cls + '-selected', selected[index] !== undefined);
 		});
+
 
 		Eselected.empty().append(builder.join(''));
 		self.search();
+
+		if (type !== 1) {
+			setTimeout(function() {
+				Eitems[0].scrollTop = 0;
+			}, 500);
+		}
 	};
 
 	self.state = function(type) {
-		if (!type)
-			return;
-		var invalid = config.required ? self.isInvalid() : false;
-		if (invalid === self.$oldstate)
-			return;
-		self.$oldstate = invalid;
-		self.tclass('ui-selectbox-invalid', invalid);
+		if (type) {
+			var invalid = config.required ? self.isInvalid() : false;
+			if (invalid !== self.$oldstate) {
+				self.$oldstate = invalid;
+				self.tclass(cls + '-invalid', invalid);
+			}
+		}
 	};
 });
 
@@ -3634,33 +3521,41 @@ COMPONENT('codemirror', 'linenumbers:false;required:false;trim:false;tabs:false'
 COMPONENT('contextmenu', function(self) {
 
 	var is = false;
-	var timeout;
-	var container;
-	var arrow;
+	var timeout, container, arrow;
 
-	self.template = Tangular.compile('<div data-value="{{ value }}" class="item{{ if selected }} selected{{ fi }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
+	self.template = Tangular.compile('<div data-index="{{ index }}"{{ if selected }} class="selected"{{ fi }}><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
 	self.singleton();
 	self.readonly();
+	self.nocompile && self.nocompile();
 	self.callback = null;
+	self.items = EMPTYARRAY;
 
 	self.make = function() {
 
-		self.classes('ui-contextmenu');
-		self.append('<span class="ui-contextmenu-arrow fa fa-caret-up"></span><div class="ui-contextmenu-items"></div>');
+		self.aclass('ui-contextmenu hidden');
+		self.append('<span class="ui-contextmenu-arrow"></span><div class="ui-contextmenu-items"></div>');
 		container = self.find('.ui-contextmenu-items');
 		arrow = self.find('.ui-contextmenu-arrow');
 
-		self.event('touchstart mousedown', 'div[data-value]', function(e) {
-			var value = $(this).attr('data-value');
-			var item =
-			self.callback && self.callback(value, $(self.target), item);
+		self.event('touchstart mousedown', 'div[data-index]', function(e) {
+			self.callback && self.callback(self.items[+$(this).attrd('index')], $(self.target));
 			self.hide();
 			e.preventDefault();
 			e.stopPropagation();
 		});
 
-		$(document).on('touchstart mousedown', function() {
-			SETTER('contextmenu', 'hide');
+		var fn = function() {
+			is && self.hide(1);
+		};
+
+		$(window).on('scroll', fn);
+		self.event('scroll', fn);
+		self.on('reflow', fn);
+		self.on('scroll', fn);
+
+		$(document).on('touchstart mousedown', function(e) {
+			if (is && (self.target !== e.target && !self.target.contains(e.target)))
+				self.hide(1);
 		});
 	};
 
@@ -3683,7 +3578,7 @@ COMPONENT('contextmenu', function(self) {
 			items = self.get(items);
 		else if (type === 'function') {
 			callback = items;
-			items = (target.attr('data-options') || '').split(';');
+			items = (target.attrd('options') || '').split(';');
 			for (var i = 0, length = items.length; i < length; i++) {
 				item = items[i];
 				if (!item)
@@ -3703,49 +3598,43 @@ COMPONENT('contextmenu', function(self) {
 		var builder = [];
 		for (var i = 0, length = items.length; i < length; i++) {
 			item = items[i];
-
-			if (typeof(item) === 'string') {
-				builder.push('<div class="divider">{0}</div>'.format(item));
-				continue;
-			}
-
 			item.index = i;
-			if (!item.value)
-				item.value = item.name;
-			if (!item.icon)
+			if (item.icon) {
+				if (item.icon.substring(0, 3) !== 'fa-')
+					item.icon = 'fa-' + item.icon;
+			} else
 				item.icon = 'fa-caret-right';
 
-			var tmp = self.template(item);
-			if (item.url)
-				tmp = tmp.replace('<div', '<a href="{0}" target="_blank"'.format(item.url)).replace(/div>$/g, 'a>');
-
-			builder.push(tmp);
+			builder.push(self.template(item));
 		}
 
+		self.items = items;
 		self.target = target[0];
 		var offset = target.offset();
+
 		container.html(builder);
+
 		switch (orientation) {
 			case 'left':
 				arrow.css({ left: '15px' });
 				break;
 			case 'right':
-				arrow.css({ left: '170px' });
+				arrow.css({ left: '165px' });
 				break;
 			case 'center':
 				arrow.css({ left: '90px' });
 				break;
 		}
 
-		var options = { left: orientation === 'center' ? (Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) + (offsetX || 0)) : orientation === 'left' ? (offset.left - 8 + (offsetX || 0)) : ((offset.left - self.element.width()) + 5 + target.innerWidth() + (offsetX || 0)), top: offset.top + target.innerHeight() + 10 + (offsetY || 0) };
+		var options = { left: orientation === 'center' ? Math.ceil((offset.left - self.element.width() / 2) + (target.innerWidth() / 2)) : orientation === 'left' ? (offset.left - 8) + (offsetX || 0) : (offset.left - self.element.width()) + target.innerWidth() + (offsetX || 0) + 8, top: offset.top + target.innerHeight() + 10 + (offsetY || 0) };
 		self.css(options);
 
 		if (is)
 			return;
 
-		self.element.show();
+		self.rclass('hidden');
 		setTimeout(function() {
-			self.classes('ui-contextmenu-visible');
+			self.aclass('ui-contextmenu-visible');
 			self.emit('contextmenu', true, self, self.target);
 		}, 100);
 
@@ -3757,20 +3646,12 @@ COMPONENT('contextmenu', function(self) {
 			return;
 		clearTimeout(timeout);
 		timeout = setTimeout(function() {
-			self.element.hide().rclass('ui-contextmenu-visible');
+			self.aclass('hidden').rclass('ui-contextmenu-visible');
 			self.emit('contextmenu', false, self, self.target);
 			self.callback = null;
 			self.target = null;
 			is = false;
 		}, sleep ? sleep : 100);
-	};
-
-	self.hideforce = function() {
-		self.element.hide().rclass('ui-contextmenu-visible');
-		self.emit('contextmenu', false, self, self.target);
-		self.callback = null;
-		self.target = null;
-		is = false;
 	};
 });
 
@@ -3991,6 +3872,388 @@ COMPONENT('textarea', function(self, config) {
 		config.error && self.find('.ui-textarea-helper').tclass('ui-textarea-helper-show', invalid);
 	};
 });
+COMPONENT('menu', function(self) {
+
+	self.singleton();
+	self.readonly();
+	self.nocompile && self.nocompile();
+
+	var cls = 'ui-menu';
+	var cls2 = '.' + cls;
+
+	var is = false;
+	var issubmenu = false;
+	var isopen = false;
+	var events = {};
+	var ul, children, prevsub, parentclass;
+
+	self.make = function() {
+		self.aclass(cls + ' hidden');
+		self.append('<div class="{0}-items"><ul></ul></div><div class="{0}-submenu hidden"><ul></ul></div>'.format(cls));
+		ul = self.find(cls2 + '-items').find('ul');
+		children = self.find(cls2 + '-submenu');
+
+		self.event('click', 'li', function(e) {
+
+			clearTimeout2(self.ID);
+
+			var el = $(this);
+			if (!el.hclass(cls + '-divider') && !el.hclass(cls + '-disabled')) {
+
+				var index = el.attrd('index').split('-');
+				if (index.length > 1) {
+					// submenu
+					self.opt.callback(self.opt.items[+index[0]].children[+index[1]]);
+					self.hide();
+				} else if (!issubmenu) {
+					self.opt.callback(self.opt.items[+index[0]]);
+					self.hide();
+				}
+			}
+
+			e.preventDefault();
+			e.stopPropagation();
+		});
+
+		events.hide = function() {
+			is && self.hide();
+		};
+
+		self.event('scroll', events.hide);
+		self.on('reflow', events.hide);
+		self.on('scroll', events.hide);
+		self.on('resize', events.hide);
+
+		events.click = function(e) {
+			if (is && !isopen && (!self.target || (self.target !== e.target && !self.target.contains(e.target))))
+				setTimeout2(self.ID, self.hide, isMOBILE ? 700 : 300);
+		};
+
+		events.hidechildren = function() {
+			if ($(this.parentNode.parentNode).hclass(cls + '-items')) {
+				if (prevsub && prevsub[0] !== this) {
+					prevsub.rclass(cls + '-selected');
+					prevsub = null;
+					children.aclass('hidden');
+					issubmenu = false;
+				}
+			}
+		};
+
+		events.children = function() {
+
+			if (prevsub && prevsub[0] !== this) {
+				prevsub.rclass(cls + '-selected');
+				prevsub = null;
+			}
+
+			issubmenu = true;
+			isopen = true;
+
+			setTimeout(function() {
+				isopen = false;
+			}, 500);
+
+			var el = prevsub = $(this);
+			var index = +el.attrd('index');
+			var item = self.opt.items[index];
+
+			el.aclass(cls + '-selected');
+
+			var html = self.makehtml(item.children, index);
+			children.find('ul').html(html);
+			children.rclass('hidden');
+
+			var css = {};
+			var offset = el.position();
+
+			css.left = ul.width() - 5;
+			css.top = offset.top - 5;
+
+			var offsetX = offset.left;
+
+			offset = self.element.offset();
+
+			var w = children.width();
+			var left = offset.left + css.left + w;
+			if (left > WW + 30)
+				css.left = (offsetX - w) + 5;
+
+			children.css(css);
+		};
+	};
+
+	self.bindevents = function() {
+		events.is = true;
+		$(document).on('touchstart mouseenter mousedown', cls2 + '-children', events.children);
+		$(document).on('touchstart mousedown', events.click);
+		$(window).on('scroll', events.hide);
+		self.element.on('mouseenter', 'li', events.hidechildren);
+	};
+
+	self.unbindevents = function() {
+		events.is = false;
+		$(document).off('touchstart mouseenter mousedown', cls2 + '-children', events.children);
+		$(document).off('touchstart mousedown', events.click);
+		$(window).off('scroll', events.hide);
+		self.element.off('mouseenter', 'li', events.hidechildren);
+	};
+
+	self.showxy = function(x, y, items, callback) {
+		var opt = {};
+		opt.x = x;
+		opt.y = y;
+		opt.items = items;
+		opt.callback = callback;
+		self.show(opt);
+	};
+
+	self.makehtml = function(items, index) {
+		var builder = [];
+		var tmp;
+
+		for (var i = 0; i < items.length; i++) {
+			var item = items[i];
+
+			if (typeof(item) === 'string') {
+				// caption or divider
+				if (item === '-')
+					tmp = '<hr />';
+				else
+					tmp = '<span>{0}</span>'.format(item);
+				builder.push('<li class="{0}-divider">{1}</li>'.format(cls, tmp));
+				continue;
+			}
+
+			var cn = item.classname || '';
+			var icon = '';
+
+			if (item.icon)
+				icon = '<i class="{0}"></i>'.format(item.icon.charAt(0) === '!' ? item.icon.substring(1) : ('fa fa-' + item.icon));
+			else
+				cn = (cn ? (cn + ' ') : '') + cls + '-nofa';
+
+			tmp = '';
+
+			if (index == null && item.children && item.children.length) {
+				cn += (cn ? ' ' : '') + cls + '-children';
+				tmp += '<i class="fa fa-play pull-right"></i>';
+			}
+
+			if (item.selected)
+				cn += (cn ? ' ' : '') + cls + '-selected';
+
+			if (item.disabled)
+				cn += (cn ? ' ' : '') + cls + '-disabled';
+
+			tmp += '<div class="{0}-name">{1}{2}{3}</div>'.format(cls, icon, item.name, item.shortcut ? '<b>{0}</b>'.format(item.shortcut) : '');
+
+			if (item.note)
+				tmp += '<div class="ui-menu-note">{0}</div>'.format(item.note);
+
+			builder.push('<li class="{0}" data-index="{2}">{1}</li>'.format(cn, tmp, (index != null ? (index + '-') : '') + i));
+		}
+
+		return builder.join('');
+	};
+
+	self.show = function(opt) {
+
+		if (typeof(opt) === 'string') {
+			// old version
+			opt = { align: opt };
+			opt.element = arguments[1];
+			opt.items = arguments[2];
+			opt.callback = arguments[3];
+			opt.offsetX = arguments[4];
+			opt.offsetY = arguments[5];
+		}
+
+		var tmp = opt.element ? opt.element instanceof jQuery ? opt.element[0] : opt.element.element ? opt.element.dom : opt.element : null;
+
+		if (is && tmp && self.target === tmp) {
+			self.hide();
+			return;
+		}
+
+		var tmp;
+
+		self.target = tmp;
+		self.opt = opt;
+
+		if (parentclass && opt.classname !== parentclass) {
+			self.rclass(parentclass);
+			parentclass = null;
+		}
+
+		isopen = false;
+		issubmenu = false;
+		prevsub = null;
+
+		var css = {};
+		children.aclass('hidden');
+		children.find('ul').empty();
+		clearTimeout2(self.ID);
+
+		ul.html(self.makehtml(opt.items));
+
+		if (!parentclass && opt.classname) {
+			self.aclass(opt.classname);
+			parentclass = opt.classname;
+		}
+
+		if (is) {
+			css.left = 0;
+			css.top = 0;
+			self.element.css(css);
+		} else {
+			self.rclass('hidden');
+			self.aclass(cls + '-visible', 100);
+			is = true;
+			if (!events.is)
+				self.bindevents();
+		}
+
+		var target = $(opt.element);
+		var w = self.width();
+		var offset = target.offset();
+
+		if (opt.element) {
+			switch (opt.align) {
+				case 'center':
+					css.left = Math.ceil((offset.left - w / 2) + (target.innerWidth() / 2));
+					break;
+				case 'right':
+					css.left = (offset.left - w) + target.innerWidth();
+					break;
+				default:
+					css.left = offset.left;
+					break;
+			}
+
+			css.top = opt.position === 'bottom' ? (offset.top - self.element.height() - 10) : (offset.top + target.innerHeight() + 10);
+
+		} else {
+			css.left = opt.x;
+			css.top = opt.y;
+		}
+
+		if (opt.offsetX)
+			css.left += opt.offsetX;
+
+		if (opt.offsetY)
+			css.top += opt.offsetY;
+
+		self.element.css(css);
+	};
+
+	self.hide = function() {
+		events.is && self.unbindevents();
+		is = false;
+		self.opt && self.opt.hide && self.opt.hide();
+		self.target = null;
+		self.opt = null;
+		self.aclass('hidden');
+		self.rclass(cls + '-visible');
+	};
+
+});
+
+COMPONENT('repeatergroup', function(self, config) {
+
+	var html, template_group;
+	var reg = /\$(index|path)/g;
+	var force = false;
+	var recompile = false;
+
+	self.readonly();
+
+	self.released = function(is) {
+		if (is) {
+			html = self.html();
+			self.empty();
+		} else
+			html && self.html(html);
+	};
+
+	self.make = function() {
+		self.find('script').each(function(index) {
+			var element = $(this);
+			var html = element.html();
+			element.remove();
+			if (index)
+				template_group = Tangular.compile(html);
+			else
+				self.template = Tangular.compile(html);
+			!recompile && (recompile = html.COMPILABLE());
+		});
+	};
+
+	self.configure = function(key, value, init) {
+		if (init)
+			return;
+		if (key === 'group') {
+			force = true;
+			self.refresh();
+		}
+	};
+
+	self.setter = function(value) {
+
+		if (!value || !value.length) {
+			self.empty();
+			return;
+		}
+
+		if (!force && NOTMODIFIED(self.id, value))
+			return;
+
+		force = false;
+		html = '';
+		var length = value.length;
+		var groups = {};
+
+		for (var i = 0; i < length; i++) {
+			var name = value[i][config.group] || '0';
+			if (groups[name])
+				groups[name].push(value[i]);
+			else
+				groups[name] = [value[i]];
+		}
+
+		var index = 0;
+		var indexgroup = 0;
+		var builder = '';
+		var keys = Object.keys(groups);
+
+		keys.quicksort();
+		keys.forEach(function(key) {
+			var arr = groups[key];
+			var tmp = '';
+
+			for (var i = 0, length = arr.length; i < length; i++) {
+				var item = arr[i];
+				tmp += self.template(item).replace(reg, function(text) {
+					return text.substring(0, 2) === '$i' ? index.toString() : self.path + '[' + index + ']';
+				});
+				item.index = index++;
+			}
+
+			if (key !== '0') {
+				var options = {};
+				options[config.group] = key;
+				options.length = arr.length;
+				options.index = indexgroup++;
+				options.body = tmp;
+				builder += template_group(options);
+			}
+
+		});
+
+		self.html(builder);
+		recompile && COMPILE();
+	};
+});
 
 COMPONENT('filereader', function(self, config) {
 	self.readonly();
@@ -4015,11 +4278,19 @@ COMPONENT('filereader', function(self, config) {
 	self.process = function(files) {
 		var el = this;
 		SETTER('loading', 'show');
-		(files.length - 1).async(function(index, next) {
+
+		var arr = [];
+		for (var i = 0; i < files.length; i++)
+			arr.push(i);
+		arr.wait(function(index, next) {
 			var file = files[index];
 			var reader = new FileReader();
 			reader.onload = function() {
-				self.set({ body: reader.result, filename: file.name, type: file.type, size: file.size });
+				var data = { body: reader.result, filename: file.name, type: file.type, size: file.size };
+				if (self.callback)
+					self.callback(data);
+				else
+					self.set(data);
 				reader = null;
 				setTimeout(next, 500);
 			};
@@ -4388,138 +4659,6 @@ COMPONENT('audio', function(self) {
 	};
 });
 
-COMPONENT('controls', function(self) {
-
-	var is = false;
-	var timeout;
-	var container;
-
-	self.template = Tangular.compile('<div data-value="{{ index }}" class="item{{ if selected }} selected{{ fi }}{{ if disabled }} disabled{{ fi }}"><i class="fa {{ icon }}"></i><span>{{ name | raw }}</span></div>');
-	self.singleton();
-	self.readonly();
-	self.callback = null;
-
-	self.make = function() {
-
-		self.classes('ui-controls');
-		self.append('<div class="ui-controls-items"></div>');
-		container = self.find('.ui-controls-items');
-
-		self.event('touchstart mousedown', 'div[data-value]', function(e) {
-			var el = $(this);
-			!el.hclass('disabled') && self.callback && self.callback(self.items[+el.attr('data-value')], $(self.target));
-			self.hide();
-			e.preventDefault();
-			e.stopPropagation();
-		});
-
-		$(document).on('touchstart mousedown', function() {
-			SETTER('controls', 'hide');
-		});
-	};
-
-	self.show = function(target, items, callback, offsetX) {
-
-		if (is) {
-			clearTimeout(timeout);
-			var obj = target instanceof jQuery ? target[0] : target;
-			if (self.target === obj) {
-				self.hide(0);
-				return;
-			}
-		}
-
-		target = $(target);
-		var type = typeof(items);
-		var item;
-
-		if (type === 'string')
-			items = self.get(items);
-		else if (type === 'function') {
-			callback = items;
-			items = (target.attr('data-options') || '').split(';');
-			for (var i = 0, length = items.length; i < length; i++) {
-				item = items[i];
-				if (!item)
-					continue;
-				var val = item.split('|');
-				items[i] = { name: val[0], icon: val[1], value: val[2] === undefined ? val[0] : val[2] };
-			}
-		}
-
-		if (!items) {
-			self.hide(0);
-			return;
-		}
-
-		self.callback = callback;
-		self.items = items;
-
-		var builder = [];
-
-		for (var i = 0, length = items.length; i < length; i++) {
-			item = items[i];
-
-			if (typeof(item) === 'string') {
-				builder.push('<div class="clearfix"></div><div class="divider"{1}>{0}</div>'.format(item, i === 0 ? ' style="margin-top:0"' : ''));
-				continue;
-			}
-
-			item.index = i;
-			if (item.value === undefined)
-				item.value = item.name;
-			if (!item.icon)
-				item.icon = 'fa-caret-right';
-
-			var tmp = self.template(item);
-			if (item.url)
-				tmp = tmp.replace('<div', '<a href="{0}" target="_blank"'.format(item.url)).replace(/div>$/g, 'a>');
-
-			builder.push(tmp);
-		}
-
-		builder.push('<div class="clearfix"></div>');
-
-		var off = target.closest('.widget').offset();
-
-		self.target = target[0];
-		var offset = target.offset();
-		var scroller = $('.designer-scroll');
-
-		offset.left += scroller.scrollLeft();
-		offset.top += scroller.scrollTop() - (off ? off.top : 0);
-
-		container.html(builder);
-
-		var options = { left: (offset.left - 8 + (offsetX || 0)), top: offset.top + target.innerHeight() + 10 };
-		self.css(options);
-
-		if (is)
-			return;
-
-		self.element.show();
-		setTimeout(function() {
-			self.classes('ui-controls-visible');
-			self.emit('controls', true, self, self.target);
-		}, 100);
-
-		is = true;
-	};
-
-	self.hide = function(sleep) {
-		if (!is)
-			return;
-		clearTimeout(timeout);
-		timeout = setTimeout(function() {
-			self.element.hide().rclass('ui-controls-visible');
-			self.emit('controls', false, self, self.target);
-			self.callback = null;
-			self.target = null;
-			is = false;
-		}, sleep ? sleep : 100);
-	};
-});
-
 COMPONENT('multioptions', 'rebind:true', function(self, config) {
 
 	var Tinput = Tangular.compile('<input class="ui-moi-save ui-moi-value-inputtext" data-name="{{ name }}" type="text" value="{{ value }}"{{ if def }} placeholder="{{ def }}"{{ fi }}{{ if max }} maxlength="{{ max }}"{{ fi }} data-type="text" />');
@@ -4824,22 +4963,723 @@ COMPONENT('multioptions', 'rebind:true', function(self, config) {
 	};
 });
 
-COMPONENT('dragdropfiles', function(self, config) {
+COMPONENT('input', 'maxlength:200;dirkey:name;dirvalue:id;increment:1;autovalue:name;direxclude:false;forcevalidation:1;searchalign:1;after:\\:', function(self, config) {
 
-	self.readonly();
+	var cls = 'ui-input';
+	var cls2 = '.' + cls;
+	var input, placeholder, dirsource, binded, customvalidator, mask, isdirvisible = false, nobindcamouflage = false, focused = false;
 
-	self.mirror = function(cls) {
-		var arr = cls.split(' ');
-		for (var i = 0, length = arr.length; i < length; i++) {
-			arr[i] = arr[i].replace(/^(\+|-)/g, function(c) {
-				return c === '+' ? '-' : '+';
-			});
-		}
-		return arr.join(' ');
+	self.nocompile();
+	self.bindvisible(20);
+
+	self.init = function() {
+		Thelpers.ui_input_icon = function(val) {
+			return val.charAt(0) === '!' ? ('<span class="ui-input-icon-custom">' + val.substring(1) + '</span>') : ('<i class="fa fa-' + val + '"></i>');
+		};
+		W.ui_input_template = Tangular.compile(('{{ if label }}<div class="{0}-label">{{ if icon }}<i class="fa fa-{{ icon }}"></i>{{ fi }}{{ label | raw }}{{ after | raw }}</div>{{ fi }}<div class="{0}-control{{ if licon }} {0}-licon{{ fi }}{{ if ricon || (type === \'number\' && increment) }} {0}-ricon{{ fi }}">{{ if ricon || (type === \'number\' && increment) }}<div class="{0}-icon-right{{ if type === \'number\' && increment }} {0}-increment{{ else if riconclick || type === \'date\' || type === \'time\' || (type === \'search\' && searchalign === 1) || type === \'password\' }} {0}-click{{ fi }}">{{ if type === \'number\' }}<i class="fa fa-caret-up"></i><i class="fa fa-caret-down"></i>{{ else }}{{ ricon | ui_input_icon }}{{ fi }}</div>{{ fi }}{{ if licon }}<div class="{0}-icon-left{{ if liconclick || (type === \'search\' && searchalign !== 1) }} {0}-click{{ fi }}">{{ licon | ui_input_icon }}</div>{{ fi }}<div class="{0}-input{{ if align === 1 || align === \'center\' }} center{{ else if align === 2 || align === \'right\' }} right{{ fi }}">{{ if placeholder && !innerlabel }}<div class="{0}-placeholder">{{ placeholder }}</div>{{ fi }}<input type="{{ if !dirsource && type === \'password\' }}password{{ else }}text{{ fi }}"{{ if autofill }} autocomplete="on" name="{{ PATH }}"{{ else }} name="input' + Date.now() + '" autocomplete="new-password"{{ fi }}{{ if dirsource }} readonly{{ else }} data-jc-bind=""{{ fi }}{{ if maxlength > 0}} maxlength="{{ maxlength }}"{{ fi }}{{ if autofocus }} autofocus{{ fi }} /></div></div>{{ if error }}<div class="{0}-error hidden"><i class="fa fa-warning"></i> {{ error }}</div>{{ fi }}').format(cls));
 	};
 
 	self.make = function() {
+		if (!config.label)
+			config.label = self.html();
+
+		if (isMOBILE && config.autofocus)
+			config.autofocus = false;
+
+		config.PATH = self.path.replace(/\./g, '_');
+
+		self.aclass(cls + ' invisible');
+		self.rclass('invisible', 100);
+		self.redraw();
+
+		self.event('input change', function() {
+			if (nobindcamouflage)
+				nobindcamouflage = false;
+			else
+				self.check();
+		});
+
+		self.event('focus', 'input', function() {
+
+			if (config.disabled)
+				return $(this).blur();
+
+			focused = true;
+			self.camouflage(false);
+			self.aclass(cls + '-focused');
+			config.autocomplete && EXEC(self.makepath(config.autocomplete), self, input.parent());
+			if (config.autosource) {
+				var opt = {};
+				opt.element = self.element;
+				opt.search = GET(self.makepath(config.autosource));
+				opt.callback = function(value) {
+					var val = typeof(value) === 'string' ? value : value[config.autovalue];
+					if (config.autoexec) {
+						EXEC(self.makepath(config.autoexec), value, function(val) {
+							self.set(val, 2);
+							self.change();
+							self.bindvalue();
+						});
+					} else {
+						self.set(val, 2);
+						self.change();
+						self.bindvalue();
+					}
+				};
+				SETTER('autocomplete', 'show', opt);
+			} else if (config.mask) {
+				setTimeout(function(input) {
+					input.selectionStart = input.selectionEnd = 0;
+				}, 50, this);
+			} else if (config.dirsource && (config.autofocus != false && config.autofocus != 0)) {
+				if (!isdirvisible)
+					self.find(cls2 + '-control').trigger('click');
+			}
+		});
+
+		self.event('paste', 'input', function(e) {
+			if (config.mask) {
+				var val = (e.originalEvent.clipboardData || window.clipboardData).getData('text');
+				self.set(val.replace(/\s|\t/g, ''));
+				e.preventDefault();
+			}
+		});
+
+		self.event('keydown', 'input', function(e) {
+
+			var t = this;
+			var code = e.which;
+
+			if (t.readOnly || config.disabled) {
+				// TAB
+				if (e.keyCode !== 9) {
+					if (config.dirsource) {
+						self.find(cls2 + '-control').trigger('click');
+						return;
+					}
+					e.preventDefault();
+					e.stopPropagation();
+				}
+				return;
+			}
+
+			if (!config.disabled && config.dirsource && (code === 13 || code > 30)) {
+				self.find(cls2 + '-control').trigger('click');
+				return;
+			}
+
+			if (config.mask) {
+
+				if (e.metaKey) {
+					if (code === 8 || code === 127) {
+						e.preventDefault();
+						e.stopPropagation();
+					}
+					return;
+				}
+
+				if (code === 32) {
+					e.preventDefault();
+					e.stopPropagation();
+					return;
+				}
+
+				var beg = e.target.selectionStart;
+				var end = e.target.selectionEnd;
+				var val = t.value;
+				var c;
+
+				if (code === 8 || code === 127) {
+
+					if (beg === end) {
+						c = config.mask.substring(beg - 1, beg);
+						t.value = val.substring(0, beg - 1) + c + val.substring(beg);
+						self.curpos(beg - 1);
+					} else {
+						for (var i = beg; i <= end; i++) {
+							c = config.mask.substring(i - 1, i);
+							val = val.substring(0, i - 1) + c + val.substring(i);
+						}
+						t.value = val;
+						self.curpos(beg);
+					}
+
+					e.preventDefault();
+					return;
+				}
+
+				if (code > 40) {
+
+					var cur = String.fromCharCode(code);
+
+					if (mask && mask[beg]) {
+						if (!mask[beg].test(cur)) {
+							e.preventDefault();
+							return;
+						}
+					}
+
+					c = config.mask.charCodeAt(beg);
+					if (c !== 95) {
+						beg++;
+						while (true) {
+							c = config.mask.charCodeAt(beg);
+							if (c === 95 || isNaN(c))
+								break;
+							else
+								beg++;
+						}
+					}
+
+					if (c === 95) {
+
+						val = val.substring(0, beg) + cur + val.substring(beg + 1);
+						t.value = val;
+						beg++;
+
+						while (beg < config.mask.length) {
+							c = config.mask.charCodeAt(beg);
+							if (c === 95)
+								break;
+							else
+								beg++;
+						}
+
+						self.curpos(beg);
+					} else
+						self.curpos(beg + 1);
+
+					e.preventDefault();
+					e.stopPropagation();
+				}
+			}
+
+		});
+
+		self.event('blur', 'input', function() {
+			focused = false;
+			self.camouflage(true);
+			self.rclass(cls + '-focused');
+		});
+
+		self.event('click', cls2 + '-control', function() {
+
+			if (!config.dirsource || config.disabled || isdirvisible)
+				return;
+
+			isdirvisible = true;
+			setTimeout(function() {
+				isdirvisible = false;
+			}, 500);
+
+			var opt = {};
+			opt.element = self.find(cls2 + '-control');
+			opt.items = dirsource;
+			opt.offsetY = -1 + (config.diroffsety || 0);
+			opt.offsetX = 0 + (config.diroffsetx || 0);
+			opt.placeholder = config.dirplaceholder;
+			opt.render = config.dirrender ? GET(self.makepath(config.dirrender)) : null;
+			opt.custom = !!config.dircustom;
+			opt.offsetWidth = 2;
+			opt.minwidth = config.dirminwidth || 200;
+			opt.maxwidth = config.dirmaxwidth;
+			opt.key = config.dirkey || config.key;
+			opt.empty = config.dirempty;
+
+			if (config.dirsearch === false)
+				opt.search = false;
+
+			var val = self.get();
+			opt.selected = val;
+
+			if (config.direxclude === false) {
+				for (var i = 0; i < dirsource.length; i++) {
+					var item = dirsource[i];
+					if (item)
+						item.selected = typeof(item) === 'object' && item[config.dirvalue] === val;
+				}
+			} else {
+				opt.exclude = function(item) {
+					return item ? item[config.dirvalue] === val : false;
+				};
+			}
+
+			opt.callback = function(item, el, custom) {
+
+				// empty
+				if (item == null) {
+					input.val('');
+					self.set(null, 2);
+					self.change();
+					self.check();
+					return;
+				}
+
+				var val = custom || typeof(item) === 'string' ? item : item[config.dirvalue || config.value];
+				if (custom && typeof(config.dircustom) === 'string') {
+					var fn = GET(config.dircustom);
+					fn(val, function(val) {
+						self.set(val, 2);
+						self.change();
+						self.bindvalue();
+					});
+				} else if (custom) {
+					if (val) {
+						self.set(val, 2);
+						self.change();
+						self.bindvalue();
+					}
+				} else {
+					self.set(val, 2);
+					self.change();
+					self.bindvalue();
+				}
+			};
+
+			SETTER('directory', 'show', opt);
+		});
+
+		self.event('click', cls2 + '-placeholder,' + cls2 + '-label', function(e) {
+			if (!config.disabled) {
+				if (config.dirsource) {
+					e.preventDefault();
+					e.stopPropagation();
+					self.find(cls2 + '-control').trigger('click');
+				} else if (!config.camouflage || $(e.target).hclass(cls + '-placeholder'))
+					input.focus();
+			}
+		});
+
+		self.event('click', cls2 + '-icon-left,' + cls2 + '-icon-right', function(e) {
+
+			if (config.disabled)
+				return;
+
+			var el = $(this);
+			var left = el.hclass(cls + '-icon-left');
+			var opt;
+
+			if (config.dirsource && left && config.liconclick) {
+				e.preventDefault();
+				e.stopPropagation();
+			}
+
+			if (!left && !config.riconclick) {
+				if (config.type === 'date') {
+					opt = {};
+					opt.element = self.element;
+					opt.value = self.get();
+					opt.callback = function(date) {
+						self.change(true);
+						self.set(date);
+					};
+					SETTER('datepicker', 'show', opt);
+				} else if (config.type === 'time') {
+					opt = {};
+					opt.element = self.element;
+					opt.value = self.get();
+					opt.callback = function(date) {
+						self.change(true);
+						self.set(date);
+					};
+					SETTER('timepicker', 'show', opt);
+				} else if (config.type === 'search')
+					self.set('');
+				else if (config.type === 'password')
+					self.password();
+				else if (config.type === 'number') {
+					var n = $(e.target).hclass('fa-caret-up') ? 1 : -1;
+					self.change(true);
+					self.inc(config.increment * n);
+				}
+				return;
+			}
+
+			if (left && config.liconclick)
+				EXEC(self.makepath(config.liconclick), self, el);
+			else if (config.riconclick)
+				EXEC(self.makepath(config.riconclick), self, el);
+			else if (left && config.type === 'search')
+				self.set('');
+
+		});
+	};
+
+	self.camouflage = function(is) {
+		if (config.camouflage) {
+			if (is) {
+				var t = input[0];
+				var arr = t.value.split('');
+				for (var i = 0; i < arr.length; i++)
+					arr[i] = typeof(config.camouflage) === 'string' ? config.camouflage : '*';
+				nobindcamouflage = true;
+				t.value = arr.join('');
+			} else {
+				nobindcamouflage = true;
+				input[0].value = self.get();
+			}
+			self.tclass(cls + '-camouflaged', is);
+		}
+	};
+
+	self.curpos = function(pos) {
+		var el = input[0];
+		if (el.createTextRange) {
+			var range = el.createTextRange();
+			range.move('character', pos);
+			range.select();
+		} else if (el.selectionStart) {
+			el.focus();
+			el.setSelectionRange(pos, pos);
+		}
+	};
+
+	self.validate = function(value) {
+
+		if ((!config.required || config.disabled) && !self.forcedvalidation())
+			return true;
+
+		if (config.dirsource)
+			return !!value;
+
+		if (customvalidator)
+			return customvalidator(value);
+
+		if (self.type === 'date')
+			return value instanceof Date && !isNaN(value.getTime());
+
+		if (value == null)
+			value = '';
+		else
+			value = value.toString();
+
+		if (config.mask && typeof(value) === 'string' && value.indexOf('_') !== -1)
+			return false;
+
+		if (config.minlength && value.length < config.minlength)
+			return false;
+
+		switch (self.type) {
+			case 'email':
+				return value.isEmail();
+			case 'phone':
+				return value.isPhone();
+			case 'url':
+				return value.isURL();
+			case 'currency':
+			case 'number':
+				value = value.parseFloat();
+				if ((config.minvalue != null && value < config.minvalue) || (config.maxvalue != null && value > config.maxvalue))
+					return false;
+				return config.minvalue == null ? value > 0 : true;
+		}
+
+		return value.length > 0;
+	};
+
+	self.offset = function() {
+		var offset = self.element.offset();
+		var control = self.find(cls2 + '-control');
+		var width = control.width() + 2;
+		return { left: offset.left, top: control.offset().top + control.height(), width: width };
+	};
+
+	self.password = function(show) {
+		var visible = show == null ? input.attr('type') === 'text' : show;
+		input.attr('type', visible ? 'password' : 'text');
+		self.find(cls2 + '-icon-right').find('i').tclass(config.ricon, visible).tclass('fa-eye-slash', !visible);
+	};
+
+	self.getterin = self.getter;
+	self.getter = function(value, realtime, nobind) {
+
+		if (nobindcamouflage)
+			return;
+
+		if (config.mask && config.masktidy) {
+			var val = [];
+			for (var i = 0; i < value.length; i++) {
+				if (config.mask.charAt(i) === '_')
+					val.push(value.charAt(i));
+			}
+			value = val.join('');
+		}
+		self.getterin(value, realtime, nobind);
+	};
+
+	self.setterin = self.setter;
+
+	self.setter = function(value, path, type) {
+
+		if (config.mask) {
+			if (value) {
+				if (config.masktidy) {
+					var index = 0;
+					var val = [];
+					for (var i = 0; i < config.mask.length; i++) {
+						var c = config.mask.charAt(i);
+						if (c === '_')
+							val.push(value.charAt(index++) || '_');
+						else
+							val.push(c);
+					}
+					value = val.join('');
+				}
+
+				// check values
+				if (mask) {
+					var arr = [];
+					for (var i = 0; i < mask.length; i++) {
+						var c = value.charAt(i);
+						if (mask[i] && mask[i].test(c))
+							arr.push(c);
+						else
+							arr.push(config.mask.charAt(i));
+					}
+					value = arr.join('');
+				}
+			} else
+				value = config.mask;
+		}
+
+		self.setterin(value, path, type);
+		self.bindvalue();
+
+		config.camouflage && !focused && setTimeout(self.camouflage, type === 1 ? 1000 : 1, true);
+
+		if (config.type === 'password')
+			self.password(true);
+	};
+
+	self.check = function() {
+
+		var is = !!input[0].value;
+
+		if (binded === is)
+			return;
+
+		binded = is;
+		placeholder && placeholder.tclass('hidden', is);
+		self.tclass(cls + '-binded', is);
+
+		if (config.type === 'search')
+			self.find(cls2 + '-icon-' + (config.searchalign === 1 ? 'right' : 'left')).find('i').tclass(config.searchalign === 1 ? config.ricon : config.licon, !is).tclass('fa-times', is);
+	};
+
+	self.bindvalue = function() {
+		if (dirsource) {
+
+			var value = self.get();
+			var item;
+
+			for (var i = 0; i < dirsource.length; i++) {
+				item = dirsource[i];
+				if (typeof(item) === 'string') {
+					if (item === value)
+						break;
+					item = null;
+				} else if (item[config.dirvalue || config.value] === value) {
+					item = item[config.dirkey || config.key];
+					break;
+				} else
+					item = null;
+			}
+
+			if (value && item == null && config.dircustom)
+				item = value;
+
+			input.val(item || '');
+		}
+		self.check();
+	};
+
+	self.redraw = function() {
+
+		if (!config.ricon) {
+			if (config.dirsource)
+				config.ricon = 'angle-down';
+			else if (config.type === 'date') {
+				config.ricon = 'calendar';
+				if (!config.align && !config.innerlabel)
+					config.align = 1;
+			} else if (config.type === 'time') {
+				config.ricon = 'clock-o';
+				if (!config.align && !config.innerlabel)
+					config.align = 1;
+			} else if (config.type === 'search')
+				if (config.searchalign === 1)
+					config.ricon = 'search';
+				else
+					config.licon = 'search';
+			else if (config.type === 'password')
+				config.ricon = 'eye';
+			else if (config.type === 'number') {
+				if (!config.align && !config.innerlabel)
+					config.align = 1;
+			}
+		}
+
+		self.tclass(cls + '-masked', !!config.mask);
+		self.html(W.ui_input_template(config));
+		input = self.find('input');
+		placeholder = self.find(cls2 + '-placeholder');
+	};
+
+	self.configure = function(key, value) {
+		switch (key) {
+			case 'dirsource':
+				self.datasource(value, function(path, value) {
+					dirsource = value;
+					self.bindvalue();
+				});
+				self.tclass(cls + '-dropdown', !!value);
+				break;
+			case 'disabled':
+				self.tclass('ui-disabled', value == true);
+				input.prop('readonly', value === true);
+				self.reset();
+				break;
+			case 'required':
+				self.tclass(cls + '-required', value == true);
+				self.reset();
+				break;
+			case 'type':
+				self.type = value;
+				break;
+			case 'validate':
+				customvalidator = value ? (/\(|=|>|<|\+|-|\)/).test(value) ? FN('value=>' + value) : (function(path) { return function(value) { return GET(path)(value); }; })(value) : null;
+				break;
+			case 'innerlabel':
+				self.tclass(cls + '-inner', value);
+				break;
+			case 'maskregexp':
+				if (value) {
+					mask = value.toLowerCase().split(',');
+					for (var i = 0; i < mask.length; i++) {
+						var m = mask[i];
+						if (!m || m === 'null')
+							mask[i] = '';
+						else
+							mask[i] = new RegExp(m);
+					}
+				} else
+					mask = null;
+				break;
+			case 'mask':
+				config.mask = value.replace(/#/g, '_');
+				break;
+		}
+	};
+
+	self.formatter(function(path, value) {
+		if (value) {
+			switch (config.type) {
+				case 'lower':
+					return value.toString().toLowerCase();
+				case 'upper':
+					return value.toString().toUpperCase();
+				case 'date':
+					return value.format(config.format || 'yyyy-MM-dd');
+				case 'time':
+					return value.format(config.format || 'HH:mm');
+				case 'number':
+					return config.format ? value.format(config.format) : value;
+			}
+		}
+
+		return value;
+	});
+
+	self.parser(function(path, value) {
+		if (value) {
+			var tmp;
+			switch (config.type) {
+				case 'date':
+					tmp = self.get();
+					if (tmp)
+						tmp = tmp.format('HH:mm');
+					else
+						tmp = '';
+					return value + (tmp ? (' ' + tmp) : '');
+				case 'lower':
+					value = value.toLowerCase();
+					break;
+				case 'upper':
+					value = value.toUpperCase();
+					break;
+				case 'time':
+					tmp = value.split(':');
+					var dt = self.get();
+					if (dt == null)
+						dt = new Date();
+					dt.setHours(+(tmp[0] || '0'));
+					dt.setMinutes(+(tmp[1] || '0'));
+					dt.setSeconds(+(tmp[2] || '0'));
+					value = dt;
+					break;
+			}
+		}
+		return value ? config.spaces === false ? value.replace(/\s/g, '') : value : value;
+	});
+
+	self.state = function(type) {
+		if (!type)
+			return;
+		var invalid = config.required ? self.isInvalid() : self.forcedvalidation() ? self.isInvalid() : false;
+		if (invalid === self.$oldstate)
+			return;
+		self.$oldstate = invalid;
+		self.tclass(cls + '-invalid', invalid);
+		config.error && self.find(cls2 + '-error').tclass('hidden', !invalid);
+	};
+
+	self.forcedvalidation = function() {
+
+		if (!config.forcevalidation)
+			return false;
+
+		if (self.type === 'number')
+			return false;
+
+		var val = self.get();
+		return (self.type === 'phone' || self.type === 'email') && (val != null && (typeof(val) === 'string' && val.length !== 0));
+	};
+
+});
+
+COMPONENT('dragdropfiles', 'click:true;class:ui-dragdropfiles;accept:*/*;', function(self, config) {
+
+	var file;
+
+	self.readonly();
+	//self.nocompile && self.nocompile();
+
+	self.destroy = function() {
+		file.off('*').remove();
+	};
+
+	self.make = function() {
+
 		var has = false;
+		var id = 'file' + self.ID;
+
+		self.aclass(config.class);
+
+		$(document.body).append('<input type="file" id="{0}" class="hidden" accept="{1}" multiple />'.format(id, config.accept));
+
+		file = $('#' + id);
+
+		self.event('click', function() {
+			config.click && file.trigger('click');
+		});
+
+		file.on('change', function(e) {
+			var self2 = this;
+			EXEC(self.makepath(config.exec), this.files, e);
+			setTimeout(function() {
+				self2.value = '';
+			}, 1000);
+		});
 
 		self.event('dragenter dragover dragexit drop dragleave', function (e) {
 
@@ -4848,24 +5688,24 @@ COMPONENT('dragdropfiles', function(self, config) {
 
 			switch (e.type) {
 				case 'drop':
-					config.class && has && self.classes(self.mirror(config.class));
+					config.class && has && self.rclass('over');
 					break;
 				case 'dragenter':
 				case 'dragover':
-					config.class && !has && self.classes(config.class);
+					config.class && !has && self.aclass('over');
 					has = true;
 					return;
 				case 'dragleave':
 				case 'dragexit':
 				default:
 					setTimeout2(self.id, function() {
-						config.class && has && self.classes(self.mirror(config.class));
+						config.class && has && self.rclass('over');
 						has = false;
 					}, 100);
 					return;
 			}
 
-			EXEC(config.files, e.originalEvent.dataTransfer.files, e);
+			EXEC(self.makepath(config.exec), e.originalEvent.dataTransfer.files, e);
 		});
 	};
 });
@@ -5103,73 +5943,30 @@ COMPONENT('radiobutton', function(self, config) {
 	};
 });
 
-COMPONENT('devicetype', function(self, config) {
+COMPONENT('fontawesomebox', 'height:300', function(self, config) {
 
-	self.configure = function(key, value, init) {
-		if (init)
-			return;
-		switch (key) {
-			case 'items':
-				self.find('span').remove();
-				var builder = [];
-				value.split(',').forEach(function(item) {
-					item = item.split('|');
-					builder.push('<span data-value="{0}">{1}</span>'.format(item[1] || item[0], item[0] || item[1]));
-				});
-				self.append(builder.join(''));
-				self.refresh();
-				break;
-		}
-	};
-
-	self.make = function() {
-		var builder = [];
-		self.aclass('ui-devicetype');
-		self.event('click', 'span', function() {
-			if (config.disabled)
-				return;
-			var value = $(this).attrd('value');
-			self.set(value);
-			self.change(true);
-		});
-		self.html(builder.join(''));
-		config.items && self.reconfigure('items:' + config.items);
-		config.type && (self.type = config.type);
-	};
-
-	self.validate = function(value) {
-		return config.disabled || !config.required ? true : !!value;
-	};
-
-	self.setter = function(value) {
-		self.find('span').each(function() {
-			var el = $(this);
-			var is = el.attrd('value') === (value == null ? null : value.toString());
-			el.tclass('ui-devicetype-selected', is);
-		});
-	};
-});
-
-COMPONENT('fontawesomebox', 'height:300;fa:false', function(self, config) {
-
-	self.init = function() {
-		window.fontawesomeicons = '500px,address-book,address-book-o,address-card,address-card-o,adjust,adn,align-center,align-justify,align-left,align-right,amazon,ambulance,american-sign-language-interpreting,anchor,android,angellist,angle-double-down,angle-double-left,angle-double-right,angle-double-up,angle-down,angle-left,angle-right,angle-up,apple,archive,area-chart,arrow-circle-down,arrow-circle-left,arrow-circle-o-down,arrow-circle-o-left,arrow-circle-o-right,arrow-circle-o-up,arrow-circle-right,arrow-circle-up,arrow-down,arrow-left,arrow-right,arrow-up,arrows,arrows-alt,arrows-h,arrows-v,asl-interpreting,assistive-listening-systems,asterisk,at,audio-description,automobile,backward,balance-scale,ban,bandcamp,bank,bar-chart,bar-chart-o,barcode,bars,bath,bathtub,battery,battery-0,battery-1,battery-2,battery-3,battery-4,battery-empty,battery-full,battery-half,battery-quarter,battery-three-quarters,bed,beer,behance,behance-square,bell,bell-o,bell-slash,bell-slash-o,bicycle,binoculars,birthday-cake,bitbucket,bitbucket-square,bitcoin,black-tie,blind,bluetooth,bluetooth-b,bold,bolt,bomb,book,bookmark,bookmark-o,braille,briefcase,btc,bug,building,building-o,bullhorn,bullseye,bus,buysellads,cab,calculator,calendar,calendar-check-o,calendar-minus-o,calendar-o,calendar-plus-o,calendar-times-o,camera,camera-retro,car,caret-down,caret-left,caret-right,caret-square-o-down,caret-square-o-left,caret-square-o-right,caret-square-o-up,caret-up,cart-arrow-down,cart-plus,cc,cc-amex,cc-diners-club,cc-discover,cc-jcb,cc-mastercard,cc-paypal,cc-stripe,cc-visa,certificate,chain,chain-broken,check,check-circle,check-circle-o,check-square,check-square-o,chevron-circle-down,chevron-circle-left,chevron-circle-right,chevron-circle-up,chevron-down,chevron-left,chevron-right,chevron-up,child,chrome,circle,circle-o,circle-o-notch,circle-thin,clipboard,clock-o,clone,close,cloud,cloud-download,cloud-upload,cny,code,code-fork,codepen,codiepie,coffee,cog,cogs,columns,comment,comment-o,commenting,commenting-o,comments,comments-o,compass,compress,connectdevelop,contao,copy,copyright,creative-commons,credit-card,credit-card-alt,crop,crosshairs,css3,cube,cubes,cut,cutlery,dashboard,dashcube,database,deaf,deafness,dedent,delicious,desktop,deviantart,diamond,digg,dollar,dot-circle-o,download,dribbble,drivers-license,drivers-license-o,dropbox,drupal,edge,edit,eercast,eject,ellipsis-h,ellipsis-v,empire,envelope,envelope-o,envelope-open,envelope-open-o,envelope-square,envira,eraser,etsy,eur,euro,exchange,exclamation,exclamation-circle,exclamation-triangle,expand,expeditedssl,external-link,external-link-square,eye,eye-slash,eyedropper,fa,facebook,facebook-f,facebook-official,facebook-square,fast-backward,fast-forward,fax,feed,female,fighter-jet,file,file-archive-o,file-audio-o,file-code-o,file-excel-o,file-image-o,file-movie-o,file-o,file-pdf-o,file-photo-o,file-picture-o,file-powerpoint-o,file-sound-o,file-text,file-text-o,file-video-o,file-word-o,file-zip-o,files-o,film,filter,fire,fire-extinguisher,firefox,first-order,flag,flag-checkered,flag-o,flash,flask,flickr,floppy-o,folder,folder-o,folder-open,folder-open-o,font,font-awesome,fonticons,fort-awesome,forumbee,forward,foursquare,free-code-camp,frown-o,futbol-o,gamepad,gavel,gbp,ge,gear,gears,genderless,get-pocket,gg,gg-circle,gift,git,git-square,github,github-alt,github-square,gitlab,gittip,glass,glide,glide-g,globe,google,google-plus,google-plus-circle,google-plus-official,google-plus-square,google-wallet,graduation-cap,gratipay,grav,group,h-square,hacker-news,hand-grab-o,hand-lizard-o,hand-o-down,hand-o-left,hand-o-right,hand-o-up,hand-paper-o,hand-peace-o,hand-pointer-o,hand-rock-o,hand-scissors-o,hand-spock-o,hand-stop-o,handshake-o,hard-of-hearing,hashtag,hdd-o,header,headphones,heart,heart-o,heartbeat,history,home,hospital-o,hotel,hourglass,hourglass-1,hourglass-2,hourglass-3,hourglass-end,hourglass-half,hourglass-o,hourglass-start,houzz,html5,i-cursor,id-badge,id-card,id-card-o,ils,image,imdb,inbox,indent,industry,info,info-circle,inr,instagram,institution,internet-explorer,intersex,ioxhost,italic,joomla,jpy,jsfiddle,key,keyboard-o,krw,language,laptop,lastfm,lastfm-square,leaf,leanpub,legal,lemon-o,level-down,level-up,life-bouy,life-buoy,life-ring,life-saver,lightbulb-o,line-chart,link,linkedin,linkedin-square,linode,linux,list,list-alt,list-ol,list-ul,location-arrow,lock,long-arrow-down,long-arrow-left,long-arrow-right,long-arrow-up,low-vision,magic,magnet,mail-forward,mail-reply,mail-reply-all,male,map,map-marker,map-o,map-pin,map-signs,mars,mars-double,mars-stroke,mars-stroke-h,mars-stroke-v,maxcdn,meanpath,medium,medkit,meetup,meh-o,mercury,microchip,microphone,microphone-slash,minus,minus-circle,minus-square,minus-square-o,mixcloud,mobile,mobile-phone,modx,money,moon-o,mortar-board,motorcycle,mouse-pointer,music,navicon,neuter,newspaper-o,object-group,object-ungroup,odnoklassniki,odnoklassniki-square,opencart,openid,opera,optin-monster,outdent,pagelines,paint-brush,paper-plane,paper-plane-o,paperclip,paragraph,paste,pause,pause-circle,pause-circle-o,paw,paypal,pencil,pencil-square,pencil-square-o,percent,phone,phone-square,photo,picture-o,pie-chart,pied-piper,pied-piper-alt,pied-piper-pp,pinterest,pinterest-p,pinterest-square,plane,play,play-circle,play-circle-o,plug,plus,plus-circle,plus-square,plus-square-o,podcast,power-off,print,product-hunt,puzzle-piece,qq,qrcode,question,question-circle,question-circle-o,quora,quote-left,quote-right,ra,random,ravelry,rebel,recycle,reddit,reddit-alien,reddit-square,refresh,registered,remove,renren,reorder,repeat,reply,reply-all,resistance,retweet,rmb,road,rocket,rotate-left,rotate-right,rouble,rss,rss-square,rub,ruble,rupee,s15,safari,save,scissors,scribd,search,search-minus,search-plus,sellsy,send,send-o,server,share,share-alt,share-alt-square,share-square,share-square-o,shekel,sheqel,shield,ship,shirtsinbulk,shopping-bag,shopping-basket,shopping-cart,shower,sign-in,sign-language,sign-out,signal,signing,simplybuilt,sitemap,skyatlas,skype,slack,sliders,slideshare,smile-o,snapchat,snapchat-ghost,snapchat-square,snowflake-o,soccer-ball-o,sort,sort-alpha-asc,sort-alpha-desc,sort-amount-asc,sort-amount-desc,sort-asc,sort-desc,sort-down,sort-numeric-asc,sort-numeric-desc,sort-up,soundcloud,space-shuttle,spinner,spoon,spotify,square,square-o,stack-exchange,stack-overflow,star,star-half,star-half-empty,star-half-full,star-half-o,star-o,steam,steam-square,step-backward,step-forward,stethoscope,sticky-note,sticky-note-o,stop,stop-circle,stop-circle-o,street-view,strikethrough,stumbleupon,stumbleupon-circle,subscript,subway,suitcase,sun-o,superpowers,superscript,support,table,tablet,tachometer,tag,tags,tasks,taxi,telegram,television,tencent-weibo,terminal,text-height,text-width,th,th-large,th-list,themeisle,thermometer,thermometer-0,thermometer-1,thermometer-2,thermometer-3,thermometer-4,thermometer-empty,thermometer-full,thermometer-half,thermometer-quarter,thermometer-three-quarters,thumb-tack,thumbs-down,thumbs-o-down,thumbs-o-up,thumbs-up,ticket,times,times-circle,times-circle-o,times-rectangle,times-rectangle-o,tint,toggle-down,toggle-left,toggle-off,toggle-on,toggle-right,toggle-up,trademark,train,transgender,transgender-alt,trash,trash-o,tree,trello,tripadvisor,trophy,truck,try,tty,tumblr,tumblr-square,turkish-lira,tv,twitch,twitter,twitter-square,umbrella,underline,undo,universal-access,university,unlink,unlock,unlock-alt,unsorted,upload,usb,usd,user,user-circle,user-circle-o,user-md,user-o,user-plus,user-secret,user-times,users,vcard,vcard-o,venus,venus-double,venus-mars,viacoin,viadeo,viadeo-square,video-camera,vimeo,vimeo-square,vine,vk,volume-control-phone,volume-down,volume-off,volume-up,warning,wechat,weibo,weixin,whatsapp,wheelchair,wheelchair-alt,wifi,wikipedia-w,window-close,window-close-o,window-maximize,window-minimize,window-restore,windows,won,wordpress,wpbeginner,wpexplorer,wpforms,wrench,xing,xing-square,y-combinator,y-combinator-square,yahoo,yc,yc-square,yelp,yen,yoast,youtube,youtube-play,youtube-square'.split(',');
-	};
-
+	var cls = 'ui-' + self.name;
+	var cls2 = '.' + cls;
 	var container, input, icon, prev;
-	var template = '<li data-search="{0}"><i class="fa fa-{0}"></i></li>';
+	var template = '<li data-search="{0}"><i class="{1}"></i></li>';
 	var skip = false;
 	var refresh = false;
 
+	self.init = function() {
+		W.fontawesomeicons = 'address-book,address-card,adjust,align-center,align-justify,align-left,align-right,allergies,ambulance,american-sign-language-interpreting,anchor,angle-double-down,angle-double-left,angle-double-right,angle-double-up,angle-down,angle-left,angle-right,angle-up,archive,arrow-alt-circle-down,arrow-alt-circle-left,arrow-alt-circle-right,arrow-alt-circle-up,arrow-circle-down,arrow-circle-left,arrow-circle-right,arrow-circle-up,arrow-down,arrow-left,arrow-right,arrow-up,arrows-alt,arrows-alt-h,arrows-alt-v,assistive-listening-systems,asterisk,at,audio-description,backward,balance-scale,ban,band-aid,barcode,bars,baseball-ball,basketball-ball,bath,battery-empty,battery-full,battery-half,battery-quarter,battery-three-quarters,bed,beer,bell,bell-slash,bicycle,binoculars,birthday-cake,blender,blind,bold,bolt,bomb,book,book-open,bookmark,bowling-ball,box,box-open,boxes,braille,briefcase,briefcase-medical,broadcast-tower,broom,bug,building,bullhorn,bullseye,burn,bus,calculator,calendar,calendar-alt,calendar-check,calendar-minus,calendar-plus,calendar-times,camera,camera-retro,capsules,car,caret-down,caret-left,caret-right,caret-square-down,caret-square-left,caret-square-right,caret-square-up,caret-up,cart-arrow-down,cart-plus,certificate,chalkboard,chalkboard-teacher,chart-area,chart-bar,chart-line,chart-pie,check,check-circle,check-square,chess,chess-bishop,chess-board,chess-king,chess-knight,chess-pawn,chess-queen,chess-rook,chevron-circle-down,chevron-circle-left,chevron-circle-right,chevron-circle-up,chevron-down,chevron-left,chevron-right,chevron-up,child,church,circle,circle-notch,clipboard,clipboard-check,clipboard-list,clock,clone,closed-captioning,cloud,cloud-download-alt,cloud-upload-alt,code,code-branch,coffee,cog,cogs,coins,columns,comment,comment-alt,comment-dots,comment-slash,comments,compact-disc,compass,compress,copy,copyright,couch,credit-card,crop,crosshairs,crow,crown,cube,cubes,cut,database,deaf,desktop,diagnoses,dice,dice-five,dice-four,dice-one,dice-six,dice-three,dice-two,divide,dna,dollar-sign,dolly,dolly-flatbed,donate,door-closed,door-open,dot-circle,dove,download,dumbbell,edit,eject,ellipsis-h,ellipsis-v,envelope,envelope-open,envelope-square,equals,eraser,euro-sign,exchange-alt,exclamation,exclamation-circle,exclamation-triangle,expand,expand-arrows-alt,external-link-alt,external-link-square-alt,eye,eye-dropper,eye-slash,fast-backward,fast-forward,fax,feather,female,fighter-jet,file,file-alt,file-archive,file-audio,file-code,file-excel,file-image,file-medical,file-medical-alt,file-pdf,file-powerpoint,file-video,file-word,film,filter,fire,fire-extinguisher,first-aid,flag,flag-checkered,flask,folder,folder-open,font,football-ball,forward,frog,frown,futbol,gamepad,gas-pump,gavel,gem,genderless,gift,glass-martini,glasses,globe,golf-ball,graduation-cap,greater-than,greater-than-equal,h-square,hand-holding,hand-holding-heart,hand-holding-usd,hand-lizard,hand-paper,hand-peace,hand-point-down,hand-point-left,hand-point-right,hand-point-up,hand-pointer,hand-rock,hand-scissors,hand-spock,hands,hands-helping,handshake,hashtag,hdd,heading,headphones,heart,heartbeat,helicopter,history,hockey-puck,home,hospital,hospital-alt,hospital-symbol,hourglass,hourglass-end,hourglass-half,hourglass-start,i-cursor,id-badge,id-card,id-card-alt,image,images,inbox,indent,industry,infinity,info,info-circle,italic,key,keyboard,kiwi-bird,language,laptop,leaf,lemon,less-than,less-than-equal,level-down-alt,level-up-alt,life-ring,lightbulb,link,lira-sign,list,list-alt,list-ol,list-ul,location-arrow,lock,lock-open,long-arrow-alt-down,long-arrow-alt-left,long-arrow-alt-right,long-arrow-alt-up,low-vision,magic,magnet,male,map,map-marker,map-marker-alt,map-pin,map-signs,mars,mars-double,mars-stroke,mars-stroke-h,mars-stroke-v,medkit,meh,memory,mercury,microchip,microphone,microphone-alt,microphone-alt-slash,microphone-slash,minus,minus-circle,minus-square,mobile,mobile-alt,money-bill,money-bill-alt,money-bill-wave,money-bill-wave-alt,money-check,money-check-alt,moon,motorcycle,mouse-pointer,music,neuter,newspaper,not-equal,notes-medical,object-group,object-ungroup,outdent,paint-brush,palette,pallet,paper-plane,paperclip,parachute-box,paragraph,parking,paste,pause,pause-circle,paw,pen-square,pencil-alt,people-carry,percent,percentage,phone,phone-slash,phone-square,phone-volume,piggy-bank,pills,plane,play,play-circle,plug,plus,plus-circle,plus-square,podcast,poo,portrait,pound-sign,power-off,prescription-bottle,prescription-bottle-alt,print,procedures,project-diagram,puzzle-piece,qrcode,question,question-circle,quidditch,quote-left,quote-right,random,receipt,recycle,redo,redo-alt,registered,reply,reply-all,retweet,ribbon,road,robot,rocket,rss,rss-square,ruble-sign,ruler,ruler-combined,ruler-horizontal,ruler-vertical,rupee-sign,save,school,screwdriver,search,search-minus,search-plus,seedling,server,share,share-alt,share-alt-square,share-square,shekel-sign,shield-alt,ship,shipping-fast,shoe-prints,shopping-bag,shopping-basket,shopping-cart,shower,sign,sign-in-alt,sign-language,sign-out-alt,signal,sitemap,skull,sliders-h,smile,smoking,smoking-ban,snowflake,sort,sort-alpha-down,sort-alpha-up,sort-amount-down,sort-amount-up,sort-down,sort-numeric-down,sort-numeric-up,sort-up,space-shuttle,spinner,square,square-full,star,star-half,step-backward,step-forward,stethoscope,sticky-note,stop,stop-circle,stopwatch,store,store-alt,stream,street-view,strikethrough,stroopwafel,subscript,subway,suitcase,sun,superscript,sync,sync-alt,syringe,table,table-tennis,tablet,tablet-alt,tablets,tachometer-alt,tag,tags,tape,tasks,taxi,terminal,text-height,text-width,th,th-large,th-list,thermometer,thermometer-empty,thermometer-full,thermometer-half,thermometer-quarter,thermometer-three-quarters,thumbs-down,thumbs-up,thumbtack,ticket-alt,times,times-circle,tint,toggle-off,toggle-on,toolbox,trademark,train,transgender,transgender-alt,trash,trash-alt,tree,trophy,truck,truck-loading,truck-moving,tshirt,tty,tv,umbrella,underline,undo,undo-alt,universal-access,university,unlink,unlock,unlock-alt,upload,user,user-alt,user-alt-slash,user-astronaut,user-check,user-circle,user-clock,user-cog,user-edit,user-friends,user-graduate,user-lock,user-md,user-minus,user-ninja,user-plus,user-secret,user-shield,user-slash,user-tag,user-tie,user-times,users,users-cog,utensil-spoon,utensils,venus,venus-double,venus-mars,vial,vials,video,video-slash,volleyball-ball,volume-down,volume-off,volume-up,walking,wallet,warehouse,weight,wheelchair,wifi,window-close,window-maximize,window-minimize,window-restore,wine-glass,won-sign,wrench,x-ray,yen-sign,fab 500px,fab accessible-icon,fab accusoft,fab acquisitions-incorporated,fab adn,fab adversal,fab affiliatetheme,fab algolia,fab alipay,fab amazon,fab amazon-pay,fab amilia,fab android,fab angellist,fab angrycreative,fab angular,fab app-store,fab app-store-ios,fab apper,fab apple,fab apple-pay,fab asymmetrik,fab audible,fab autoprefixer,fab avianex,fab aviato,fab aws,fab bandcamp,fab behance,fab behance-square,fab bimobject,fab bitbucket,fab bitcoin,fab bity,fab black-tie,fab blackberry,fab blogger,fab blogger-b,fab bluetooth,fab bluetooth-b,fab btc,fab buromobelexperte,fab buysellads,fab cc-amazon-pay,fab cc-amex,fab cc-apple-pay,fab cc-diners-club,fab cc-discover,fab cc-jcb,fab cc-mastercard,fab cc-paypal,fab cc-stripe,fab cc-visa,fab centercode,fab chrome,fab cloudscale,fab cloudsmith,fab cloudversify,fab codepen,fab codiepie,fab connectdevelop,fab contao,fab cpanel,fab creative-commons,fab creative-commons-by,fab creative-commons-nc,fab creative-commons-nc-eu,fab creative-commons-nc-jp,fab creative-commons-nd,fab creative-commons-pd,fab creative-commons-pd-alt,fab creative-commons-remix,fab creative-commons-sa,fab creative-commons-sampling,fab creative-commons-sampling-plus,fab creative-commons-share,fab css3,fab css3-alt,fab cuttlefish,fab d-and-d,fab dashcube,fab delicious,fab deploydog,fab deskpro,fab deviantart,fab digg,fab digital-ocean,fab discord,fab discourse,fab dochub,fab docker,fab draft2digital,fab dribbble,fab dribbble-square,fab dropbox,fab drupal,fab dyalog,fab earlybirds,fab ebay,fab edge,fab elementor,fab ello,fab ember,fab empire,fab envira,fab erlang,fab ethereum,fab etsy,fab expeditedssl,fab facebook,fab facebook-f,fab facebook-messenger,fab facebook-square,fab firefox,fab first-order,fab first-order-alt,fab firstdraft,fab flickr,fab flipboard,fab fly,fab font-awesome,fab font-awesome-alt,fab font-awesome-flag,fab fonticons,fab fonticons-fi,fab fort-awesome,fab fort-awesome-alt,fab forumbee,fab foursquare,fab free-code-camp,fab freebsd,fab fulcrum,fab galactic-republic,fab galactic-senate,fab get-pocket,fab gg,fab gg-circle,fab git,fab git-square,fab github,fab github-alt,fab github-square,fab gitkraken,fab gitlab,fab gitter,fab glide,fab glide-g,fab gofore,fab goodreads,fab goodreads-g,fab google,fab google-drive,fab google-play,fab google-plus,fab google-plus-g,fab google-plus-square,fab google-wallet,fab gratipay,fab grav,fab gripfire,fab grunt,fab gulp,fab hacker-news,fab hacker-news-square,fab hackerrank,fab hips,fab hire-a-helper,fab hooli,fab hornbill,fab hotjar,fab houzz,fab html5,fab hubspot,fab imdb,fab instagram,fab internet-explorer,fab ioxhost,fab itunes,fab itunes-note,fab java,fab jedi-order,fab jenkins,fab joget,fab joomla,fab js,fab js-square,fab jsfiddle,fab kaggle,fab keybase,fab keycdn,fab kickstarter,fab kickstarter-k,fab korvue,fab laravel,fab lastfm,fab lastfm-square,fab leanpub,fab less,fab line,fab linkedin,fab linkedin-in,fab linode,fab linux,fab lyft,fab magento,fab mailchimp,fab mandalorian,fab markdown,fab mastodon,fab maxcdn,fab medapps,fab medium,fab medium-m,fab medrt,fab meetup,fab megaport,fab microsoft,fab mix,fab mixcloud,fab mizuni,fab modx,fab monero,fab napster,fab neos,fab nimblr,fab node,fab node-js,fab npm,fab ns8,fab nutritionix,fab odnoklassniki,fab odnoklassniki-square,fab old-republic,fab opencart,fab openid,fab opera,fab optin-monster,fab osi,fab page4,fab pagelines,fab palfed,fab patreon,fab paypal,fab periscope,fab phabricator,fab phoenix-framework,fab phoenix-squadron,fab php,fab pied-piper,fab pied-piper-alt,fab pied-piper-hat,fab pied-piper-pp,fab pinterest,fab pinterest-p,fab pinterest-square,fab playstation,fab product-hunt,fab pushed,fab python,fab qq,fab quinscape,fab quora,fab r-project,fab ravelry,fab react,fab readme,fab rebel,fab red-river,fab reddit,fab reddit-alien,fab reddit-square,fab renren,fab replyd,fab researchgate,fab resolving,fab rev,fab rocketchat,fab rockrms,fab safari,fab sass,fab schlix,fab scribd,fab searchengin,fab sellcast,fab sellsy,fab servicestack,fab shirtsinbulk,fab shopware,fab simplybuilt,fab sistrix,fab sith,fab skyatlas,fab skype,fab slack,fab slack-hash,fab slideshare,fab snapchat,fab snapchat-ghost,fab snapchat-square,fab soundcloud,fab speakap,fab spotify,fab squarespace,fab stack-exchange,fab stack-overflow,fab staylinked,fab steam,fab steam-square,fab steam-symbol,fab sticker-mule,fab strava,fab stripe,fab stripe-s,fab studiovinari,fab stumbleupon,fab stumbleupon-circle,fab superpowers,fab supple,fab teamspeak,fab telegram,fab telegram-plane,fab tencent-weibo,fab the-red-yeti,fab themeco,fab themeisle,fab trade-federation,fab trello,fab tripadvisor,fab tumblr,fab tumblr-square,fab twitch,fab twitter,fab twitter-square,fab typo3,fab uber,fab uikit,fab uniregistry,fab untappd,fab usb,fab ussunnah,fab vaadin,fab viacoin,fab viadeo,fab viadeo-square,fab viber,fab vimeo,fab vimeo-square,fab vimeo-v,fab vine,fab vk,fab vnv,fab vuejs,fab weebly,fab weibo,fab weixin,fab whatsapp,fab whatsapp-square,fab whmcs,fab wikipedia-w,fab windows,fab wix,fab wolf-pack-battalion,fab wordpress,fab wordpress-simple,fab wpbeginner,fab wpexplorer,fab wpforms,fab xbox,fab xing,fab xing-square,fab y-combinator,fab yahoo,fab yandex,fab yandex-international,fab yelp,fab yoast,fab youtube,fab youtube-square,fab zhihu'.split(',');
+	};
+
 	self.readonly();
+	self.nocompile();
 
 	self.make = function() {
-		self.aclass('ui-fontawesomebox');
+
+		self.aclass(cls);
 		self.css('height', config.height + 'px');
-		self.append('<div class="ui-fontawesomebox-search"><span><i class="fa fa-search clearsearch"></i></span><div><input type="text" maxlength="50" placeholder="{0}" /></div></div><div class="ui-fontawesomebox-search-empty"></div><div class="ui-fontawesomebox-icons"><ul style="height:{1}px"></ul></div>'.format(config.search, config.height - 40));
-		container = $(self.find('.ui-fontawesomebox-icons').find('ul')[0]);
+		self.append('<div class="{2}-search"><span><i class="fa fa-search clearsearch"></i></span><div><input type="text" maxlength="50" placeholder="{0}" /></div></div><div class="{2}-search-empty"></div><div class="{2}-icons"><ul style="height:{1}px" class="noscrollbar"></ul></div>'.format(config.search, config.height - 40, cls));
+		container = $(self.find(cls2 + '-icons').find('ul')[0]);
 		input = self.find('input');
-		icon = self.find('.ui-fontawesomebox-search').find('.fa');
+		icon = self.find(cls2 + '-search').find('i');
 
 		self.event('click', '.clearsearch', function() {
 			input.val('').trigger('keydown');
@@ -5179,10 +5976,8 @@ COMPONENT('fontawesomebox', 'height:300;fa:false', function(self, config) {
 			var el = $(this);
 			var val = '';
 
-			if (!el.hclass('selected')) {
-				var icon = el.find('.fa').attr('class').replace('fa ', '');
-				val = config.fa ? icon : icon.replace('fa-', '');
-			}
+			if (!el.hclass('selected'))
+				val = el.find('i').attr('class');
 
 			skip = true;
 			config.exec && EXEC(config.exec, val, self);
@@ -5233,21 +6028,62 @@ COMPONENT('fontawesomebox', 'height:300;fa:false', function(self, config) {
 
 	self.render = function() {
 		var builder = [];
-		var icons = window.fontawesomeicons;
-		for (var i = 0, length = icons.length; i < length; i++)
-			builder.push(template.format(icons[i]));
+		var icons = W.fontawesomeicons;
+		for (var i = 0, length = icons.length; i < length; i++) {
+			var icon = icons[i];
+			builder.push(template.format(icon, icon.indexOf(' ') === -1 ? ('fa fa-' + icon) : icon.replace(' ', ' fa-')));
+		}
 		container.empty();
 		input.val('').trigger('keydown');
+console.log(builder.join(''));
 		container.html(builder.join(''));
+	};
+
+	self.rescroll = function(t, offset, bottom) {
+		t.each(function() {
+			var e = this;
+			var el = e;
+			el.scrollIntoView(true);
+			if (offset) {
+				var count = 0;
+				while (el && el.scrollTop == 0 && count++ < 25) {
+					el = el.parentNode;
+					if (el && el.scrollTop) {
+
+						var off = el.scrollTop + offset;
+
+						if (bottom != false) {
+							if (el.scrollTop + el.getBoundingClientRect().height >= el.scrollHeight) {
+								el.scrollTop = el.scrollHeight;
+								return;
+							}
+						}
+
+						el.scrollTop = off;
+						return;
+					}
+				}
+			}
+		});
 	};
 
 	self.setter = function(value) {
 		prev && prev.rclass('selected');
 		if (value) {
-			var fa = container.find(config.fa ? ('.' + value) : ('.fa-' + value));
+			if (value.indexOf('fa-') === -1)
+				value = 'fa-' + value;
+
+			var index = value.indexOf(' ');
+			if (index === -1)
+				value = '.' + value;
+			else
+				value = '.' + value.substring(index + 1);
+
+			var fa = container.find(value);
 			prev = fa.parent().aclass('selected');
 			setTimeout(function() {
-				!skip && prev.length && prev.rescroll(-40);
+				if (!skip && prev.length)
+					self.rescroll(prev, -40);
 			}, 100);
 		}
 		skip = false;

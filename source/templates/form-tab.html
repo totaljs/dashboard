@@ -1,40 +1,55 @@
-<div data-jc="form__common.form__enter:true;submit:formtab_submit;if:tab;title:@(Edit tab);width:500;autofocus:true" class="hidden">
-	<div class="padding npb">
-		<div data-jc="textbox__formtab.name__maxlength:30;placeholder:@(Type a tab name);required:true" class="m">@(Name)</div>
+<div data---="modal__common.form__if:tab;width:400;enter:true;reload:tab/reload;submit:tab/submit;autofocus:true" class="hidden">
 
-		<div class="row">
-			<div class="col-md-3 m">
-				<div data-jc="dropdown__formtab.position__datasource:formtabpositions;required:true;type:number">@(Position)</div>
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label></label>
+	</div>
+
+	<div>
+		<div class="padding npb">
+			<div data---="input__formtab.name__maxlength:30;required:1;placeholder:@(Type a tab name)" class="m">@(Name)</div>
+
+			<div class="row">
+				<div class="col-md-4 m">
+					<div data---="input__formtab.position__required:1;dirsource:formtabpositions">@(Position)</div>
+				</div>
+			</div>
+
+			<div data-bind="formtab.id__show:value && common.tabs.length > 1" class="hidden m fs12">
+				<hr class="nmt" />
+				<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
+				<div class="mt5"><span class="link exec red" data-exec="tab/remove"><i class="fa fa-times-circle mr5"></i>@(Remove this tab)</span></div>
 			</div>
 		</div>
+	</div>
 
-		<div data-bind="formtab.id__show:value && common.tabs.length > 1" class="hidden m fs12">
-			<hr class="nmt" />
-			<div class="help">@(Be careful, removed tab removes all components in this tab.)</div>
-			<div class="mt5"><a href="javascript:void(0)" class="link exec red" data-exec="formtab_remove"><i class="fa fa-times-circle"></i>@(Remove this tab)</a></div>
-		</div>
+	<div data---="validation__formtab">
+		<span class="link cancel">@(Close)</span>
+		<button name="submit" disabled><i class="fa fa-floppy-o mr5"></i>@(APPLY)</button>
 	</div>
-	<div class="ui-form-buttons">
-		<div data-jc="validation__formtab">
-			<button name="submit" disabled="disabled">@(SUBMIT)</button>
-		</div>
-		<button name="cancel">@(Close)</button>
-	</div>
+
 </div>
 
 <script>
 
-	function formtab_submit(com) {
-		EMIT('tabs.save', formtab);
-		com.hide();
-	}
+	PLUGIN('tab', function(exports){
 
-	function formtab_remove() {
-		SETTER('confirm', 'confirm', '@(Are you sure you want to remove this tab?)', ['@(Yes)', '@(Cancel)'], function(index) {
-			if (!index) {
-				SET('common.form', '');
-				OPERATION('tabs.rem')(formtab.id);
-			}
-		});
-	}
+		exports.reload = function(com) {
+			com.reconfigure({ title: formtab.id ? '@(Edit tab)' : '@(Add tab)' });
+		};
+
+		exports.submit = function(com) {
+			EMIT('tabs.save', formtab);
+			SET('common.form', '');
+		};
+
+		exports.remove = function() {
+			SETTER('confirm', 'confirm', '@(Are you sure you want to remove this tab?)', ['@(Yes)', '@(Cancel)'], function(index) {
+				if (!index) {
+					SET('common.form', '');
+					EMIT('tabs.rem', formtab.id);
+				}
+			});
+		}
+	});	
 </script>

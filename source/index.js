@@ -75,8 +75,8 @@ exports.install = function(options) {
 	F.localize(OPT.url + 'templates/*.html', ['compress']);
 
 	// Merging & Mapping
-	F.merge(OPT.url + 'default.css', '@dashboard/css/dep.min.css', '@dashboard/css/default.css', '@dashboard/css/ui.css');
-	F.merge(OPT.url + 'default.js', '@dashboard/js/dep.min.js', '@dashboard/js/default.js', '@dashboard/js/ui.js');
+	F.merge(OPT.url + 'css/default.css', '@dashboard/css/spa.min@18.css', '@dashboard/css/default.css', '@dashboard/css/ui.css', '@dashboard/css/ui.extras.css');
+	F.merge(OPT.url + 'js/default.js', '@dashboard/js/spa.min@18.js', '@dashboard/js/default.js', '@dashboard/js/ui.js', '@dashboard/js/ui.extras.js');
 	F.map(OPT.url + 'templates/', '@dashboard/templates/');
 	F.map(OPT.url + 'fonts/', '@dashboard/fonts/');
 	F.map(OPT.url + 'img/', '@dashboard/img/');
@@ -137,7 +137,6 @@ function websocket() {
 		switch (message.TYPE) {
 			case 'templates':
 				OPT.templates && U.request(OPT.templates, FLAGS, function(err, response) {
-					console.log('TEMPLATES', err, response);
 					if (!err) {
 						WS_TEMPLATES.body = response.parseJSON();
 						WS_TEMPLATES.body && client.send(WS_TEMPLATES);
@@ -157,6 +156,8 @@ function websocket() {
 			case 'save':
 				DASHBOARD.save(message.body, OPT.backup);
 				break;
+			default:
+				EMIT('dashboard.message', message);
 		}
 	});
 }
