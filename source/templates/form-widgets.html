@@ -1,10 +1,10 @@
-<div data-jc="form__common.form__if:widgets;title:@(Choose a component);width:930" class="hidden">
+<!-- <div data---="form__common.form__if:widgets;title:@(Choose a component);width:930" class="hidden">
 	<div class="padding npb">
-		<div data-jc="textbox__formwidgets_init.search__placeholder:@(Search components ...);type:search;type:search" class="mt10"></div>
+		<div data---="textbox__formwidgets_init.search__placeholder:@(Search components ...);type:search" class="mt10"></div>
 		<br />
-		<div data-jc="search__formwidgets_init.search__selector:.jsearch">
+		<div data---="search__formwidgets_init.search__selector:.jsearch">
 			<div class="db-container">
-				<div data-jc="repeater-group__common.database__group:group">
+				<div data---="repeatergroup__common.database__group:group">
 					<script type="text/html">
 						<div class="jsearch db-widget" data-search="{{ name }}" data-id="{{ name }}">
 							<span><i class="fa {{ icon }}"></i></span>
@@ -26,6 +26,45 @@
 	<div class="ui-form-buttons ui-center">
 		<button name="cancel" style="width:240px">@(Close)</button>
 	</div>
+</div> -->
+
+<div data---="modal__common.form__if:widgets;width:932;autofocus:true" class="hidden">
+
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<label>@(Choose a component)</label>
+	</div>
+
+	<div>
+		<div class="padding npb">
+			<div data---="input__formwidgets_init.search__placeholder:@(Search components ...);type:search" class="m">@(Name)</div>
+
+			<div data---="search__formwidgets_init.search__selector:.jsearch">
+				<div class="db-container">
+					<div data---="repeatergroup__common.database__group:group">
+						<script type="text/html">
+							<div class="jsearch db-widget" data-search="{{ name }}" data-id="{{ name }}">
+								<span><i class="fa {{ icon }}"></i></span>
+								<div>
+									<div class="name">{{ title }}</div>
+									<div class="author">{{ author }}</div>
+								</div>
+							</div>
+						</script>
+						<script type="text/html">
+							<div class="jsearch db-category" data-search=""><i class="fa fa-folder-o"></i>{{ group }}</div>
+							{{ body | raw }}
+						</script>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="center">
+		<button name="cancel">@(Close)</button>
+	</div>
+
 </div>
 
 <script>

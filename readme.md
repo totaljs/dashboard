@@ -2,11 +2,11 @@
 
 [![Support](https://www.totaljs.com/img/button-support.png?v=2)](https://www.totaljs.com/support/)
 
-__Total.js Dashboard__ `v6.0.0` is dashboard for __IoT__ and [Total.js Flow](https://www.totaljs.com/flow/).
+__Total.js Dashboard__ `v7.0.0` is dashboard for __IoT__ and [Total.js Flow](https://www.totaljs.com/flow/).
 
 ## Installation
 
-- Total.js `+v2.9.0`
+- Total.js `+v3.3.0`
 - Flow `+v5.0.0`
 - download and copy `dashboard.package` into the `/packages/` directory __or create a definition file with:__
 
@@ -345,7 +345,3 @@ __References:__
 ## Components
 
 - https://github.com/totaljs/dashboardcomponents
-
-## Contribute
-
-This project is stored in private repository on GitHub. Contact me <petersirka@gmail.com> if you want be a contributor.

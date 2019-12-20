@@ -1,15 +1,21 @@
-<div data-jc="form__common.form2__title:@(Registered components);if:components;width:850;submit:formcomponents_submit" class="hidden">
-	<div class="padding">
-		<div class="padding bg-smoke" style="border-radius:3px">
-			<div data-jc="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true">@(Choose components)</div>
-		</div>
-		<div class="mt10">
-			<a href="javascript:void(0)" class="exec fs12" data-exec="formcomponents_select"><i class="fa fa-caret-right mr5"></i>@(Toggle select)</a>
+<div data---="modal__common.form2__title:@(Choose components);if:components;width:850;reload:components/reload;submit:components/submit;autofocus:true" class="hidden">
+
+	<div>
+		<span class="link cancel"><i class="fa fa-times"></i></span>
+		<div style="margin:0 60px 0 0;padding-top: 10px">
+			<div data---="input__formcomponents.search__maxlength:50;type:search;searchalign:2;placeholder:@(Search components)"></div>
 		</div>
 	</div>
-	<div class="ui-form-buttons">
-		<button name="submit">@(Submit)</button>
-		<button name="cancel">@(Close)</button>
+
+	<div>
+		<div class="padding" data---="search__formcomponents.search__selector:.ui-checkboxlist-item-container">
+			<div data---="checkboxlist__formcomponents.components__datasource:formcomponents.database;required:true;value:url;text:url;$id:formcomponents"></div>
+		</div>
+	</div>
+	<div>
+		<span class="link exec fs12 pull-left" style="margin-top:22px" data-exec="components/select"><i class="fa fa-caret-right mr5"></i>@(Toggle select)</span>
+		<span class="link cancel">@(Cancel)</span>
+		<button name="submit">@(INSTALL)</button>
 	</div>
 </div>
 
@@ -17,27 +23,34 @@
 
 	SETTER('websocket', 'send', { 'type': 'templates' });
 
-	function formcomponents_submit() {
-		SET('common.form2', '');
-		SETTER('loading', 'show');
-		formcomponents.components.waitFor(function(item, next) {
-			SETTER('websocket', 'send', { TYPE: 'install', body: item });
-			setTimeout(next, 500);
-		}, function() {
-			SETTER('loading', 'hide', 1000);
-			SETTER('snackbar', 'success', '@(Components have been installed successfully.)');
-		});
-	}
+	PLUGIN('components', function(exports){
 
-	function formcomponents_select() {
-		formcomponents.database.forEach(function(item) {
-			var index = formcomponents.components.indexOf(item);
-			if (index === -1)
-				formcomponents.components.push(item);
-			else
-				formcomponents.components.splice(index, 1);
-		});
-		UPDATE('formcomponents.components');
-	}
+		exports.submit = function() {
+			SET('common.form2', '');
+			SETTER('loading', 'show');
+			formcomponents.components.wait(function(item, next) {
+				SETTER('websocket', 'send', { TYPE: 'install', body: item });
+				setTimeout(next, 500);
+			}, function() {
+				SETTER('loading', 'hide', 1000);
+				SETTER('snackbar', 'success', '@(Components have been installed successfully.)');
+			});
+		};
+
+		exports.select = function() {
+			formcomponents.database.forEach(function(item) {
+				var index = formcomponents.components.indexOf(item);
+				if (index === -1)
+					formcomponents.components.push(item);
+				else
+					formcomponents.components.splice(index, 1);
+			});
+			UPDATE('formcomponents.components');
+		}
+	});
+
+	
+
+	
 
 </script>

@@ -13,28 +13,29 @@
 	<meta name="apple-mobile-web-app-status-bar-style" content="#A0A0A0" />
 	<meta name="apple-mobile-web-app-title" content="@{config.name}" />
 	<link rel="apple-touch-icon" href="icon.png" />
-	<link type="text/css" rel="stylesheet" href="@{model.url}default.css" />
+	<link type="text/css" rel="stylesheet" href="@{model.url}css/default.css" />
 	<script>var user = JSON.parse('@{json(user)}');!user && (user = {});</script>
 	@{import('head')}
 </head>
-<body data-jc="exec,binder"@{if model.dark} class="themedark"@{fi}>
+<body data---="exec"@{if model.dark} class="ui-dark"@{fi}>
 
-	<div data-jc="audio" data-jc-path="common.volume"></div>
-	<div data-jc="autocomplete"></div>
-	<div data-jc="calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);firstday:0;months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today)"></div>
-	<div data-jc="confirm"></div>
-	<div data-jc="contextmenu"></div>
-	<div data-jc="loading" class="ui-loading"></div>
-	<div data-jc="message__null__button:@(Close)"></div>
-	<div data-jc="websocket__null__url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
-	<div data-jc="snackbar__null__button:@(Dismiss)"></div>
-	<div data-jc="shortcuts"></div>
-
-	<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-ellipsis-h"></i></a>
+	<div data---="audio" data-jc-path="common.volume"></div>
+	<div data---="autocomplete"></div>
+	<div data---="calendar__null__days:@(SU,MO,TU,WE,TH,FR,SO);firstday:0;months:@(January,February,March,April,May,June,July,August,September,October,November,December);today:@(Set date to today)"></div>
+	<div data---="confirm"></div>
+	<div data---="menu"></div>
+	<div data---="contextmenu"></div>
+	<div data---="loading" class="ui-loading"></div>
+	<div data---="message__null__button:@(Close)"></div>
+	<div data---="websocket__null__url:@{model.url}?&token=@{query.token}&baa=@{repository.baa}"></div>
+	<div data---="snackbar__null__button:@(Dismiss)"></div>
+	<div data---="shortcuts"></div>
+	<div data---="faicons"></div>
 
 	<div class="toolbar">
 		<div class="tabs">
-			<div data-jc="repeater__common.tabs">
+			<a href="javascript:void(0)" data-exec="mainmenu" class="mainmenu exec"><i class="fa fa-chevron-down"></i></a>
+			<div data---="repeater__common.tabs">
 				<script type="text/html">
 					<a href="#{{ linker }}" data-id="{{ id }}" class="tab" data-bind="common.tab__.selected:common.tabs[{{ index }}]?(value.id==common.tabs[{{ index }}].id):false">{{ name }}</a>
 				</script>
@@ -45,26 +46,40 @@
 
 	<div class="designer-container">
 		<div class="designer-scroll">
-			<div class="devicetype" data-jc="devicetype__common.device__items:@(Desktop)|desktop,@(Mobile)|mobile"></div>
+			<div class="devicetype" data---="devicetype__common.device__items:@(Desktop)|desktop,@(Mobile)|mobile"></div>
 			<div class="designer">
-				<div data-jc="controls"></div>
-				<div data-jc="designer"></div>
+				<div data---="controls"></div>
+				<div data---="designer"></div>
 			</div>
 		</div>
 	</div>
 
 	<div id="dashboardsettings"></div>
-	<div data-jc="importer__common.form__if:database;reload:formdatabase_reload;url:@{model.url}templates/form-database.html"></div>
-	<div data-jc="importer__common.form__if:widgets;reload:formwidgets_reload;url:@{model.url}templates/form-widgets.html"></div>
-	<div data-jc="importer__common.form__if:tab;url:@{model.url}templates/form-tab.html"></div>
-	<div data-jc="importer__common.form2__if:components;url:@{model.url}templates/form-components.html"></div>
+	<div data---="importer__common.form__if:database;reload:formdatabase_reload;url:@{model.url}templates/form-database.html"></div>
+	<div data---="importer__common.form__if:widgets;reload:formwidgets_reload;url:@{model.url}templates/form-widgets.html"></div>
+	<div data---="importer__common.form__if:tab;url:@{model.url}templates/form-tab.html"></div>
+	<div data---="importer__common.form2__if:components;url:@{model.url}templates/form-components.html"></div>
 
-	@{import(model.url + 'default.js')}
+	<script type="text/html" id="settings">
+		<div data---="modal__common.form__if:settings-{{ name }};title:@(Settings\:) {{ name }};width:800;submit:settings/submit" data-scope="settings.{{ name }}" data-jc-id="html.{{ name }}" class="hidden">
+			<div>
+				<span class="link cancel"><i class="fa fa-times"></i></span>
+				<label></label>
+			</div>
+			<div>{{ html | raw }}</div>
+			<div data---="validation__?">
+				<span class="link cancel">@(Close)</span>
+				<button class="exec" name="submit" data-exec="#settings" disabled="disabled">@(APPLY SETTINGS)</button>
+			</div>
+		</div>
+	</script>
+
+	@{import(model.url + 'js/default.js')}
 	@{place('scripts')}
 
 	<script>
 
-		M.environment('dashboard.jc');
+		DEF.localstorage = 'dashboard.jc';
 
 		common.id = 'dashboard';
 		common.draft = false;
@@ -76,9 +91,7 @@
 
 		WATCH('common.theme', function(path, value) {
 			var body = $(document.body);
-			var cls = (body.attr('class') || '').match(/theme\w+/g);
-			cls && body.removeClass(cls.toString());
-			value && body.addClass('theme' + value);
+			body.tclass('ui-dark', !!value);
 		}, true);
 
 		WATCH('common.fullwidth', function(path, value, type) {
@@ -100,6 +113,15 @@
 			var container = $('.designer');
 			el.scrollLeft((container.width() / 2) - (w.width() / 2));
 			el.scrollTop((container.height() / 2) - (w.height() / 2));
+		}
+
+		WATCH('common.draft', function(path, value) {
+			changed(value);
+		});
+
+		function changed(is) {
+			var el = $('a.mainmenu');
+			el.tclass('highlight', is).tclass('blink', is);
 		}
 
 		WATCH('common.draft', function(path, value) {
@@ -144,44 +166,46 @@
 			var device = WIDTH();
 			var items = [];
 
-			items.push('@(Dashboard)');
-			items.push({ name: '@(Components)', icon: 'fa-database', value: 'database' });
+			//items.push('@(Dashboard)');
+			items.push({ name: '@(Components)', icon: 'database', value: 'database' });
 
 			if (common.draft) {
-				items.push({ name: '@(Save changes)', icon: 'fa-floppy-o', value: 'save' });
-				items.push({ name: '@(Restore changes)', icon: 'fa-refresh', value: 'restore' });
+				items.push({ name: '@(Save changes)', icon: 'floppy-o', value: 'save' });
+				items.push({ name: '@(Restore changes)', icon: 'refresh', value: 'restore' });
 			} else
-				items.push({ name: '@(Edit mode)', icon: 'fa-object-group', value: 'edit' });
+				items.push({ name: '@(Edit mode)', icon: 'object-group', value: 'edit' });
 
-			items.push({ name: '@(Clear current tab)', icon: 'fa-trash-o', value: 'clear' });
-			items.push({ name: '@(Toggle dark theme)', icon: 'fa-paint-brush', value: 'theme' });
-			items.push({ name: '@(Full-width layout)', icon: 'fa-arrows-h', value: 'fullwidth' });
+			items.push({ name: '@(Clear current tab)', icon: 'trash-o', value: 'clear' });
 
 			if (common.page === 'dashboard' && device !== 'xs' && dashboard.current) {
 				var mode = FIND('dashboard').getMode();
 				var save = mode === 1 && dashboard.changed ? true : false;
-				items.push({ name: save ? '@(Save dashboard)' : '@(Edit dashboard)', icon: save ? 'fa-floppy-o' : 'fa-pencil', value: 'edit' });
+				items.push({ name: save ? '@(Save dashboard)' : '@(Edit dashboard)', icon: save ? 'floppy-o' : 'pencil', value: 'edit' });
 			}
+
+			items.push('@(Appearance)');
+			items.push({ name: '@(Toggle dark theme)', icon: 'paint-brush', value: 'theme' });
+			items.push({ name: '@(Full-width layout)', icon: 'arrows-h', value: 'fullwidth' });
 
 			@{if model.flow || model.flowboard}
 				@{if helpers.FLOWBOARD || helpers.FLOW}
 					items.push('@(Applications)');
 					@{if helpers.FLOWBOARD}
-					items.push({ name: '@(Flowboard)', icon: 'fa-object-group', value: 'flowboard' });
+					items.push({ name: '@(Flowboard)', icon: 'object-group', value: 'flowboard' });
 					@{fi}
 					@{if helpers.FLOW}
-					items.push({ name: '@(Flow designer)', icon: 'fa-sitemap', value: 'flow' });
+					items.push({ name: '@(Flow designer)', icon: 'sitemap', value: 'flow' });
 					@{fi}
 				@{fi}
 			@{fi}
 
 			EMIT('settings.open', items);
 
-			FIND('contextmenu').show('right', el, items, function(value) {
+			FIND('menu').show('left', el, items, function(item) {
 
-				EMIT('settings.select', value);
+				EMIT('settings.select', item);
 
-				switch (value) {
+				switch (item.value) {
 					@{if model.flow && helpers.FLOW}
 					case 'flow':
 						location.href = '@{helpers.FLOW.url}';
@@ -201,7 +225,8 @@
 						FIND('designer').operations.load(data);
 						break;
 					case 'clear':
-						SETTER('loading', 'show')('loading', 'hide', 2000);
+						SETTER('loading', 'show');
+						SETTER('loading', 'hide', 800);
 						FIND('designer').operations.tabclear(common.tab.id);
 						break;
 					case 'database':
@@ -258,7 +283,6 @@
 			}
 
 			UPDATE('common.tabs');
-			SETTER('binder', 'scan');
 			location.hash = o.linker;
 		});
 
@@ -276,18 +300,18 @@
 
 			EMIT('component.open', items);
 
-			FIND('contextmenu').show('center', button, items, function(value) {
+			FIND('contextmenu').show('center', button, items, function(item) {
 
-				EMIT('component.select', value);
+				EMIT('component.select', item);
 
-				switch (value) {
+				switch (item.value) {
 					case 'settings':
 						common.selected = element;
 						widget.settings();
 						break;
 					case 'widgets':
 						common.selected = element;
-						SET('common.form', value);
+						SET('common.form', item.value);
 						break;
 					case 'moveto':
 						EMIT('designer.contextmenu.moveto', button, element, widget);
@@ -311,7 +335,8 @@
 			});
 
 			setTimeout(function(){
-				FIND('contextmenu').show('center', button, items, function(value) {
+				FIND('contextmenu').show('center', button, items, function(item) {
+					var value = item.value;
 
 					var w = common.designer.findItem('id', widget.id);
 					if (w.tab === value)
@@ -364,11 +389,14 @@
 			}
 
 			common.statics[instance.name] = true;
-			COMPILE($('#dashboardsettings').append(('<div data-jc-id="html.{0}" data-jc="form" data-jc-path="common.form" data-jc-config="if:settings-{0};title:@(Settings\\:) {0};width:800" class="hidden"><div data-jc-scope="settings.{0}">{1}<div class="ui-form-buttons"><div class="help nmt" style="margin-bottom:5px">@(The options will be applied immediately.)</div><div data-jc="validation" data-jc-path="?" style="width:100%"><button class="exec" name="submit" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div><div class="help"><a href="javas' + 'cript:void(0)" class="exec" data-path="common.form" data-value="\'\'">@(Cancel settings)</a></div></div></div></div>').format(instance.name.replace(/\:/g, '\:'), common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
+			var template = Tangular.compile($('#settings').html());
+			$('#dashboardsettings').append(template({ name: instance.name.replace(/\:/g, '\:'), html: common.database.findItem('name', instance.name).settings }));
+			COMPILE($('#dashboardsettings'));
+			//COMPILE($('#dashboardsettings').append(('<div data-jc-id="html.{0}" data---="modal__common.form__if:settings-{0};title:@(Settings\\:) {0};width:800" class="hidden"><div><span class="link cancel"><i class="fa fa-times"></i></span><label></label></div><div data-scope="settings.{0}">{1}</div><div data---="validation__?"><span class="link cancel">@(Close)</span><button class="exec" name="submit" data-exec="#settings" disabled="disabled" style="width:100%">@(APPLY SETTINGS)</button></div></div>').format(instance.name.replace(/\:/g, '\:'), common.database.findItem('name', instance.name).settings || '<br /><div class="ui-center padding gray"><i class="fa fa-ban mr5"></i>@(No advanced configuration.)</div><br />')));
 			callback(false);
 		}
 
-		OPERATION('settings', function() {
+		ON('settings', function() {
 			var target = common.selected.find('figure[data-name]');
 			var instance = target.get(0).$widget;
 			var options = settings[instance.name];
@@ -405,7 +433,7 @@
 		}
 
 		$('.designer-scroll').on('scroll', function() {
-			FIND('contextmenu').hideforce();
+			FIND('contextmenu').hide();
 		});
 
 		$(window).on('hashchange', function() {
@@ -417,7 +445,7 @@
 		});
 
 		// Tabs operations
-		OPERATION('tabs.add', function() {
+		ON('tabs.add', function() {
 
 			formtabpositions = [];
 			for (var i = 0; i < common.tabs.length + 1; i++)
@@ -428,7 +456,7 @@
 			SET('common.form', 'tab');
 		});
 
-		OPERATION('tabs.upd', function(id) {
+		ON('tabs.upd', function(id) {
 
 			formtabpositions = [];
 			for (var i = 0; i < common.tabs.length; i++)
@@ -445,17 +473,16 @@
 			}
 		});
 
-		OPERATION('tabs.rem', function(id) {
+		ON('tabs.rem', function(id) {
 			FIND('designer').operations.tabclear(id);
 			common.designer = common.designer.remove('tab', id);
 			SET('common.tabs', common.tabs.remove('id', id));
-			SETTER('binder', 'scan');
 			if (common.tab.id === id)
 				location.hash = common.tabs[0].linker;
 		});
 
 		$(document).on('dblclick', '.tab', function() {
-			common.draft && OPERATION('tabs.upd')(this.getAttribute('data-id'));
+			common.draft && EMIT('tabs.upd', this.getAttribute('data-id'));
 		});
 
 		SETTER(true, 'shortcuts', 'register', 'esc', function(e) {

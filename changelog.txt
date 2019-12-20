@@ -1,3 +1,10 @@
+======= 7.0.0
+
+- updated jComponent to v18
+- updated UI components
+- updated FontAwesome to v5
+- added delegates for saving designer.json
+
 ======= 4.0.0
 
 - updated jComponent version
