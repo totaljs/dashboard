@@ -76,88 +76,102 @@ common.operations.remove = function(name, uninstall) {
 	UPDATE('common.database', 1000);
 };
 
-common.operations.append = function(html, updated, filename) {
+function getScripts(html) {
+	var obj = {};
 
-	var beg = -1;
-	var end = -1;
-	var tmp = -1;
-
-	var body_settings = '';
-	var body_svg = '';
-	var body_script = '';
-	var body_readme = '';
-	var body_style = '';
-	var body_html = '';
+	if (!html)
+		return obj;
+	
+	var t = [];
+	var otag = '<script';
+	var ctag = '</script>';
+	var ot = 0;
+	var ct = 0;
 
 	while (true) {
-
-		beg = html.indexOf('<script', end);
-		if (beg === -1)
+		ot = html.indexOf(otag, ot);
+		if (ot === -1)
 			break;
+		t.push([0, ot]);
+		ot = ot + 7;
 
-		end = html.indexOf('</script>', beg + 7);
-		tmp = html.indexOf('<script', beg + 7);
-
-		if (tmp !== -1 && tmp < end) {
-			while (true) {
-				end = html.indexOf('</script>', tmp + 7);
-				tmp = html.indexOf('<script', tmp + 7);
-				if (tmp === -1 || tmp > end) {
-					end = html.lastIndexOf('</script>', tmp);
-					break;
-				}
-			}
-		}
-
-		if (end === -1)
-			break;
-
-		var body = html.substring(beg, end);
-
-		var beg = body.indexOf('>') + 1;
-		var type = body.substring(0, beg);
-		body = body.substring(beg).trim();
-
-		if (type.indexOf('markdown') !== -1)
-			body_readme = body;
-		if (type.indexOf('json') !== -1) {
-			// data example
-		} else if (type.indexOf('html') !== -1) {
-			if (type.indexOf('body') === -1)
-				body_settings = body;
-			else
-				body_html = body;
-		} else if (type.indexOf('svg') !== -1)
-			body_svg = body;
-		else
-			body_script = body;
-
-		end += 9;
 	}
 
-	if (!body)
+	while (true) {
+		ct = html.indexOf(ctag, ct);
+		if (ct === -1)
+			break;
+		t.push([1, ct]);
+		ct = ct + 7;
+	}
+
+	if (!t.length)
 		return false;
+
+	t = t.sort((p, r) => p[1] - r[1]);
+
+	var pairs = [];
+	var depth = 1;
+	var len = t.length;
+	if (t[0][0] !== 0)
+		return;
+	var beg = t[0][1];
+	for (var i = 1; i < len; i++) {
+		if (t[i][0] === 0)
+			depth++;
+		else
+			depth--;
+		if (depth === 0) {
+			pairs.push([beg, t[i][1]]);
+			if (!t[i+1])
+				break;
+			beg = t[i+1][1];
+		}
+	}
+
+	pairs.forEach(function(pair, index){
+		var script = html.substring(pair[0], pair[1]);
+		var br = script.indexOf('>') + 1;
+		var type = script.substring(0, br);
+		if (type.indexOf('markdown') !== -1)
+			obj.readme = script.substring(br).trim();
+		else if (type.indexOf('body') !== -1)
+			obj.html = script.substring(br).trim();
+		else if (type.indexOf('settings') !== -1)
+			obj.settings = script.substring(br).trim();
+		else if (type.indexOf('svg') !== -1)
+			obj.svg = script.substring(br).trim();
+		else
+			obj.script = script.substring(br).trim();
+	});
 
 	beg = html.indexOf('<style');
 	if (beg !== -1)
-		body_style = html.substring(html.indexOf('>', beg) + 1, html.indexOf('</style>')).trim();
+		obj.style = html.substring(html.indexOf('>', beg) + 1, html.indexOf('</style>')).trim();
+
+	return obj;
+};
+
+common.operations.append = function(html, updated, filename) {
+
+	var scripts = getScripts(html);
 
 	var component = {};
-	new Function('exports', body_script)(component);
+	new Function('exports', scripts.script)(component);
 
 	if (!component.name)
 		return false;
 
-	component.settings = body_settings;
-	component.svg = body_svg;
-	component.readme = body_readme;
-	component.html = body_html;
+	component.settings = scripts.settings;
+	component.svg = scripts.svg;
+	component.readme = scripts.readme;
+	component.html = scripts.html;
 	component.dateupdated = updated;
 	component.filename = filename;
 
-	if (body_style) {
+	if (scripts.style) {
 		$('#inlinecss_' + component.name).remove();
-		$('<style type="text/css" id="inlinecss_{0}">'.format(component.name) + body_style + '</style>').appendTo('head');
+		$('<style type="text/css" id="inlinecss_{0}">'.format(component.name) + scripts.style + '</style>').appendTo('head');
 	}
 
 	var index = common.database.findIndex('name', component.name);
