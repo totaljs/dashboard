@@ -4,5 +4,5 @@ SET parent=%~dp0
 SET name=dashboard.package
 
 cd source
-totaljs --package %parent%%name%
+total4 --package %parent%%name%
 MOVE %name% ../
