@@ -72,16 +72,16 @@ exports.install = function(options) {
 	}
 
 	// Files
-	F.localize(OPT.url + 'templates/*.html', ['compress']);
+	LOCALIZE(OPT.url + 'templates/*.html', ['compress']);
 
 	// Merging & Mapping
-	F.merge(OPT.url + 'css/default.css', '@dashboard/css/spa.min@18.css', '@dashboard/css/default.css', '@dashboard/css/ui.css', '@dashboard/css/ui.extras.css');
-	F.merge(OPT.url + 'js/default.js', '@dashboard/js/spa.min@18.js', '@dashboard/js/default.js', '@dashboard/js/ui.js', '@dashboard/js/ui.extras.js');
-	F.map(OPT.url + 'templates/', '@dashboard/templates/');
-	F.map(OPT.url + 'fonts/', '@dashboard/fonts/');
-	F.map(OPT.url + 'img/', '@dashboard/img/');
+	MERGE(OPT.url + 'css/default.css', '@dashboard/css/spa.min@18.css', '@dashboard/css/default.css', '@dashboard/css/ui.css', '@dashboard/css/ui.extras.css');
+	MERGE(OPT.url + 'js/default.js', '@dashboard/js/spa.min@18.js', '@dashboard/js/default.js', '@dashboard/js/ui.js', '@dashboard/js/ui.extras.js');
+	MAP(OPT.url + 'templates/', '@dashboard/templates/');
+	MAP(OPT.url + 'fonts/', '@dashboard/fonts/');
+	MAP(OPT.url + 'img/', '@dashboard/img/');
 
-	F.helpers.DASHBOARD = global.DASHBOARD;
+	DEF.helpers.DASHBOARD = global.DASHBOARD;
 
 	// Service
 	ON('service', service);
@@ -136,12 +136,17 @@ function websocket() {
 
 		switch (message.TYPE) {
 			case 'templates':
-				OPT.templates && U.request(OPT.templates, FLAGS, function(err, response) {
-					if (!err) {
-						WS_TEMPLATES.body = response.parseJSON();
-						WS_TEMPLATES.body && client.send(WS_TEMPLATES);
-					}
-				});
+				OPT.templates && REQUEST({
+          method: 'get',
+          url: OPT.templates,
+          dnscache: true,
+          callback: function(err, response) {
+            if (!err) {
+              WS_TEMPLATES.body = response.body.parseJSON();
+              WS_TEMPLATES.body && client.send(WS_TEMPLATES);
+            }
+          }
+        });
 				break;
 			case 'send':
 				var instance = FLOW.findById(message.id);
@@ -170,33 +175,26 @@ function component_install(controller, response, callback) {
 
 	var u = response.body.substring(0, 6);
 	if (u === 'http:/' || u === 'https:') {
-		U.download(response.body, FLAGS, function(err, res) {
-
+    var target = F.path.root(PATH + U.getName(response.body));
+		DOWNLOAD(response.body, target, function(err, res) {
 			if (err) {
 				WS_ERROR.body = err.toString();
 				DASHBOARD.send(WS_ERROR);
 				return callback(err);
-			}
-
-			var filename = F.path.root(PATH + U.getName(response.body));
-			var writer = Fs.createWriteStream(filename);
-			res.pipe(writer);
-			writer.on('finish', function() {
-				Fs.readFile(filename, function(err, response) {
+			} else {
+        Fs.readFile(target, function(err, response) {
 					if (response)
-						response = U.minifyHTML(response.toString('utf8'));
-					Fs.writeFile(filename, response, function() {
-						callback && callback();
-						controller && send_component(filename, controller);
-					});
+						response = U.minify_html(response.toString('utf8'));
+            callback && callback();
+						controller && send_component(target, controller);
 				});
-			});
+      }
 		});
 		return;
 	}
 
-	var filename = F.path.root(PATH + response.filename);
-	Fs.writeFile(filename, U.minifyHTML(response.body), function() {
+  var filename = F.path.root(PATH + response.filename);
+	Fs.writeFile(filename, U.minify_html(response.body), function() {
 		callback && callback();
 		controller && send_component(filename, controller);
 	});
@@ -269,7 +267,7 @@ function send_component(filename, client, callback) {
 
 		Fs.readFile(filename, function(err, data) {
 			if (data) {
-				WS_COMPONENT.body = U.minifyHTML(TRANSLATOR('default', data.toString('utf8')));
+				WS_COMPONENT.body = U.minify_html(TRANSLATOR('default', data.toString('utf8')));
 				WS_COMPONENT.name = U.getName(filename);
 				WS_COMPONENT.dateupdated = stats.mtime;
 				client.send(WS_COMPONENT);
@@ -288,7 +286,7 @@ function send_components(client, callback) {
 					return next();
 				Fs.readFile(item, function(err, data) {
 					if (data) {
-						WS_COMPONENT.body = U.minifyHTML(TRANSLATOR('default', data.toString('utf8')));
+						WS_COMPONENT.body = U.minify_html(TRANSLATOR('default', data.toString('utf8')));
 						WS_COMPONENT.name = U.getName(item);
 						WS_COMPONENT.dateupdated = stats.mtime;
 						client.send(WS_COMPONENT);

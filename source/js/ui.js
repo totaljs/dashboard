@@ -1246,7 +1246,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 	};
 
 	self.send = function(obj) {
-		queue.push(encodeURIComponent(JSON.stringify(obj)));
+		queue.push(JSON.stringify(obj));
 		self.process();
 		return self;
 	};
@@ -1293,7 +1293,7 @@ COMPONENT('websocket', 'reconnect:2000', function(self, config) {
 	function onMessage(e) {
 		var data;
 		try {
-			data = PARSE(decodeURIComponent(e.data));
+			data = PARSE(e.data);
 			self.attrd('jc-path') && self.set(data);
 		} catch (e) {
 			WARN('WebSocket "{0}": {1}'.format(url, e.toString()));
